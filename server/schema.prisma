@@ -1,0 +1,4 @@
+datasource db {
+    provider = "postgresql"
+    url      = "postgresql://postgres:Password@localhost:5432/localVolunteerMe?schema=public"
+  }

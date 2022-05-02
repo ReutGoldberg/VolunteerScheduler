@@ -2,16 +2,17 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.tsx",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server",
-    "devStart": "nodemon server"
+    "start": "node server.js",
+    "devStart": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^17.0.31",
     "nodemon": "^2.0.15"
   },
   "dependencies": {
