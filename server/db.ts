@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+
+
 async function main() {
   console.log('hi')
     const allUsers = await prisma.test.findMany()
