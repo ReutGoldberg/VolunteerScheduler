@@ -5,11 +5,13 @@ import TextField from '@mui/material/TextField';
 import { AccountCircle } from "@mui/icons-material";
 import {InputAdornment} from '@mui/material';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import ButtonGroup from '@mui/material/ButtonGroup';
 
 
 export const Login : React.FC = () => {
     const [username, setUsername] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
+    const [signupOrLogin, setSignupOrLogin] = React.useState<string>("");
 
     const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(event.target.value);
@@ -17,23 +19,22 @@ export const Login : React.FC = () => {
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(event.target.value);
     };
-    const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-        
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        if(signupOrLogin == 'Login'){}
+        if(signupOrLogin == 'signup'){}
         }
 
     return (
         <Box component="form" sx={{
           width: '30%',
-          minWidth: '500px',
-          height: '50%',
+          height: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          p: 5,
-          m: 5,
+          p: '5%',
           gap: 2,
         }}
         id="loginForm"
-        onSubmit={handleLogin} >
+        onSubmit={handleSubmit} >
                 <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'  }}>
                      <AccountCircle color="primary" sx={{ fontSize: 130 }}  />
                 </Box>
@@ -57,9 +58,11 @@ export const Login : React.FC = () => {
                                 <VpnKeyIcon />
                               </InputAdornment>
                             ),}}/>
-                <Button sx={{
-                     flexGrow: 1, display: 'flex'
-                }} type="submit" form="loginForm" variant="contained" >Login</Button>
+                <ButtonGroup size="large" variant="text" aria-label="text button group" sx={{gap: 1}} fullWidth={true}>
+                  <Button type="submit" form="loginForm" variant="contained" onClick={() => (setSignupOrLogin('Login'))}>Login</Button>
+                  <Button type="submit" form="loginForm" variant="contained" onClick={() => (setSignupOrLogin('Signup'))}>Signup</Button>
+                </ButtonGroup>
+
 
         </Box>
     );
