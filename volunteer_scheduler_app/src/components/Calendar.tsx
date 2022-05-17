@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { generateDemoEvents } from '../utils/helper';
-import { DateTime } from 'luxon';
-import Kalend, { CalendarView, OnEventDragFinish } from 'kalend';
-import 'kalend/dist/styles/index.css';
+import React, { useEffect, useState } from "react";
+import { generateDemoEvents } from "../utils/helper";
+import { DateTime } from "luxon";
+import Kalend, { CalendarView, OnEventDragFinish } from "kalend";
+import "kalend/dist/styles/index.css";
 
 const CalendComponent = (props: any) => {
   const [demoEvents, setDemoEvents] = useState({});
@@ -21,7 +21,7 @@ const CalendComponent = (props: any) => {
       startAt: data.startAt,
       endAt: data.endAt,
       view: data.view,
-      event: 'click event ',
+      event: "click event ",
     })}`;
     console.log(msg);
   };
@@ -54,7 +54,7 @@ const CalendComponent = (props: any) => {
       initialDate={new Date().toISOString()}
       hourHeight={60}
       // showWeekNumbers={true}
-      timezone={'Europe/Berlin'}
+      timezone={"Europe/Berlin"}
       // draggingDisabledConditions={{
       //   summary: 'Computers',
       //   allDay: false,
