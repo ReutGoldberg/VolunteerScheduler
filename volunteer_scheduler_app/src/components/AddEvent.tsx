@@ -1,21 +1,34 @@
 import * as React from "react";
 import "../App.css";
 import { Button, Box, InputAdornment } from "@mui/material";
-import TextField, { TextFieldProps } from "@mui/material/TextField";
-import { AccountCircle } from "@mui/icons-material";
+import TextField from "@mui/material/TextField";
 import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
 import Typography from "@mui/material/Typography";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { EventDatePicker } from "./EventDatePicker";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import InfoIcon from "@mui/icons-material/Info";
+import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+import MaximizeIcon from "@mui/icons-material/Maximize";
+import MinimizeIcon from "@mui/icons-material/Minimize";
 
 export const AddEvent: React.FC = () => {
   const [eventName, setEventName] = React.useState("");
   const [eventNameValid, setEventNameValid] = React.useState(true);
 
+  const [eventInfo, setEventInfo] = React.useState("");
+  const [eventInfoValid, setEventInfoValid] = React.useState(true);
+
+  const [eventLocation, setEventLocation] = React.useState("");
+  const [eventLocationValid, setEventLocationValid] = React.useState(true);
+
+  const [eventMaxParticipants, setEventMaxParticipants] = React.useState("");
+  const [eventMaxParticipantsValid, setEventMaxParticipantsValid] =
+    React.useState(true);
+
   const [startDate, setStartDate] = React.useState<Date | null>(null);
+  const [startDateValid, setStartDateValid] = React.useState(true);
   const [endDate, setEndDate] = React.useState<Date | null>(null);
+  const [endDateValid, setEndDateValid] = React.useState(true);
 
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -23,6 +36,60 @@ export const AddEvent: React.FC = () => {
     if (!event.target.value.match(/^[a-z0-9]+/i)) setEventNameValid(false);
     else setEventNameValid(true);
     setEventName(event.target.value);
+  };
+  const handleEventInfoChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!event.target.value.match(/^[$%^@*&!()]*[a-z0-9]+[$%^@*&!()]*/i))
+      setEventInfoValid(false);
+    else setEventInfoValid(true);
+    setEventInfo(event.target.value);
+  };
+
+  const handleEventLocationChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!event.target.value.match(/^[a-z0-9]+/i)) setEventLocationValid(false);
+    else setEventLocationValid(true);
+    setEventLocation(event.target.value);
+  };
+
+  const handleEventMaxParticipantsChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!event.target.value.match(/^[1-9]+[0-9]*/i))
+      setEventMaxParticipantsValid(false);
+    else setEventMaxParticipantsValid(true);
+    setEventMaxParticipants(event.target.value);
+  };
+
+  const handleEventStartTimeChange = (newVal: Date | null) => {
+    if (newVal) {
+      var today = new Date();
+      var inputStartDate = new Date(newVal);
+      if (!(inputStartDate >= today)) setStartDateValid(false);
+      else setStartDateValid(true);
+      setStartDate(inputStartDate);
+    }
+  };
+
+  const handleEventEndTimeChange = (newVal: Date | null) => {
+    if (newVal) {
+      var today = new Date();
+      var inputEndDate = new Date(newVal);
+      if (
+        !(inputEndDate >= today) ||
+        (startDate != null && inputEndDate > startDate)
+      ) {
+        console.log("valid");
+        //TODO: do we want to have min time to event?
+        setEndDateValid(false);
+      } else {
+        console.log("not valid");
+        setEndDateValid(true);
+      }
+      setEndDate(inputEndDate);
+    }
   };
 
   const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -92,20 +159,71 @@ export const AddEvent: React.FC = () => {
         gutterBottom
         component="div"
       >
-        add new admin
+        add new Event
       </Typography>
       <TextField
         required
         error={!eventNameValid}
         id="outlined-basic"
-        label="Admin name"
+        label="Name"
         variant="outlined"
         onChange={handleEventNameChange}
         helperText={!eventNameValid ? "Please enter a valid name " : ""}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <AccountCircle />
+              <DriveFileRenameOutlineIcon />
+            </InputAdornment>
+          ),
+        }}
+      />
+      <TextField
+        required
+        error={!eventInfoValid}
+        id="outlined-basic"
+        label="Info"
+        variant="outlined"
+        onChange={handleEventInfoChange}
+        helperText={!eventInfoValid ? "Please enter a valid info " : ""}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <InfoIcon />
+            </InputAdornment>
+          ),
+        }}
+      />
+      <TextField
+        required
+        error={!eventLocationValid}
+        id="outlined-basic"
+        label="Location"
+        variant="outlined"
+        onChange={handleEventLocationChange}
+        helperText={!eventLocationValid ? "Please enter a valid location " : ""}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <LocationOnIcon />
+            </InputAdornment>
+          ),
+        }}
+      />
+      <TextField
+        error={!eventMaxParticipantsValid}
+        id="outlined-basic"
+        label="Maximum number of participants"
+        variant="outlined"
+        onChange={handleEventMaxParticipantsChange}
+        helperText={
+          !eventMaxParticipantsValid
+            ? "Please enter a valid maximum of participants "
+            : ""
+        }
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <MaximizeIcon />
             </InputAdornment>
           ),
         }}
@@ -115,20 +233,27 @@ export const AddEvent: React.FC = () => {
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
-          gap: 1,
+          gap: 4.7,
         }}
       >
         <EventDatePicker
           {...{
+            onChangeHandler: handleEventStartTimeChange,
             label: "enter start date",
             value: startDate,
-            setValue: setStartDate,
+            isValid: startDateValid,
           }}
         />
         <EventDatePicker
-          {...{ label: "enter end date", value: endDate, setValue: setEndDate }}
+          {...{
+            onChangeHandler: handleEventEndTimeChange,
+            label: "enter end date",
+            value: endDate,
+            isValid: endDateValid,
+          }}
         />
       </Box>
+      {/* change "add event" to white */}
       <Button type="submit" form="registerForm" variant="contained">
         Add Event
       </Button>

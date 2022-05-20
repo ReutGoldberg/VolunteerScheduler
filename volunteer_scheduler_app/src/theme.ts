@@ -3,8 +3,8 @@ import { createTheme } from "@mui/material";
 export const lightTheme = createTheme({
     palette: {
       primary: {
-        // light: 'rgb(173, 226, 202)',
-        main: "#0c8a00",
+        // light: 'rgb(255, 255, 255)',
+        main: "#236958",
         // dark: '#b20e45',
         contrastText: "#312d2d",
       },
@@ -14,6 +14,9 @@ export const lightTheme = createTheme({
       info: {
           main: "#000000",
       },
+      secondary:{
+        main: '#ffffff',
+      }
       // secondary: {
       //   light: '#f48fb1',
       //   main: '#312d2d',

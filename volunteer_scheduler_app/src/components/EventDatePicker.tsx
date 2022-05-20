@@ -7,13 +7,15 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 export interface EventDatePickerProps {
   label: string;
   value: Date | null;
-  setValue: (date: Date | null) => void;
+  onChangeHandler: (date: Date | null) => void;
+  isValid: boolean;
 }
 
 export const EventDatePicker: React.FC<EventDatePickerProps> = ({
   label,
   value,
-  setValue,
+  onChangeHandler,
+  isValid,
 }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -21,9 +23,13 @@ export const EventDatePicker: React.FC<EventDatePickerProps> = ({
         label={label}
         value={value}
         onChange={(newValue: Date | null) => {
-          setValue(newValue);
+          onChangeHandler(newValue);
         }}
-        renderInput={(params: TextFieldProps) => <TextField {...params} />}
+        renderInput={(params: TextFieldProps) => {
+          params.error = !isValid;
+          params.helperText = !isValid ? "Please enter a valid Date " : "";
+          return <TextField {...params} />;
+        }}
       />
     </LocalizationProvider>
   );
