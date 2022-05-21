@@ -1,0 +1,59 @@
+//const express = require("express") //before switching to TS;
+import express, {Express, Request, Response} from "express";
+import {getAllUsers,addNewUser,updateUser,deleteUserById} from "./db";
+const config = require('./config')
+
+
+//OLD (before the change to TS): const app = express();
+const app: Express = express();
+
+app.use(express.json());
+
+const myPort = config.server_app.port;
+app.listen(myPort, ()=>{
+    console.log(`server running on port ${myPort}`);
+});
+
+app.get('/', (req:Request, res:Response) => {
+    res.send("You're on Root with TS enabled !");
+    res.status(200);
+});
+
+//retrevies data from DB
+app.get('/users', async (req:Request, res:Response) => {
+    const users = await getAllUsers();
+    res.json(users);
+});
+
+//Pushes data to the DB based on the request body
+app.post('/users', async (req:Request, res:Response) => {
+    const {firstName, lastName} = req.body;
+    const user = await addNewUser(firstName,lastName);
+    res.json(user);
+});
+
+//Updates existing records based on request body
+app.put('/users', async (req:Request, res:Response) => {
+    const {userId, userName} = req.body;
+    const updatedUser = await updateUser(userId,userName);
+    res.json(updatedUser);
+});
+
+//delete specific user
+app.delete('/users:id', async (req:Request, res:Response) => {
+    const userId = req.params.id;
+    const deletedUser = await deleteUserById(Number(userId));    
+    res.json(deletedUser);
+});
+
+
+
+
+
+
+// app.get('/test', (req, res) => {    
+//     res.send('starting test query');
+//     //put some code that fetches data from the DB (test table)
+//     // and presents it to the screen as JSON objecct
+
+// });
