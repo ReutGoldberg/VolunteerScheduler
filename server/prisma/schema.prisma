@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model test_person {
+  id Int @id @default(autoincrement())
+  firstName String
+  lastName String?
+}
+//cars Car[]
+
+//example for using relations = Joins
+// model Car {
+//   id Int @id @default(autoincrement())
+//   model String
+//   year Int
+//   person test_person @relation(fields: [person_id], references: [id])
+//   person_id Int
+// }
