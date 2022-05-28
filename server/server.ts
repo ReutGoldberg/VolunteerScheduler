@@ -1,11 +1,13 @@
 //const express = require("express") //before switching to TS;
 import express, {Express, Request, Response} from "express";
-import {getAllUsers,addNewUser,updateUser,deleteUserById} from "./db";
+import {getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin} from "./db";
 const config = require('./config')
 
 
 //OLD (before the change to TS): const app = express();
 const app: Express = express();
+var cors = require('cors');
+app.use(cors({origin: 'http://localhost:3000'}))
 
 app.use(express.json());
 
@@ -32,6 +34,17 @@ app.post('/users', async (req:Request, res:Response) => {
     res.json(user);
 });
 
+
+app.post('/add_user', async (req:Request, res:Response) => {
+    console.log('got post')
+    console.log(req.body)
+  //  console.log(req)
+    const {name, password} = req.body;
+    console.log(name)
+    console.log(password)
+    const user = await addNewAdmin(name, password);
+    res.json(user);
+});
 //Updates existing records based on request body
 app.put('/users', async (req:Request, res:Response) => {
     const {userId, userName} = req.body;

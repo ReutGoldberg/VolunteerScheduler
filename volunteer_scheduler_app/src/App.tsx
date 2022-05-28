@@ -20,7 +20,7 @@ function App() {
             alignItems: "center",
           }}
         >
-          <AddEvent />
+          <AddAdmin />
         </Box>
       </div>
     </ThemeProvider>

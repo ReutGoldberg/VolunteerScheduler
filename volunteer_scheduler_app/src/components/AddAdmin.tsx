@@ -6,6 +6,7 @@ import { AccountCircle } from "@mui/icons-material";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
 import Typography from "@mui/material/Typography";
+import axios from 'axios';
 // import axios from "axios";
 // import {getUser} from "../Utils";
 
@@ -51,44 +52,18 @@ export const AddAdmin: React.FC = () => {
   };
 
   const handleAddAdmin = async (event: React.FormEvent<HTMLFormElement>) => {
-    // event.preventDefault();
-    // if(adminPasswordVerificationValid){
-    //     let loggedUser= getUser()
-    //     if (!loggedUser) return;
-    //     let token:string = window.btoa(`${loggedUser!![0]}:${loggedUser!![1]}`)
-    //     console.log("token:"+ token + "loggeduser" + loggedUser);
-    //     let data = new FormData();    //formdata object
-    //     data.append('adminName', adminName);
-    //     data.append('adminPassword', adminPassword);
-    //     try {
-    //         const res = await axios({
-    //             method: "post",
-    //             url: `http://localhost:${process.env.REACT_APP_BACKEND_PORT}/register_admin`,
-    //             data: data,
-    //             headers: {  "Content-Type": "multipart/form-data", 'Authorization': `Basic ${token}` },
-    //         });
-    //         if(res.statusText === 'OK'){
-    //             setPageApp("CurrentAdminsList")
-    //         }
-    //     } catch(err:any) {
-    //         if (axios.isAxiosError(err)) {
-    //             if(err.response){
-    //                 let message: string = ""
-    //                 if( err.response.status === 409){
-    //                     message = "A problem occurred! probably name is taken";
-    //                 }
-    //                 else {
-    //                     message = "error! " + err.response.status.toString() + " " + err.response.statusText;
-    //                 }
-    //                 alert(message)
-    //             } else if(err.request){
-    //                 alert("The request was made but no response was received from server")
-    //             } else {
-    //                 alert(err.message)
-    //             }
-    //         }
-    //     }
-    // }
+    event.preventDefault();
+    const data = {name: adminName, password: adminPassword}
+    const response = await axios({
+        method: "post",
+        url: `http://localhost:5001/add_user`,
+        data: JSON.stringify(data),
+        headers: {  "Content-Type": "application/json"},
+    });
+    if(response.statusText === 'OK')
+        console.log('add admin')
+    else
+      console.log('didnt add admin')
   };
 
   return (

@@ -18,6 +18,19 @@ const prisma = new PrismaClient()
   return user;
   }
 
+  async function addNewAdmin(name:String, password:String){
+    const user = await prisma.Users.create({
+      data: {
+        firstName: name,
+        lastName: name,
+        email: name,
+        password: password,
+        admin: true
+      },
+    });
+    return user;
+    }
+
   async function getAllUsers() {
     const users = await prisma.test_person.findMany();
     return users;
@@ -43,4 +56,4 @@ const prisma = new PrismaClient()
     });
     return deletedUser;
   }
-  export {getAllUsers,addNewUser,updateUser,deleteUserById};
+  export {getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin};

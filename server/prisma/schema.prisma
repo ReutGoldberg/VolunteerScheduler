@@ -7,12 +7,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model test_person {
-  id Int @id @default(autoincrement())
+
+model Users {
   firstName String
-  lastName String?
+  lastName String
+  email String @id
+  password String
+  admin Boolean
 }
-//cars Car[]
+
+model Event {
+  id Int @id @default(autoincrement())
+  title String
+  details String
+  created_by String
+  location String?
+  min_volenteering Int?
+  max_volenteering Int?
+  date String
+  label String
+}
 
 //example for using relations = Joins
 // model Car {
