@@ -56,4 +56,19 @@ const prisma = new PrismaClient()
     });
     return deletedUser;
   }
-  export {getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin};
+  
+  async function getAllEvents(){
+    const events = await prisma.Events.findMany();
+    return events;
+  }
+
+  async function getEvent(event_id: Number){
+    const event_details = await prisma.Events.findMany({
+      where:{
+        id: event_id,
+      }
+    });
+    return event_details;
+  }
+  
+  export {getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents};

@@ -1,6 +1,6 @@
 //const express = require("express") //before switching to TS;
 import express, {Express, Request, Response} from "express";
-import {getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin} from "./db";
+import {getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin} from "./db";
 const config = require('./config')
 
 
@@ -27,6 +27,38 @@ app.get('/users', async (req:Request, res:Response) => {
     res.json(users);
 });
 
+app.get('/all_events', async (req:Request, res:Response) => {
+    const events = await getAllEvents();
+    res.json(events);
+    console.log(events)
+});
+
+app.get(`/event_details/:event_id`, async (req:Request, res:Response) => {
+    //console.log(req)
+    console.log(req.params.event_id)
+    const id = Number(req.params.event_i)
+    const event_details = await getEvent(id);
+    // res.json(events);
+    console.log("event details from db:")
+    console.log(event_details)
+    const full_event_details={
+        id: event_details["id"],
+        startAt: event_details["start_time"],
+        endAt: event_details["end_date"],
+        title: event_details["title"],
+        details: event_details["details"],
+        color: 'blue',
+        allDay: false,
+        label: event_details["label"],
+        location: event_details["location"],
+        created_by: event_details["created_by"],
+        min_volenteers: event_details["min_volenteering"],
+        max_volenteers: event_details["max_volenteering"],
+    }
+    console.log("event details after parsing:")
+    console.log(full_event_details)
+    res.json(full_event_details);
+});
 //Pushes data to the DB based on the request body
 app.post('/users', async (req:Request, res:Response) => {
     const {firstName, lastName} = req.body;

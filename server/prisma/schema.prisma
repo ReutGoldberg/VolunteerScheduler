@@ -9,14 +9,15 @@ datasource db {
 
 
 model Users {
-  firstName String
-  lastName String
-  email String @id
-  password String
-  admin Boolean
+  first_name String?
+  last_name String?
+  email String
+  token String @id
+  is_admin Boolean
+  EventManagerMap EventManagerMap[]
 }
 
-model Event {
+model Events {
   id Int @id @default(autoincrement())
   title String
   details String
@@ -24,15 +25,31 @@ model Event {
   location String?
   min_volenteering Int?
   max_volenteering Int?
-  date String
+  start_time DateTime
+  end_date DateTime
   label String
+  EventManagerMap EventManagerMap[]
+  EventLabelMap EventLabelMap[]
 }
 
-//example for using relations = Joins
-// model Car {
-//   id Int @id @default(autoincrement())
-//   model String
-//   year Int
-//   person test_person @relation(fields: [person_id], references: [id])
-//   person_id Int
-// }
+model Labels{
+  name String @id
+  EventLabelMap EventLabelMap[]
+}
+
+model EventManagerMap{
+  event_id Int
+  Events Events? @relation(fields: [event_id], references: [id])
+  user_token String
+  Users Users? @relation(fields: [user_token], references: [token])
+  @@id([event_id, user_token])
+}
+
+model EventLabelMap{
+  event_id Int
+  Events Events? @relation(fields: [event_id], references: [id])
+  label String
+  Labels Labels? @relation(fields: [label], references: [name])
+  @@id([event_id, label])
+}
+

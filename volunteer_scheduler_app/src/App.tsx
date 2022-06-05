@@ -7,6 +7,8 @@ import { AddAdmin } from "./components/AddAdmin";
 import { AddEvent } from "./components/AddEvent";
 import { Navbar } from "./components/Navbar";
 import { lightTheme } from "./theme";
+import MainPage from "./pages/main";
+//import MainPage from "./pages/full";
 
 function App() {
   return (
@@ -20,7 +22,7 @@ function App() {
             alignItems: "center",
           }}
         >
-          <AddAdmin />
+          <MainPage />
         </Box>
       </div>
     </ThemeProvider>
