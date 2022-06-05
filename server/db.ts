@@ -68,7 +68,7 @@ const prisma = new PrismaClient()
         id: event_id,
       }
     });
-    return event_details;
+    return event_details[0];
   }
   
   export {getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents};
