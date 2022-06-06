@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Users {
+  first_name String?
+  last_name String?
+  email String
+  token String @id
+  is_admin Boolean
+  EventManagerMap EventManagerMap[]
+}
+
+model Events {
+  id Int @id @default(autoincrement())
+  title String
+  details String
+  created_by String
+  location String?
+  min_volenteering Int?
+  max_volenteering Int?
+  start_time DateTime
+  end_date DateTime
+  label String
+  EventManagerMap EventManagerMap[]
+  EventLabelMap EventLabelMap[]
+}
+
+model Labels{
+  name String @id
+  EventLabelMap EventLabelMap[]
+}
+
+model EventManagerMap{
+  event_id Int
+  Events Events? @relation(fields: [event_id], references: [id])
+  user_token String
+  Users Users? @relation(fields: [user_token], references: [token])
+  @@id([event_id, user_token])
+}
+
+model EventLabelMap{
+  event_id Int
+  Events Events? @relation(fields: [event_id], references: [id])
+  label String
+  Labels Labels? @relation(fields: [label], references: [name])
+  @@id([event_id, label])
+}
+

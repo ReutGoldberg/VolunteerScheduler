@@ -1,15 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { Login } from './components/Login';
-import Kalend, { CalendarView } from 'kalend' // import component
-import 'kalend/dist/styles/index.css'; // import styles
-import MainPage from './pages/main';
+import { Box, ThemeProvider } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
+import "kalend/dist/styles/index.css"; // import styles
+import React from "react";
+import "./App.css";
+import { AddAdmin } from "./components/AddAdmin";
+import { AddEvent } from "./components/AddEvent";
+import { Navbar } from "./components/Navbar";
+import { lightTheme } from "./theme";
+import MainPage from "./pages/main";
+import {Login} from "./components/Login";
 
+//import MainPage from "./pages/full";
 
 function App() {
   return (
-    <MainPage />
+    <ThemeProvider theme={lightTheme}>
+      <div className={"root"}>
+        <Navbar />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Login/>
+        </Box>
+      </div>
+    </ThemeProvider>
   );
 }
 
