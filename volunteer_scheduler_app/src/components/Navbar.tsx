@@ -6,32 +6,38 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { Console } from "console";
 // import {removeUserSession} from "../Utils";
 
-// export interface NavbarProps {
-//     setPageApp(page:string) : void;
-// }
+export interface NavbarProps {
+  setPageApp(page: string): void;
+}
 
-export const Navbar: React.FC = () => {
+export const Navbar: React.FC<NavbarProps> = ({ setPageApp }) => {
   // const handleLogOut = () => {
   //     removeUserSession()
   //     setPageApp("Login")
   // };
   const handlePersonalEventsCalendar = () => {
     console.log("handlePersonalEventsCalendar");
+    setPageApp("PersonalEventsCalendar");
   };
   const handleGeneralEventsCalendar = () => {
     console.log("handleGeneralEventsCalendar");
+    setPageApp("GeneralEventsCalendar");
   };
   const handleAddEvent = () => {
     console.log("handleAddEvent");
+    setPageApp("AddEvent");
   };
   const handleAddAdmin = () => {
     console.log("handleAddAdmin");
+    setPageApp("AddAdmin");
   };
   const handleCurrentAdminsList = () => {
     console.log("handleCurrentAdminsList");
+    setPageApp("CurrentAdminsList");
   };
   const handleProfile = () => {
     console.log("handleProfile");
+    setPageApp("Profile");
   };
 
   return (
@@ -55,15 +61,15 @@ export const Navbar: React.FC = () => {
         >
           {/* <Button color={"secondary"} onClick={handleLogOut}> <LogoutIcon color={"secondary"}/>  Log out </Button> */}
           <Button onClick={handlePersonalEventsCalendar}>
-            Personal events calendar
+            Personal Events Calendar
           </Button>
           <Button onClick={handleGeneralEventsCalendar}>
-            General events calendar
+            General Events Calendar
           </Button>
-          <Button onClick={handleAddEvent}>add event</Button>
-          <Button onClick={handleAddAdmin}>add admin</Button>
+          <Button onClick={handleAddEvent}>Add Event</Button>
+          <Button onClick={handleAddAdmin}>Add Admin</Button>
           <Button onClick={handleCurrentAdminsList}>Current Admins List</Button>
-          <Button onClick={handleProfile}>profile</Button>
+          <Button onClick={handleProfile}>Profile</Button>
         </ButtonGroup>
       </Box>
     </Box>

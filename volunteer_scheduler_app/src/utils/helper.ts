@@ -100,7 +100,9 @@ export const getAllEvents = async () => {
 // };
 
 
-
+export const getPage = () => {
+  return sessionStorage.getItem("page") || "main";
+};
 
 export const generateDemoEvents = (
   date: DateTime = DateTime.now(),

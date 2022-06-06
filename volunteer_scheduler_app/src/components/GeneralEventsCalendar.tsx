@@ -6,7 +6,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { Console } from "console";
 import CalendComponent from "./Calendar";
 
-export const PersonalEventsCalendar: React.FC = () => {
+export const GeneralEventsCalendar: React.FC = () => {
   return (
     <div className={"wrapper"}>
       <div className={"container__title"}>
