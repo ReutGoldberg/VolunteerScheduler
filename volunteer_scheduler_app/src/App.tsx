@@ -54,7 +54,7 @@ function App() {
             alignItems: "center",
           }}
         >
-          <Login />
+          {pageToPresent(page)}
         </Box>
       </div>
     </ThemeProvider>

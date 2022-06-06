@@ -2,8 +2,6 @@ import React from "react";
 import "../App.css";
 import { Button, Box } from "@mui/material";
 import ButtonGroup from "@mui/material/ButtonGroup";
-import LogoutIcon from "@mui/icons-material/Logout";
-import { Console } from "console";
 // import {removeUserSession} from "../Utils";
 
 export interface NavbarProps {
