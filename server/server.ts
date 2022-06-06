@@ -33,7 +33,7 @@ app.get('/all_events', async (req:Request, res:Response) => {
     console.log(events)
 });
 
-app.get(`/event_details/:event_id`, async (req:Request, res:Response) => {
+app.get('/event_details/:event_id', async (req:Request, res:Response) => {
     //console.log(req)
     console.log(req.params.event_id)
     const id = Number(req.params.event_id)
@@ -45,7 +45,7 @@ app.get(`/event_details/:event_id`, async (req:Request, res:Response) => {
         const full_event_details={
             id: event_details["id"],
             startAt: event_details["start_time"],
-            endAt: event_details["end_date"],
+            endAt: event_details["end_time"],
             title: event_details["title"],
             details: event_details["details"],
             color: 'blue',
