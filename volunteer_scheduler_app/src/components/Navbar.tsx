@@ -37,6 +37,10 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp }) => {
     console.log("handleProfile");
     setPageApp("Profile");
   };
+  const handleLogin = () => {
+    console.log("handleLogin");
+    setPageApp("Login");
+  };
 
   return (
     <Box
@@ -68,6 +72,7 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp }) => {
           <Button onClick={handleAddAdmin}>Add Admin</Button>
           <Button onClick={handleCurrentAdminsList}>Current Admins List</Button>
           <Button onClick={handleProfile}>Profile</Button>
+          <Button onClick={handleLogin}>Login</Button>
         </ButtonGroup>
       </Box>
     </Box>

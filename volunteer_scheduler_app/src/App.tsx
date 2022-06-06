@@ -37,7 +37,7 @@ function App() {
         return <AddAdmin />;
       case "Profile":
         return <Profile />;
-      case "main":
+      case "Login":
         return <Login />;
       default:
         return <Login />;
