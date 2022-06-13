@@ -1,10 +1,7 @@
-//const express = require("express") //before switching to TS;
 import express, {Express, Request, Response} from "express";
 import {getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin} from "./db";
 const config = require('./config')
 
-
-//OLD (before the change to TS): const app = express();
 const app: Express = express();
 var cors = require('cors');
 app.use(cors({origin: 'http://localhost:3000'}))
@@ -21,7 +18,7 @@ app.get('/', (req:Request, res:Response) => {
     res.status(200);
 });
 
-//retrevies data from DB
+//Retrevie data from DB section:
 app.get('/users', async (req:Request, res:Response) => {
     const users = await getAllUsers();
     res.json(users);
