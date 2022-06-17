@@ -1,7 +1,7 @@
 import { Box, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import "kalend/dist/styles/index.css"; // import styles
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import { AddAdmin } from "./components/AddAdmin";
 import { AddEvent } from "./components/AddEvent";
@@ -14,29 +14,37 @@ import { GeneralEventsCalendar } from "./components/GeneralEventsCalendar";
 import { Profile } from "./components/Profile";
 import { getPage } from "./utils/helper";
 
+
 function App() {
 
   /*Google Login Part*/
-
   //this is the function that handles/runs after the user logs in successfully
   function handleCallbackResponse(response:any){
     console.log("Encoded JWT ID Token" + response.credential);
   }
 
+    const clientId:string = "83163129776-q90s185nilupint4nb1bp0gsi0fb61vs.apps.googleusercontent.com"; //todo: put in Config/ .env file
+    React.useEffect(()=> {
+           /* global google */
+        google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleCallbackResponse
+        });
+    
+      // @ts-ignore
+      google.accounts.id.renderButton(
+      // @ts-ignore
+     document.getElementById("signInDiv")!,
+     // @ts-ignore
+      {theme: "outline", size: "large",shape: "pill"})
+    }, []);
+
+/* End google login part*/
+
+
   
-  React.useEffect(()=> {
-    /* global google */
-    google.accounts.id.initialize({
-      client_id: 'http://83163129776-q90s185nilupint4nb1bp0gsi0fb61vs.apps.googleusercontent.com/',
-      callback: handleCallbackResponse
-    });
 
-    google.accounts.id.renderButton(
-      document.getElementById("signInDiv"), {theme: "outline", size:"large"}
-    );
-  }, []);
-
-  /* End google login part*/
+  
 
   const [page, setPage] = React.useState<string>(getPage());
 
