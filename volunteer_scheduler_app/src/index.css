@@ -12,6 +12,7 @@ html body{
 #root {
   width: 100%;
   height: 100%;
+  background: rgb(199, 245, 224) !important;
 }
 
 p {
@@ -86,9 +87,5 @@ a {
     top: 16px;
     right: 16px;
   }
-}
-
-.root{
-  background: rgb(199, 245, 224) !important;
 }
 
