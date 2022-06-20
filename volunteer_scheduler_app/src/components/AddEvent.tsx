@@ -1,6 +1,13 @@
 import * as React from "react";
 import "../App.css";
-import { Button, Box, InputAdornment } from "@mui/material";
+import {
+  Button,
+  Box,
+  InputAdornment,
+  FormControlLabel,
+  FormGroup,
+  Checkbox,
+} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
 import Typography from "@mui/material/Typography";
@@ -10,6 +17,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import MaximizeIcon from "@mui/icons-material/Maximize";
 import MinimizeIcon from "@mui/icons-material/Minimize";
+import { start } from "repl";
 
 export const AddEvent: React.FC = () => {
   const [eventName, setEventName] = React.useState("");
@@ -29,6 +37,8 @@ export const AddEvent: React.FC = () => {
   const [startDateValid, setStartDateValid] = React.useState(true);
   const [endDate, setEndDate] = React.useState<Date | null>(null);
   const [endDateValid, setEndDateValid] = React.useState(true);
+
+  const [allDayChecked, setAllDayChecked] = React.useState(false);
 
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -62,12 +72,16 @@ export const AddEvent: React.FC = () => {
     else setEventMaxParticipantsValid(true);
     setEventMaxParticipants(event.target.value);
   };
-
+  //TODO: if there is notValid and fix from start its not changing end
   const handleEventStartTimeChange = (newVal: Date | null) => {
     if (newVal) {
       var today = new Date();
       var inputStartDate = new Date(newVal);
-      if (!(inputStartDate >= today)) setStartDateValid(false);
+      if (
+        !(inputStartDate >= today) ||
+        (endDate != null && inputStartDate > endDate)
+      )
+        setStartDateValid(false);
       else setStartDateValid(true);
       setStartDate(inputStartDate);
     }
@@ -79,13 +93,13 @@ export const AddEvent: React.FC = () => {
       var inputEndDate = new Date(newVal);
       if (
         !(inputEndDate >= today) ||
-        (startDate != null && inputEndDate > startDate)
+        (startDate != null && inputEndDate < startDate)
       ) {
-        console.log("valid");
+        console.log("not valid");
         //TODO: do we want to have min time to event?
         setEndDateValid(false);
       } else {
-        console.log("not valid");
+        console.log("valid");
         setEndDateValid(true);
       }
       setEndDate(inputEndDate);
@@ -131,6 +145,16 @@ export const AddEvent: React.FC = () => {
     //         }
     //     }
     // }
+  };
+
+  const handleAllDayChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAllDayChecked(event.target.checked);
+    if (allDayChecked) {
+      startDate?.setHours(0);
+      startDate?.setMinutes(0);
+      endDate?.setHours(23);
+      endDate?.setMinutes(59);
+    }
   };
 
   return (
@@ -253,7 +277,15 @@ export const AddEvent: React.FC = () => {
           }}
         />
       </Box>
-      {/* change "add event" to white */}
+      <FormGroup>
+        <FormControlLabel
+          control={
+            <Checkbox checked={allDayChecked} onChange={handleAllDayChecked} />
+          }
+          label="All Day"
+        />
+      </FormGroup>
+      {/*TODO: change "add event" to white */}
       <Button type="submit" form="registerForm" variant="contained">
         Add Event
       </Button>
