@@ -17,7 +17,7 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
   function handleCallbackResponse(response: any) {
     console.log("Encoded JWT ID Token" + response.credential);
     var userObject = jwt_decode(response.credential);
-    console.log(userObject);
+    console.log(userObject); //todo - remove when done bulding
     document.getElementById("signInDiv")!.hidden = true;
     setUserAuth(userObject);
     setPageApp("GeneralEventsCalendar");
