@@ -9,42 +9,51 @@ import { CurrentAdminsList } from "./components/CurrentAdminsList";
 import { PersonalEventsCalendar } from "./components/PersonalEventsCalendar";
 import { Navbar } from "./components/Navbar";
 import { lightTheme } from "./theme";
-import { Login } from "@mui/icons-material";
+import { Login } from "./components/Login";
 import { GeneralEventsCalendar } from "./components/GeneralEventsCalendar";
 import { Profile } from "./components/Profile";
 import { getPage } from "./utils/helper";
-
+import jwt_decode from "jwt-decode";
 
 function App() {
-
+  const [user, setUser] = React.useState<any>({});
   /*Google Login Part*/
   //this is the function that handles/runs after the user logs in successfully
-  function handleCallbackResponse(response:any){
+  function handleCallbackResponse(response: any) {
     console.log("Encoded JWT ID Token" + response.credential);
+    var userObject = jwt_decode(response.credential);
+    console.log(userObject);
+    setUser(userObject);
+    document.getElementById("signInDiv")!.hidden = true;
   }
 
-    const clientId:string = "83163129776-q90s185nilupint4nb1bp0gsi0fb61vs.apps.googleusercontent.com"; //todo: put in Config/ .env file
-    React.useEffect(()=> {
-           /* global google */
-        google.accounts.id.initialize({
-          client_id: clientId,
-          callback: handleCallbackResponse
-        });
-    
+  function handleSignOut(
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void {
+    setUser({});
+    document.getElementById("signInDiv")!.hidden = false;
+  }
+
+  const clientId: string =
+    "83163129776-q90s185nilupint4nb1bp0gsi0fb61vs.apps.googleusercontent.com"; //todo: put in Config/ .env file
+  React.useEffect(() => {
+    /* global google */
+    google.accounts.id.initialize({
+      client_id: clientId,
+      callback: handleCallbackResponse,
+    });
+
+    // @ts-ignore
+    google.accounts.id.renderButton(
       // @ts-ignore
-      google.accounts.id.renderButton(
+      document.getElementById("signInDiv")!,
       // @ts-ignore
-     document.getElementById("signInDiv")!,
-     // @ts-ignore
-      {theme: "outline", size: "large",shape: "pill"})
-    }, []);
+      { theme: "outline", size: "large", shape: "pill" }
+    );
+    google.accounts.id.prompt();
+  }, []);
 
-/* End google login part*/
-
-
-  
-
-  
+  /* End google login part*/
 
   const [page, setPage] = React.useState<string>(getPage());
 
@@ -78,7 +87,16 @@ function App() {
     <ThemeProvider theme={lightTheme}>
       <div className={"root"}>
         <div id="signInDiv"></div>
-        <Navbar setPageApp={setPageApp} />
+        {Object.keys(user).length != 0 && (
+          <button onClick={(e) => handleSignOut(e)}>sign out</button>
+        )}
+        {user && (
+          <div>
+            <img src={user.picture}></img>
+            <h3>{user.name}</h3>
+          </div>
+        )}
+        {Object.keys(user).length != 0 && <Navbar setPageApp={setPageApp} />}
         <Box
           sx={{
             display: "flex",
