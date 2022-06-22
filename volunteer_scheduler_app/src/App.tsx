@@ -66,9 +66,9 @@ function App() {
             Volunteer Scheduler
           </Typography>
         </Box>
-        {Object.keys(user).length != 0 && (
-          <Navbar setPageApp={setPageApp} setUserAuth={setUserAuth} />
-        )}
+        {Object.keys(user).length != 0 && 
+          <Navbar setPageApp={setPageApp} setUserAuth={setUserAuth}/>
+        }
         <Box
           sx={{
             display: "flex",
