@@ -6,13 +6,24 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 
 export interface NavbarProps {
   setPageApp(page: string): void;
+  setUserAuth(user: any): void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ setPageApp }) => {
-  // const handleLogOut = () => {
-  //     removeUserSession()
-  //     setPageApp("Login")
-  // };
+function getFocus(elementId:string) {
+  let button = document.getElementById(elementId);
+  button?.setAttribute("color","primary");
+  button?.setAttribute("variant","contained");
+}
+
+function loseFocus(elementId:string) {
+  let button = document.getElementById(elementId);
+  button?.setAttribute("color","");
+  button?.setAttribute("variant","");
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
+  const [user, setUser] = React.useState<any>({});
+
   const handlePersonalEventsCalendar = () => {
     console.log("handlePersonalEventsCalendar");
     setPageApp("PersonalEventsCalendar");
@@ -35,12 +46,16 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp }) => {
   };
   const handleProfile = () => {
     console.log("handleProfile");
+    getFocus("ProfileBtn");
     setPageApp("Profile");
   };
-  const handleLogin = () => {
-    console.log("handleLogin");
+
+  function handleSignOut(
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): void {
     setPageApp("Login");
-  };
+    setUserAuth({});
+  }
 
   return (
     <Box
@@ -53,6 +68,10 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp }) => {
         },
       }}
     >
+      <div>
+        <img src={user.picture}></img>
+        <h3>{user.name}</h3>
+      </div>
       <Box sx={{ width: "80%" }}>
         <ButtonGroup
           size="large"
@@ -62,17 +81,17 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp }) => {
           fullWidth={true}
         >
           {/* <Button color={"secondary"} onClick={handleLogOut}> <LogoutIcon color={"secondary"}/>  Log out </Button> */}
-          <Button onClick={handlePersonalEventsCalendar}>
+          <Button id="PersonalEventsCalendarBtn" onClick={handlePersonalEventsCalendar}>
             Personal Events Calendar
           </Button>
-          <Button onClick={handleGeneralEventsCalendar}>
+          <Button id="GeneralEventsCalendarBtn" onClick={handleGeneralEventsCalendar}>
             General Events Calendar
           </Button>
-          <Button onClick={handleAddEvent}>Add Event</Button>
-          <Button onClick={handleAddAdmin}>Add Admin</Button>
-          <Button onClick={handleCurrentAdminsList}>Current Admins List</Button>
-          <Button onClick={handleProfile}>Profile</Button>
-          <Button onClick={handleLogin}>Login</Button>
+          <Button id="AddEventBtn" onClick={handleAddEvent}>Add Event</Button>
+          <Button id="AddAdminBtn" onClick={handleAddAdmin}>Add Admin</Button>
+          <Button id="CurrentAdminsListBtn" onClick={handleCurrentAdminsList}>Current Admins List</Button>
+          <Button id="ProfileBtn" onClick={handleProfile}>Profile</Button>
+          <Button id="LogoutBtn" color="warning" onClick={(e) => handleSignOut(e)}>Logout</Button>
         </ButtonGroup>
       </Box>
     </Box>
