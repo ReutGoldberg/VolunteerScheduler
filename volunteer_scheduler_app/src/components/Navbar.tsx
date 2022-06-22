@@ -9,6 +9,8 @@ export interface NavbarProps {
   setUserAuth(user: any): void;
 }
 
+// Applying focus to tab buttons when pressesd 
+// not working yet
 function getFocus(elementId:string) {
   let button = document.getElementById(elementId);
   button?.setAttribute("color","primary");
@@ -20,6 +22,7 @@ function loseFocus(elementId:string) {
   button?.setAttribute("color","");
   button?.setAttribute("variant","");
 }
+//end of applying focus to tab buttons when pressesd
 
 export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
   const [user, setUser] = React.useState<any>({});
@@ -46,7 +49,6 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
   };
   const handleProfile = () => {
     console.log("handleProfile");
-    getFocus("ProfileBtn");
     setPageApp("Profile");
   };
 

@@ -1,5 +1,5 @@
 import express, {Express, Request, Response} from "express";
-import {getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin} from "./db";
+import {getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin} from "./db";
 const config = require('./config')
 
 const app: Express = express();
@@ -62,23 +62,35 @@ app.get('/event_details/:event_id', async (req:Request, res:Response) => {
     }
 });
 //Pushes data to the DB based on the request body
+/* Todo: Is this really needed? we have add_user & add_admin instead
 app.post('/users', async (req:Request, res:Response) => {
-    const {firstName, lastName} = req.body;
+    const {firstName, lastName,email,token} = req.body;
     const user = await addNewUser(firstName,lastName);
     res.json(user);
 });
-
+*/
 
 app.post('/add_user', async (req:Request, res:Response) => {
     console.log('got post')
     console.log(req.body)
   //  console.log(req)
-    const {name, password} = req.body;
-    console.log(name)
-    console.log(password)
-    const user = await addNewAdmin(name, password);
+    const {firstName, lastName, email, token} = req.body;
+    console.log(`${firstName} \n ${lastName} \n ${email} \n ${token}`)
+    const user = await addNewUser(firstName, lastName, email, token);
     res.json(user);
 });
+
+//put and not post bc it updates a specific user and doesnt create a new one
+app.put('/add_admin', async (req:Request, res:Response) => {
+    console.log('got put')
+    console.log(req.body)
+  //  console.log(req)
+    const {email} = req.body;
+    console.log(`Admins email from request: ${email}`)
+    const user = await addNewAdmin(email);
+    res.json(user);
+});
+
 //Updates existing records based on request body
 app.put('/users', async (req:Request, res:Response) => {
     const {userId, userName} = req.body;
@@ -91,6 +103,12 @@ app.delete('/users:id', async (req:Request, res:Response) => {
     const userId = req.params.id;
     const deletedUser = await deleteUserById(Number(userId));    
     res.json(deletedUser);
+});
+
+app.get('/users', async (req:Request, res:Response) => {
+    const {userEmail} = req.body;
+    const users = await getUserByEmail(userEmail);
+    res.json(users);
 });
 
 

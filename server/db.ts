@@ -5,34 +5,39 @@
    *  Contains all methods that change the data inside our DB
   */
 
+import e from "express";
+
 const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient()
 
-  async function addNewUser(firstName:String, lastName:String){
-  const user = await prisma.test_person.create({
+  async function addNewUser(firstName:String, lastName:String, email:string, token:string){
+  const user = await prisma.Users.create({
     data: {
       first_name: firstName,
       last_name: lastName,
+      email: email,
+      token: token,
+      is_admin: false
     },
   });
   return user;
   }
 
-  async function addNewAdmin(name:String, password:String){
-    const user = await prisma.Users.create({
-      data: {
-        first_name: name,
-        last_name: name,
-        email: name,
-        token: "13546",
-        is_admin: true
-      },
-    });
+  //grants admin prevlege to provided user-email
+  async function addNewAdmin(email:string){
+    const user = await prisma.Users.update({
+      where:{
+        email: email,
+        },
+        data:{
+          is_admin: true,
+        },
+      });
     return user;
-    }
+  }
 
   async function getAllUsers() {
-    const users = await prisma.test_person.findMany();
+    const users = await prisma.Users.findMany();
     return users;
   }
 
@@ -82,6 +87,16 @@ const prisma = new PrismaClient()
   }
 
 
+  async function getUserByEmail(email: string){
+    const user = await prisma.Users.findFirst({
+      where:{
+        email: email,
+      }
+    });
+    return user;
+  }
+
+
 /*Event properties to update: 
         const full_event_details={
             id: event_details["id"],
@@ -100,4 +115,4 @@ const prisma = new PrismaClient()
 */
 
   
-  export {getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById};
+  export {getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById};
