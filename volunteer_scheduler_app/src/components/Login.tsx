@@ -17,15 +17,10 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
 
   
   async function isNewUser(userEmail:string){
-    const data = {userEmail:userEmail};
-    const response = await axios({
-        method: "get",
-        url: `http://localhost:5001/users`,
-        data: JSON.stringify(data),    
-        headers: { "Content-Type": "application/json"},
-    });
-    //response.data returns null on new user hence the reverse logic
-    return response.data ? false : true
+    const data = {userEmail: userEmail};
+    const requestURL:string = `http://localhost:5001/user/userEmail/${userEmail}`;
+    const response = await axios.get(requestURL);
+    return !response.data 
   }
   
   async function createUser(userObject:any, userToken:string){
@@ -36,20 +31,13 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
         data: JSON.stringify(data),
         headers: { "Content-Type": "application/json"},
     });
-    //todo remove below after done testing:
-    if(response.statusText === 'OK')
-        console.log('User added successfully')
-    else
-      console.log('Didnt add user, some issues happened')
   }
   
   
   async function handleCallbackResponse(response: any) {
-    console.log("Encoded JWT ID Token" + response.credential);
-    let userObject:any = jwt_decode(response.credential);
-    console.log(userObject); //todo - remove when done bulding    
+    console.log("Encoded JWT ID Token" + response.credential); //todo: remove when done testing
+    let userObject:any = jwt_decode(response.credential); 
     const isNewUserResult = await isNewUser(userObject?.email);
-    console.log(`User Email: ${userObject?.email} IsNewUser result: ${isNewUserResult}`)
     if(isNewUserResult){
       createUser(userObject,response.credential);
     }

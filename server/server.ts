@@ -18,8 +18,8 @@ app.get('/', (req:Request, res:Response) => {
     res.status(200);
 });
 
-//Retrevie data from DB section:
-app.get('/users', async (req:Request, res:Response) => {
+
+app.get('/all_users', async (req:Request, res:Response) => {
     const users = await getAllUsers();
     res.json(users);
 });
@@ -105,20 +105,26 @@ app.delete('/users:id', async (req:Request, res:Response) => {
     res.json(deletedUser);
 });
 
-app.get('/users', async (req:Request, res:Response) => {
-    const {userEmail} = req.body;
-    const users = await getUserByEmail(userEmail);
-    res.json(users);
-});
+
+//todo: put this in Utils and use here and in AddAdmin to avoid duplicated code
+const isValidEmail = (email:string) =>{
+    return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
+  }
+
+//Retrevie data from DB section:
+//posible exploit here with hackers brute-force quering the server for existing emails
+//need to allow this only for validated requests.
+//possible fix - only allow the application to communicate with the server, not external users
+app.get('/user/userEmail/:email', async (req:Request, res:Response) => {
+    //const userEmail = req.query.userEmail?.toString() ?? "";
+    const email = req.params.email;
+
+    if(!isValidEmail(email)){
+        res.send(`INVALID EMAIL PROVIDED: ${email}`);
+        return;
+    }
+     const users = await getUserByEmail(email);
+     res.json(users);
+ });
 
 
-
-
-
-
-// app.get('/test', (req, res) => {    
-//     res.send('starting test query');
-//     //put some code that fetches data from the DB (test table)
-//     // and presents it to the screen as JSON objecct
-
-// });

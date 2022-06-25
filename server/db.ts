@@ -88,7 +88,7 @@ const prisma = new PrismaClient()
 
 
   async function getUserByEmail(email: string){
-    const user = await prisma.Users.findFirst({
+    const user = await prisma.Users.findUnique({
       where:{
         email: email,
       }
