@@ -1,5 +1,7 @@
 import express, {Express, Request, Response} from "express";
+import jwt_decode from "jwt-decode";
 import {getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin} from "./db";
+
 const config = require('./config')
 
 const app: Express = express();
@@ -115,16 +117,28 @@ const isValidEmail = (email:string) =>{
 //posible exploit here with hackers brute-force quering the server for existing emails
 //need to allow this only for validated requests.
 //possible fix - only allow the application to communicate with the server, not external users
-app.get('/user/userEmail/:email', async (req:Request, res:Response) => {
+app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
     //const userEmail = req.query.userEmail?.toString() ?? "";
     const email = req.params.email;
+    //@ts-ignore
+    const recivedTokenSub = jwt_decode(req.params.token).sub; //sub should remain the same
+    
 
     if(!isValidEmail(email)){
         res.send(`INVALID EMAIL PROVIDED: ${email}`);
         return;
     }
-     const users = await getUserByEmail(email);
-     res.json(users);
+
+     const user = await getUserByEmail(email);
+     //@ts-ignore
+     const subFromDB = jwt_decode(user.token).sub;
+
+     //authenticate user with his sub from DB
+     if(recivedTokenSub !== subFromDB){
+        res.send("GOT BAD TOKEN");
+        return;
+     }
+     res.json(user);
  });
 
 

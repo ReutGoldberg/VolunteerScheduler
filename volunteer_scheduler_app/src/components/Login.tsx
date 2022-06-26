@@ -15,13 +15,19 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
   const clientId: string =
     "83163129776-q90s185nilupint4nb1bp0gsi0fb61vs.apps.googleusercontent.com"; //todo: put in Config/ .env file
 
-  
-  async function isNewUser(userEmail:string){
-    const data = {userEmail: userEmail};
-    const requestURL:string = `http://localhost:5001/user/userEmail/${userEmail}`;
+  //  working version w/o token validation
+  // async function isNewUser(userEmail:string){
+  //   const requestURL:string = `http://localhost:5001/user/userEmail/${userEmail}`;
+  //   const response = await axios.get(requestURL);
+  //   return !response.data 
+  // }
+
+  async function isNewUser(userEmail:string, token:string){
+    const requestURL:string = `http://localhost:5001/user/userEmail/${userEmail}/${token}`;
     const response = await axios.get(requestURL);
-    return !response.data 
+    return !response.data.email 
   }
+
   
   async function createUser(userObject:any, userToken:string){
     const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email,token:userToken}
@@ -37,7 +43,7 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
   async function handleCallbackResponse(response: any) {
     console.log("Encoded JWT ID Token" + response.credential); //todo: remove when done testing
     let userObject:any = jwt_decode(response.credential); 
-    const isNewUserResult = await isNewUser(userObject?.email);
+    const isNewUserResult = await isNewUser(userObject?.email, response.credential);
     if(isNewUserResult){
       createUser(userObject,response.credential);
     }
