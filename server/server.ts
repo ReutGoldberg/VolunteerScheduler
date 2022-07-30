@@ -6,7 +6,7 @@ const config = require('./config')
 
 const app: Express = express();
 var cors = require('cors');
-app.use(cors({origin: 'http://localhost:3000'}))
+app.use(cors({origin: config.client_app.localhost})) 
 
 app.use(express.json());
 
@@ -33,13 +33,9 @@ app.get('/all_events', async (req:Request, res:Response) => {
 });
 
 app.get('/event_details/:event_id', async (req:Request, res:Response) => {
-    //console.log(req)
     console.log(req.params.event_id)
     const id = Number(req.params.event_id)
     const event_details = await getEvent(id);
-    // res.json(events);
-    console.log("event details from db:")
-    console.log(event_details)
     try{
         const full_event_details={
             id: event_details["id"],
@@ -75,7 +71,6 @@ app.post('/users', async (req:Request, res:Response) => {
 app.post('/add_user', async (req:Request, res:Response) => {
     console.log('got post')
     console.log(req.body)
-  //  console.log(req)
     const {firstName, lastName, email, token} = req.body;
     console.log(`${firstName} \n ${lastName} \n ${email} \n ${token}`)
     const user = await addNewUser(firstName, lastName, email, token);
@@ -96,8 +91,15 @@ app.put('/add_admin', async (req:Request, res:Response) => {
 //Updates existing records based on request body
 app.put('/users', async (req:Request, res:Response) => {
     const {userId, userName} = req.body;
-    const updatedUser = await updateUser(userId,userName);
-    res.json(updatedUser);
+    try {
+        const updatedUser = await updateUser(userId,userName);    
+        res.json(updatedUser);
+        res.status(200);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500);
+    }
 });
 
 //delete specific user
@@ -114,20 +116,19 @@ const isValidEmail = (email:string) =>{
   }
 
 //Retrevie data from DB section:
-//posible exploit here with hackers brute-force quering the server for existing emails
-//need to allow this only for validated requests.
-//possible fix - only allow the application to communicate with the server, not external users
+
 app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
     //const userEmail = req.query.userEmail?.toString() ?? "";
     const email = req.params.email;
-    //@ts-ignore
-    const recivedTokenSub = jwt_decode(req.params.token).sub; //sub should remain the same
-    
-
     if(!isValidEmail(email)){
         res.send(`INVALID EMAIL PROVIDED: ${email}`);
         return;
     }
+    //@ts-ignore
+    const recivedTokenSub = jwt_decode(req.params.token).sub; //sub should remain the same
+    
+
+
 
      const user = await getUserByEmail(email);
      //@ts-ignore
@@ -136,7 +137,8 @@ app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
      //authenticate user with his sub from DB
      if(recivedTokenSub !== subFromDB){
         res.send("GOT BAD TOKEN");
-        return;
+        res.status(400);
+        throw "Invalid input";
      }
      res.json(user);
  });

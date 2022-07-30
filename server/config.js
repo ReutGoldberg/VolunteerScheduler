@@ -3,6 +3,10 @@ const config = {
       port: 5001, 
       name: 'myapp'
     },
+    client_app:{
+      port: 3000, 
+      localhost: 'http://localhost:3000'
+    },
     db: {
       host: 'ec2-34-247-172-149.eu-west-1.compute.amazonaws.com',
       port: 5432,
