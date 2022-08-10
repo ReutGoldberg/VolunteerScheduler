@@ -4,9 +4,6 @@
    *
    *  Contains all methods that change the data inside our DB
   */
-
-import e from "express";
-
 const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient()
 
@@ -62,7 +59,17 @@ const prisma = new PrismaClient()
     });
     return deletedUser;
   }
+
+  async function getUserByEmail(email: string){
+    const user = await prisma.Users.findUnique({
+      where:{
+        email: email,
+      }
+    });
+    return user;
+  }
   
+  // ------------- Events ----------------------- 
   async function getAllEvents(){
     const events = await prisma.Events.findMany();
     return events;
@@ -86,15 +93,24 @@ const prisma = new PrismaClient()
     return event_details;
   }
 
+  async function addNewEvent(event:any){
+    const {title, details, created_by, location, label, min_volenteers, max_volenteers, startAt, endAt}  = event;
 
-  async function getUserByEmail(email: string){
-    const user = await prisma.Users.findUnique({
-      where:{
-        email: email,
-      }
+    const new_event = await prisma.Events.create({
+      data: {
+        title: title,
+        details: details,
+        created_by: created_by,
+        location: location,
+        label: label,
+        min_volenteers: min_volenteers,
+        max_volenteers: max_volenteers,
+        startAt: startAt,
+        endAt: endAt
+      },
     });
-    return user;
-  }
+    return new_event;
+    }
 
 
 /*Event properties to update: 
@@ -115,4 +131,4 @@ const prisma = new PrismaClient()
 */
 
   
-  export {getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById};
+  export {getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent};

@@ -1,6 +1,6 @@
 import express, {Express, Request, Response} from "express";
 import jwt_decode from "jwt-decode";
-import {getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin} from "./db";
+import {getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, addNewEvent} from "./db";
 
 const config = require('./config')
 
@@ -69,12 +69,20 @@ app.post('/users', async (req:Request, res:Response) => {
 */
 
 app.post('/add_user', async (req:Request, res:Response) => {
-    console.log('got post')
+    console.log('--------------- Creates new USER ---------------')
     console.log(req.body)
     const {firstName, lastName, email, token} = req.body;
     console.log(`${firstName} \n ${lastName} \n ${email} \n ${token}`)
     const user = await addNewUser(firstName, lastName, email, token);
     res.json(user);
+});
+
+
+app.post('/add_event', async (req:Request, res:Response) => {
+    console.log('--------------- Creates new Events ---------------')
+    console.log(req.body)
+    const result_event = await addNewEvent(req.body);
+    res.json(result_event);
 });
 
 //put and not post bc it updates a specific user and doesnt create a new one
@@ -127,9 +135,6 @@ app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
     //@ts-ignore
     const recivedTokenSub = jwt_decode(req.params.token).sub; //sub should remain the same
     
-
-
-
      const user = await getUserByEmail(email);
      //@ts-ignore
      const subFromDB = jwt_decode(user.token).sub;
@@ -142,5 +147,7 @@ app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
      }
      res.json(user);
  });
+
+
 
 

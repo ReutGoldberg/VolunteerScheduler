@@ -1,8 +1,10 @@
 import React from "react";
 import "../App.css";
-import { Button, Box } from "@mui/material";
+import { Button, Box, TextField} from "@mui/material";
 import jwt_decode from "jwt-decode";
 import axios from 'axios';
+import {generateFakeUser, generateFakeEvent, generateFakeLabel, generateFakeLog} from "../fakeData";
+import { isNewUser, createUser } from "../utils/DataAccessLayer";
 
 export interface NavbarProps {
   setPageApp(page: string): void;
@@ -14,30 +16,6 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
   const CLIENT_CONTENT = `${CLIENT_ID}.apps.googleusercontent.com`;
   const clientId: string =
     "83163129776-q90s185nilupint4nb1bp0gsi0fb61vs.apps.googleusercontent.com"; //todo: put in Config/ .env file
-
-  //  working version w/o token validation
-  // async function isNewUser(userEmail:string){
-  //   const requestURL:string = `http://localhost:5001/user/userEmail/${userEmail}`;
-  //   const response = await axios.get(requestURL);
-  //   return !response.data 
-  // }
-
-  async function isNewUser(userEmail:string, token:string){
-    const requestURL:string = `http://localhost:5001/user/userEmail/${userEmail}/${token}`;
-    const response = await axios.get(requestURL);
-    return !response.data.email 
-  }
-
-  
-  async function createUser(userObject:any, userToken:string){
-    const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email,token:userToken}
-    const response = await axios({
-        method: "post",
-        url: `http://localhost:5001/add_user`,
-        data: JSON.stringify(data),
-        headers: { "Content-Type": "application/json"},
-    });
-  }
   
   
   async function handleCallbackResponse(response: any) {
@@ -50,6 +28,29 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
     document.getElementById("signInDiv")!.hidden = true;
     setUserAuth(userObject);
     setPageApp("GeneralEventsCalendar");
+    //@ts-ignore
+    //todo: find a safer way to move around the userObject of the logged in value.
+    //maybe useContext? 
+    window.userObjectGoogle = userObject; 
+    //@ts-ignore
+    window.userTokenGoogle = response.credntial;
+  }
+
+  //todo remove when done testing or move to a better position.
+  //this function takes data from fakeData.ts and sends via the api to DB
+  //In order for it to work, the function needs access both to the fakeData API and the server API (this is why it's located here)
+  async function handleGenerateFakeData(event:any) {
+    //@ts-ignore
+    const amount = document.getElementById('fakeDataAmount')?.value;
+
+    const num_data = parseInt(amount);
+      
+    for (let index = 0; index < num_data; index++) {
+      const fakeUser = generateFakeUser();  
+      const data = {given_name: fakeUser.first_name, family_name: fakeUser.last_name ,email: fakeUser.email, token:fakeUser.token}
+      createUser(data, data.token);      
+    }
+    
   }
 
   React.useEffect(() => {
@@ -102,6 +103,10 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
         }}
         id="signInDiv"
       ></Box>
+        <TextField id='fakeDataAmount' type='number' helperText='Set the amount of fake data to generate' label='Amount'>
+        </TextField>
+        <Button onClick={event => handleGenerateFakeData(event)}> Generate Fake Data
+        </Button>
     </Box>
   );
 };
