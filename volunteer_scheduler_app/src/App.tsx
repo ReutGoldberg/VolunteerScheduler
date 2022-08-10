@@ -1,7 +1,7 @@
-import { Box, ThemeProvider } from "@mui/material";
+import { Box, ThemeProvider, Typography } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import "kalend/dist/styles/index.css"; // import styles
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import { AddAdmin } from "./components/AddAdmin";
 import { AddEvent } from "./components/AddEvent";
@@ -9,17 +9,26 @@ import { CurrentAdminsList } from "./components/CurrentAdminsList";
 import { PersonalEventsCalendar } from "./components/PersonalEventsCalendar";
 import { Navbar } from "./components/Navbar";
 import { lightTheme } from "./theme";
-import { Login } from "@mui/icons-material";
+import { Login } from "./components/Login";
 import { GeneralEventsCalendar } from "./components/GeneralEventsCalendar";
 import { Profile } from "./components/Profile";
 import { getPage } from "./utils/helper";
 
 function App() {
+  /*Google Login Part*/
+  //this is the function that handles/runs after the user logs in successfully
+
+  const [user, setUser] = React.useState<any>({});
   const [page, setPage] = React.useState<string>(getPage());
 
   const setPageApp = (page: string) => {
     setPage(page);
   };
+
+  const setUserAuth = (user: any) => {
+    setUser(user);
+  };
+
   const pageToPresent = (page: string) => {
     sessionStorage.setItem("page", page);
     switch (page) {
@@ -38,15 +47,28 @@ function App() {
       case "Profile":
         return <Profile />;
       case "Login":
-        return <Login />;
+        return <Login setPageApp={setPageApp} setUserAuth={setUserAuth} />;
       default:
-        return <Login />;
+        return <Login setPageApp={setPageApp} setUserAuth={setUserAuth} />;
     }
   };
   return (
     <ThemeProvider theme={lightTheme}>
       <div className={"root"}>
-        <Navbar setPageApp={setPageApp} />
+        <Box>
+          <Typography
+            variant="h2"
+            color="text.primary"
+            textAlign={"center"}
+            gutterBottom
+            component="div"
+          >
+            Volunteer Scheduler
+          </Typography>
+        </Box>
+        {Object.keys(user).length != 0 && 
+          <Navbar setPageApp={setPageApp} setUserAuth={setUserAuth}/>
+        }
         <Box
           sx={{
             display: "flex",

@@ -4,35 +4,37 @@
    *
    *  Contains all methods that change the data inside our DB
   */
-
 const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient()
 
-  async function addNewUser(firstName:String, lastName:String){
-  const user = await prisma.test_person.create({
+  async function addNewUser(firstName:String, lastName:String, email:string, token:string){
+  const user = await prisma.Users.create({
     data: {
       first_name: firstName,
       last_name: lastName,
+      email: email,
+      token: token,
+      is_admin: false
     },
   });
   return user;
   }
 
-  async function addNewAdmin(name:String, password:String){
-    const user = await prisma.Users.create({
-      data: {
-        first_name: name,
-        last_name: name,
-        email: name,
-        token: "13546",
-        is_admin: true
-      },
-    });
+  //grants admin prevlege to provided user-email
+  async function addNewAdmin(email:string){
+    const user = await prisma.Users.update({
+      where:{
+        email: email,
+        },
+        data:{
+          is_admin: true,
+        },
+      });
     return user;
-    }
+  }
 
   async function getAllUsers() {
-    const users = await prisma.test_person.findMany();
+    const users = await prisma.Users.findMany();
     return users;
   }
 
@@ -57,7 +59,17 @@ const prisma = new PrismaClient()
     });
     return deletedUser;
   }
+
+  async function getUserByEmail(email: string){
+    const user = await prisma.Users.findUnique({
+      where:{
+        email: email,
+      }
+    });
+    return user;
+  }
   
+  // ------------- Events ----------------------- 
   async function getAllEvents(){
     const events = await prisma.Events.findMany();
     return events;
@@ -81,6 +93,25 @@ const prisma = new PrismaClient()
     return event_details;
   }
 
+  async function addNewEvent(event:any){
+    const {title, details, created_by, location, label, min_volenteers, max_volenteers, startAt, endAt}  = event;
+
+    const new_event = await prisma.Events.create({
+      data: {
+        title: title,
+        details: details,
+        created_by: created_by,
+        location: location,
+        label: label,
+        min_volenteers: min_volenteers,
+        max_volenteers: max_volenteers,
+        startAt: startAt,
+        endAt: endAt
+      },
+    });
+    return new_event;
+    }
+
 
 /*Event properties to update: 
         const full_event_details={
@@ -100,4 +131,4 @@ const prisma = new PrismaClient()
 */
 
   
-  export {getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById};
+  export {getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent};

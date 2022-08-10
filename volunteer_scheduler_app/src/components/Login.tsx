@@ -1,47 +1,91 @@
 import React from "react";
 import "../App.css";
-import { Button, Box } from "@mui/material";
-import TextField from "@mui/material/TextField";
-import { AccountCircle } from "@mui/icons-material";
-import { InputAdornment } from "@mui/material";
-import VpnKeyIcon from "@mui/icons-material/VpnKey";
-import ButtonGroup from "@mui/material/ButtonGroup";
- 
+import { Button, Box, TextField} from "@mui/material";
+import jwt_decode from "jwt-decode";
+import axios from 'axios';
+import {generateFakeUser, generateFakeEvent, generateFakeLabel, generateFakeLog} from "../fakeData";
+import { isNewUser, createUser } from "../utils/DataAccessLayer";
 
+export interface NavbarProps {
+  setPageApp(page: string): void;
+  setUserAuth(user: any): void;
+}
 
-
-
-export const Login: React.FC = () => {  
-  const [username, setUsername] = React.useState<string>("");
-  const [password, setPassword] = React.useState<string>("");
-  const [signupOrLogin, setSignupOrLogin] = React.useState<string>("");
-
-  const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.target.value);
-  };
-  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
-  };
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    if (signupOrLogin == "Login") {
-    }
-    if (signupOrLogin == "signup") {
-    }
-  };  
+export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
   const CLIENT_ID = process.env.CLIENT_ID;
   const CLIENT_CONTENT = `${CLIENT_ID}.apps.googleusercontent.com`;
+  const clientId: string =
+    "83163129776-q90s185nilupint4nb1bp0gsi0fb61vs.apps.googleusercontent.com"; //todo: put in Config/ .env file
+  
+  
+  async function handleCallbackResponse(response: any) {
+    console.log("Encoded JWT ID Token" + response.credential); //todo: remove when done testing
+    let userObject:any = jwt_decode(response.credential); 
+    const isNewUserResult = await isNewUser(userObject?.email, response.credential);
+    if(isNewUserResult){
+      createUser(userObject,response.credential);
+    }
+    document.getElementById("signInDiv")!.hidden = true;
+    setUserAuth(userObject);
+    setPageApp("GeneralEventsCalendar");
+    //@ts-ignore
+    //todo: find a safer way to move around the userObject of the logged in value.
+    //maybe useContext? 
+    window.userObjectGoogle = userObject; 
+    //@ts-ignore
+    window.userTokenGoogle = response.credntial;
+  }
 
-  function onSignIn(googleUser:any) {
+  //todo remove when done testing or move to a better position.
+  //this function takes data from fakeData.ts and sends via the api to DB
+  //In order for it to work, the function needs access both to the fakeData API and the server API (this is why it's located here)
+  async function handleGenerateFakeData(event:any) {
+    //@ts-ignore
+    const amount = document.getElementById('fakeDataAmount')?.value;
+
+    const num_data = parseInt(amount);
+      
+    for (let index = 0; index < num_data; index++) {
+      const fakeUser = generateFakeUser();  
+      const data = {given_name: fakeUser.first_name, family_name: fakeUser.last_name ,email: fakeUser.email, token:fakeUser.token}
+      createUser(data, data.token);      
+    }
+    
+  }
+
+  React.useEffect(() => {
+    /* global google */
+    google.accounts.id.initialize({
+      client_id: clientId,
+      callback: handleCallbackResponse,
+    });
+
+    // @ts-ignore
+    google.accounts.id.renderButton(
+      // @ts-ignore
+      document.getElementById("signInDiv")!,
+      // @ts-ignore
+      {
+        theme: "outline",
+        size: "large",
+        shape: "pill",
+        width: "100px",
+      }
+    );
+    google.accounts.id.prompt();
+  }, []);
+
+  /* End google login part*/
+  function onSignIn(googleUser: any) {
     var profile = googleUser.getBasicProfile();
-    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-    console.log('Name: ' + profile.getName());
-    console.log('Image URL: ' + profile.getImageUrl());
-    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-  };
+    console.log("ID: " + profile.getId()); // Do not send to your backend! Use an ID token instead.
+    console.log("Name: " + profile.getName());
+    console.log("Image URL: " + profile.getImageUrl());
+    console.log("Email: " + profile.getEmail()); // This is null if the 'email' scope is not present.
+  }
 
   return (
-    <Box    
-      component="form"
+    <Box
       sx={{
         width: "30%",
         height: "100vh",
@@ -50,73 +94,19 @@ export const Login: React.FC = () => {
         p: "5%",
         gap: 2,
       }}
-      id="loginForm"
-      onSubmit={handleSubmit}
     >
       <Box
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-      >
-        <AccountCircle color="info" sx={{ fontSize: 130 }} />
-      </Box>
-
-      <TextField
-        required
-        id="outlined-basic"
-        label="Username"
-        variant="outlined"
-        onChange={handleUsernameChange}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <AccountCircle />
-            </InputAdornment>
-          ),
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
-      />
-      <TextField
-        required
-        id="outlined-basic"
-        label="Password"
-        variant="outlined"
-        type={"password"}
-        onChange={handlePasswordChange}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <VpnKeyIcon />
-            </InputAdornment>
-          ),
-        }}
-      />
-      <ButtonGroup
-        size="large"
-        variant="text"
-        aria-label="text button group"
-        sx={{ gap: 1 }}
-        fullWidth={true}
-      >
-        <Button
-          type="submit"
-          form="loginForm"
-          variant="contained"
-          onClick={() => setSignupOrLogin("Login")}
-        >
-          Login
+        id="signInDiv"
+      ></Box>
+        <TextField id='fakeDataAmount' type='number' helperText='Set the amount of fake data to generate' label='Amount'>
+        </TextField>
+        <Button onClick={event => handleGenerateFakeData(event)}> Generate Fake Data
         </Button>
-        <Button
-          type="submit"
-          form="loginForm"
-          variant="contained"
-          onClick={() => setSignupOrLogin("Signup")}
-        >
-          Signup
-        </Button>   
-      </ButtonGroup>
-      <script src="https://apis.google.com/js/platform.js" async defer></script>      
-      <meta name="google-signin-client_id" content={CLIENT_CONTENT}></meta>     
-      <div className="g-signin2" data-onsuccess="onSignIn">
-        <Button>Place for Google signIn</Button>
-      </div> 
     </Box>
   );
 };

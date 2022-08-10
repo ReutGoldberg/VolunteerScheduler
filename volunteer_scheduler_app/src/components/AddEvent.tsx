@@ -18,6 +18,7 @@ import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutli
 import MaximizeIcon from "@mui/icons-material/Maximize";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 import { start } from "repl";
+import { isAdminUser } from "../utils/DataAccessLayer";
 
 export const AddEvent: React.FC = () => {
   const [eventName, setEventName] = React.useState("");
@@ -106,45 +107,56 @@ export const AddEvent: React.FC = () => {
     }
   };
 
+  //const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
+  // event.preventDefault();
+  // if(adminPasswordVerificationValid){
+  //     let loggedUser= getUser()
+  //     if (!loggedUser) return;
+  //     let token:string = window.btoa(`${loggedUser!![0]}:${loggedUser!![1]}`)
+  //     console.log("token:"+ token + "loggeduser" + loggedUser);
+  //     let data = new FormData();    //formdata object
+  //     data.append('adminName', adminName);
+  //     data.append('adminPassword', adminPassword);
+  //     try {
+  //         const res = await axios({
+  //             method: "post",
+  //             url: `http://localhost:${process.env.REACT_APP_BACKEND_PORT}/register_admin`,
+  //             data: data,
+  //             headers: {  "Content-Type": "multipart/form-data", 'Authorization': `Basic ${token}` },
+  //         });
+  //         if(res.statusText === 'OK'){
+  //             setPageApp("CurrentAdminsList")
+  //         }
+  //     } catch(err:any) {
+  //         if (axios.isAxiosError(err)) {
+  //             if(err.response){
+  //                 let message: string = ""
+  //                 if( err.response.status === 409){
+  //                     message = "A problem occurred! probably name is taken";
+  //                 }
+  //                 else {
+  //                     message = "error! " + err.response.status.toString() + " " + err.response.statusText;
+  //                 }
+  //                 alert(message)
+  //             } else if(err.request){
+  //                 alert("The request was made but no response was received from server")
+  //             } else {
+  //                 alert(err.message)
+  //             }
+  //         }
+  //     }
+  // }
+  //};
   const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
-    // event.preventDefault();
-    // if(adminPasswordVerificationValid){
-    //     let loggedUser= getUser()
-    //     if (!loggedUser) return;
-    //     let token:string = window.btoa(`${loggedUser!![0]}:${loggedUser!![1]}`)
-    //     console.log("token:"+ token + "loggeduser" + loggedUser);
-    //     let data = new FormData();    //formdata object
-    //     data.append('adminName', adminName);
-    //     data.append('adminPassword', adminPassword);
-    //     try {
-    //         const res = await axios({
-    //             method: "post",
-    //             url: `http://localhost:${process.env.REACT_APP_BACKEND_PORT}/register_admin`,
-    //             data: data,
-    //             headers: {  "Content-Type": "multipart/form-data", 'Authorization': `Basic ${token}` },
-    //         });
-    //         if(res.statusText === 'OK'){
-    //             setPageApp("CurrentAdminsList")
-    //         }
-    //     } catch(err:any) {
-    //         if (axios.isAxiosError(err)) {
-    //             if(err.response){
-    //                 let message: string = ""
-    //                 if( err.response.status === 409){
-    //                     message = "A problem occurred! probably name is taken";
-    //                 }
-    //                 else {
-    //                     message = "error! " + err.response.status.toString() + " " + err.response.statusText;
-    //                 }
-    //                 alert(message)
-    //             } else if(err.request){
-    //                 alert("The request was made but no response was received from server")
-    //             } else {
-    //                 alert(err.message)
-    //             }
-    //         }
-    //     }
-    // }
+    event.preventDefault();
+    if (await isAdminUser()) {
+      try {
+        //todo: implement event addition based on the above data. and the
+        // data in the server & db classes.
+      } catch {
+      } finally {
+      }
+    }
   };
 
   const handleAllDayChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
