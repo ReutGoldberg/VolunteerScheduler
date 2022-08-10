@@ -15,53 +15,34 @@ import axios from 'axios';
 // }
 
 export const AddAdmin: React.FC = () => {
-  const [adminName, setAdminName] = React.useState("");
-  const [adminNameValid, setAdminNameValid] = React.useState(true);
+  const [adminEmail, setAdminEmail] = React.useState("");
+  const [adminEmailValid, setAdminEmailValid] = React.useState(true);
 
-  const [adminPassword, setAdminPassword] = React.useState("");
-  const [adminPasswordValid, setAdminPasswordValid] = React.useState(true);
 
-  const [adminPasswordVerification, setAdminPasswordVerification] =
-    React.useState("");
-  const [adminPasswordVerificationValid, setAdminPasswordVerificationValid] =
-    React.useState(true);
+  const isValidEmail = (email:string) =>{
+    return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
+  }
 
-  const handleAdminNameChange = (
+  const handleAdminEmailChange = (
     event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-   // if (!event.target.value.match(/^[a-z0-9]+/i)) setAdminNameValid(false);
-   // else setAdminNameValid(true);
-    setAdminName(event.target.value);
+  ) => {   
+    setAdminEmailValid(isValidEmail(event.target.value));
+    setAdminEmail(event.target.value);
   };
-  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.value.match(/^[$%^@*&!()]*[a-z0-9]+[$%^@*&!()]*/i))
-      setAdminPasswordValid(false);
-    else setAdminPasswordValid(true);
-    if (adminPasswordVerification != event.target.value)
-      setAdminPasswordVerificationValid(false);
-    else setAdminPasswordVerificationValid(true);
-    setAdminPassword(event.target.value);
-  };
-  const handlePasswordVerificationChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (adminPassword != event.target.value)
-      setAdminPasswordVerificationValid(false);
-    else setAdminPasswordVerificationValid(true);
-    setAdminPasswordVerification(event.target.value);
-  };
+
+
 
   const handleAddAdmin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = {name: adminName, password: adminPassword}
+    const data = {email: adminEmail}
     const response = await axios({
         method: "post",
-        url: `http://localhost:5001/add_user`,
+        url: `http://localhost:5001/add_admin`, //todo: use config file for this
         data: JSON.stringify(data),
-        headers: {  "Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json"},
     });
     if(response.statusText === 'OK')
-        console.log('add admin')
+        console.log('Admin added successfully')
     else
       console.log('didnt add admin')
   };
@@ -96,52 +77,16 @@ export const AddAdmin: React.FC = () => {
       </Typography>
       <TextField
         required
-        error={!adminNameValid}
+        error={!adminEmailValid}
         id="outlined-basic"
-        label="Admin name"
+        label="Admin's Email"
         variant="outlined"
-        onChange={handleAdminNameChange}
-        helperText={!adminNameValid ? "Please enter a valid name " : ""}
+        onChange={handleAdminEmailChange}
+        helperText={!adminEmailValid ? "Please enter a valid email address " : ""}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
               <AccountCircle />
-            </InputAdornment>
-          ),
-        }}
-      />
-      <TextField
-        required
-        error={!adminPasswordValid}
-        id="outlined-basic"
-        label="Password"
-        variant="outlined"
-        type={"password"}
-        onChange={handlePasswordChange}
-        helperText={!adminPasswordValid ? "Please enter a valid password " : ""}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <VpnKeyIcon />
-            </InputAdornment>
-          ),
-        }}
-      />
-      <TextField
-        required
-        error={!adminPasswordVerificationValid}
-        id="outlined-basic"
-        label="Verify Password"
-        variant="outlined"
-        type={"password"}
-        onChange={handlePasswordVerificationChange}
-        helperText={
-          !adminPasswordVerificationValid ? "Passwords are different" : ""
-        }
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <VpnKeyIcon />
             </InputAdornment>
           ),
         }}

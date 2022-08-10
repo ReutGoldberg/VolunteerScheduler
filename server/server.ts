@@ -1,13 +1,12 @@
-//const express = require("express") //before switching to TS;
 import express, {Express, Request, Response} from "express";
-import {getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin} from "./db";
+import jwt_decode from "jwt-decode";
+import {getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, addNewEvent} from "./db";
+
 const config = require('./config')
 
-
-//OLD (before the change to TS): const app = express();
 const app: Express = express();
 var cors = require('cors');
-app.use(cors({origin: 'http://localhost:3000'}))
+app.use(cors({origin: config.client_app.localhost})) 
 
 app.use(express.json());
 
@@ -21,8 +20,8 @@ app.get('/', (req:Request, res:Response) => {
     res.status(200);
 });
 
-//retrevies data from DB
-app.get('/users', async (req:Request, res:Response) => {
+
+app.get('/all_users', async (req:Request, res:Response) => {
     const users = await getAllUsers();
     res.json(users);
 });
@@ -34,13 +33,9 @@ app.get('/all_events', async (req:Request, res:Response) => {
 });
 
 app.get('/event_details/:event_id', async (req:Request, res:Response) => {
-    //console.log(req)
     console.log(req.params.event_id)
     const id = Number(req.params.event_id)
     const event_details = await getEvent(id);
-    // res.json(events);
-    console.log("event details from db:")
-    console.log(event_details)
     try{
         const full_event_details={
             id: event_details["id"],
@@ -65,28 +60,54 @@ app.get('/event_details/:event_id', async (req:Request, res:Response) => {
     }
 });
 //Pushes data to the DB based on the request body
+/* Todo: Is this really needed? we have add_user & add_admin instead
 app.post('/users', async (req:Request, res:Response) => {
-    const {firstName, lastName} = req.body;
+    const {firstName, lastName,email,token} = req.body;
     const user = await addNewUser(firstName,lastName);
     res.json(user);
 });
-
+*/
 
 app.post('/add_user', async (req:Request, res:Response) => {
-    console.log('got post')
+    console.log('--------------- Creates new USER ---------------')
     console.log(req.body)
-  //  console.log(req)
-    const {name, password} = req.body;
-    console.log(name)
-    console.log(password)
-    const user = await addNewAdmin(name, password);
+    const {firstName, lastName, email, token} = req.body;
+    console.log(`${firstName} \n ${lastName} \n ${email} \n ${token}`)
+    const user = await addNewUser(firstName, lastName, email, token);
     res.json(user);
 });
+
+
+app.post('/add_event', async (req:Request, res:Response) => {
+    console.log('--------------- Creates new Events ---------------')
+    console.log(req.body)
+    const result_event = await addNewEvent(req.body);
+    res.json(result_event);
+});
+
+//put and not post bc it updates a specific user and doesnt create a new one
+app.put('/add_admin', async (req:Request, res:Response) => {
+    console.log('got put')
+    console.log(req.body)
+  //  console.log(req)
+    const {email} = req.body;
+    console.log(`Admins email from request: ${email}`)
+    const user = await addNewAdmin(email);
+    res.json(user);
+});
+
 //Updates existing records based on request body
 app.put('/users', async (req:Request, res:Response) => {
     const {userId, userName} = req.body;
-    const updatedUser = await updateUser(userId,userName);
-    res.json(updatedUser);
+    try {
+        const updatedUser = await updateUser(userId,userName);    
+        res.json(updatedUser);
+        res.status(200);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500);
+    }
 });
 
 //delete specific user
@@ -97,13 +118,36 @@ app.delete('/users:id', async (req:Request, res:Response) => {
 });
 
 
+//todo: put this in Utils and use here and in AddAdmin to avoid duplicated code
+const isValidEmail = (email:string) =>{
+    return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
+  }
+
+//Retrevie data from DB section:
+
+app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
+    //const userEmail = req.query.userEmail?.toString() ?? "";
+    const email = req.params.email;
+    if(!isValidEmail(email)){
+        res.send(`INVALID EMAIL PROVIDED: ${email}`);
+        return;
+    }
+    //@ts-ignore
+    const recivedTokenSub = jwt_decode(req.params.token).sub; //sub should remain the same
+    
+     const user = await getUserByEmail(email);
+     //@ts-ignore
+     const subFromDB = jwt_decode(user.token).sub;
+
+     //authenticate user with his sub from DB
+     if(recivedTokenSub !== subFromDB){
+        res.send("GOT BAD TOKEN");
+        res.status(400);
+        throw "Invalid input";
+     }
+     res.json(user);
+ });
 
 
 
 
-// app.get('/test', (req, res) => {    
-//     res.send('starting test query');
-//     //put some code that fetches data from the DB (test table)
-//     // and presents it to the screen as JSON objecct
-
-// });

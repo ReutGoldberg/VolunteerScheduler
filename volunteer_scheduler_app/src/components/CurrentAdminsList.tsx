@@ -70,7 +70,7 @@ export const CurrentAdminsList: React.FC = () => {
         sx={{ border: 1, borderRadius: "8px", borderColor: "primary.dark" }}
       >
         {admins ? (
-          admins.map((adminName, index) => (
+          admins.map((adminEmail, index) => (
             <ListItem
               disablePadding
               key={index}
@@ -90,7 +90,7 @@ export const CurrentAdminsList: React.FC = () => {
                     <AccountCircle />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={adminName} />
+                <ListItemText primary={adminEmail} />
               </ListItemButton>
             </ListItem>
           ))

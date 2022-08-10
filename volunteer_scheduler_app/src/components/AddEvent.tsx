@@ -10,6 +10,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import MaximizeIcon from "@mui/icons-material/Maximize";
 import MinimizeIcon from "@mui/icons-material/Minimize";
+import {isAdminUser} from "../utils/DataAccessLayer";
 
 export const AddEvent: React.FC = () => {
   const [eventName, setEventName] = React.useState("");
@@ -92,7 +93,7 @@ export const AddEvent: React.FC = () => {
     }
   };
 
-  const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
+  //const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
     // event.preventDefault();
     // if(adminPasswordVerificationValid){
     //     let loggedUser= getUser()
@@ -131,6 +132,23 @@ export const AddEvent: React.FC = () => {
     //         }
     //     }
     // }
+    //};
+  const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if(await isAdminUser()){
+      try{
+        //todo: implement event addition based on the above data. and the
+        // data in the server & db classes. 
+      }
+      catch{
+
+      }
+      finally{
+
+      }
+    }
+
+
   };
 
   return (
