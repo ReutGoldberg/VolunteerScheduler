@@ -40,6 +40,7 @@ export const AddEvent: React.FC = () => {
   const [endDateValid, setEndDateValid] = React.useState(true);
 
   const [allDayChecked, setAllDayChecked] = React.useState(false);
+  const [isAllDayDisable, setIsAllDayDisable] = React.useState(false);
 
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -75,38 +76,58 @@ export const AddEvent: React.FC = () => {
   };
   //TODO: if there is notValid and fix from start its not changing end
   const handleEventStartTimeChange = (newVal: Date | null) => {
+    var today = new Date();
     if (newVal) {
-      var today = new Date();
       var inputStartDate = new Date(newVal);
       if (
         !(inputStartDate >= today) ||
         (endDate != null && inputStartDate > endDate)
-      )
+      ) {
         setStartDateValid(false);
-      else setStartDateValid(true);
+        console.log("startDate not valid");
+      } else {
+        setStartDateValid(true);
+        console.log("startDate valid");
+      }
       setStartDate(inputStartDate);
+      setAllDayChecked(false);
+      setIsAllDayDisable(true);
+
+      if (!endDateValid) {
+        if (endDate != null && startDate != null && endDate > startDate) {
+          setEndDateValid(true);
+        }
+      }
+    } else {
+      setIsAllDayDisable(false);
     }
   };
 
   const handleEventEndTimeChange = (newVal: Date | null) => {
+    var today = new Date();
     if (newVal) {
-      var today = new Date();
       var inputEndDate = new Date(newVal);
       if (
         !(inputEndDate >= today) ||
         (startDate != null && inputEndDate < startDate)
       ) {
-        console.log("not valid");
+        console.log("endDate not valid");
         //TODO: do we want to have min time to event?
         setEndDateValid(false);
       } else {
-        console.log("valid");
+        console.log("endDate valid");
         setEndDateValid(true);
       }
       setEndDate(inputEndDate);
+      setAllDayChecked(false);
+
+      if (!startDateValid) {
+        if (endDate != null && startDate != null && endDate > startDate) {
+          setStartDateValid(true);
+        }
+      }
     }
   };
-
   //const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
   // event.preventDefault();
   // if(adminPasswordVerificationValid){
@@ -149,23 +170,31 @@ export const AddEvent: React.FC = () => {
   //};
   const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (await isAdminUser()) {
-      try {
-        //todo: implement event addition based on the above data. and the
-        // data in the server & db classes.
-      } catch {
-      } finally {
+    if (startDate == null) {
+      setStartDateValid(false);
+    } else if (endDate == null) {
+      setEndDateValid(false);
+    } else {
+      if (await isAdminUser()) {
+        try {
+          //todo: implement event addition based on the above data. and the
+          // data in the server & db classes.
+        } catch {
+        } finally {
+        }
       }
     }
   };
 
   const handleAllDayChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAllDayChecked(event.target.checked);
-    if (allDayChecked) {
+    if (event.target.checked) {
       startDate?.setHours(0);
       startDate?.setMinutes(0);
       endDate?.setHours(23);
       endDate?.setMinutes(59);
+      setEndDateValid(true);
+      setStartDateValid(true);
     }
   };
 
@@ -295,6 +324,7 @@ export const AddEvent: React.FC = () => {
             <Checkbox checked={allDayChecked} onChange={handleAllDayChecked} />
           }
           label="All Day"
+          disabled={!isAllDayDisable}
         />
       </FormGroup>
       {/*TODO: change "add event" to white */}
