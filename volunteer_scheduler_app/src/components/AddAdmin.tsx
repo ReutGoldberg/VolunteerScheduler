@@ -36,7 +36,7 @@ export const AddAdmin: React.FC = () => {
     event.preventDefault();
     const data = {email: adminEmail}
     const response = await axios({
-        method: "post",
+        method: "put",
         url: `http://localhost:5001/add_admin`, //todo: use config file for this
         data: JSON.stringify(data),
         headers: { "Content-Type": "application/json"},

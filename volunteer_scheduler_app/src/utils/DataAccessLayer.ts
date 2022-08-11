@@ -3,9 +3,9 @@ import axios from 'axios';
 
 
 async function isNewUser(userEmail:string, token:string){
-    const requestURL:string = `http://localhost:5001/user/userEmail/${userEmail}/${token}`;
+    const requestURL:string = `http://localhost:5001/user/isNewUser/${userEmail}/${token}`;
     const response = await axios.get(requestURL);
-    return !response.data.email 
+    return !response.data
   }
 
   

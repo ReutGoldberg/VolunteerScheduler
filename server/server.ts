@@ -126,7 +126,7 @@ const isValidEmail = (email:string) =>{
 //Retrevie data from DB section:
 
 app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
-    //const userEmail = req.query.userEmail?.toString() ?? "";
+    //const userEmailF = req.query.userEmail?.toString() ?? "";
     const email = req.params.email;
     if(!isValidEmail(email)){
         res.send(`INVALID EMAIL PROVIDED: ${email}`);
@@ -136,6 +136,8 @@ app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
     const recivedTokenSub = jwt_decode(req.params.token).sub; //sub should remain the same
     
      const user = await getUserByEmail(email);
+
+
      //@ts-ignore
      const subFromDB = jwt_decode(user.token).sub;
 
@@ -146,6 +148,37 @@ app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
         throw "Invalid input";
      }
      res.json(user);
+ });
+
+
+ app.get('/user/isNewUser/:email/:token', async (req:Request, res:Response) => {
+    //const userEmailF = req.query.userEmail?.toString() ?? "";
+    const email = req.params.email;
+    if(!isValidEmail(email)){
+        res.send(`INVALID EMAIL PROVIDED: ${email}`);
+        res.status(400);
+        throw "Invalid input";
+    }
+    //@ts-ignore
+    const recivedTokenSub = jwt_decode(req.params.token).sub; //sub should remain the same
+    
+    const user = await getUserByEmail(email);
+    
+    if (user == null){
+        return res.json(false);
+    }
+
+    
+    //@ts-ignore
+     const subFromDB = jwt_decode(user.token).sub;
+
+     //authenticate user with his sub from DB
+     if(recivedTokenSub !== subFromDB){
+        res.send("GOT BAD TOKEN");
+        res.status(400);
+        throw "Invalid input";
+     }
+     return res.json(true);
  });
 
 
