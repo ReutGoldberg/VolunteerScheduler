@@ -72,8 +72,10 @@ app.post('/add_user', async (req:Request, res:Response) => {
     console.log('--------------- Creates new USER ---------------')
     console.log(req.body)
     const {firstName, lastName, email, token} = req.body;
-    console.log(`${firstName} \n ${lastName} \n ${email} \n ${token}`)
-    const user = await addNewUser(firstName, lastName, email, token);
+    //@ts-ignore
+    console.log(`${firstName} \n ${lastName} \n ${email} \n ${jwt_decode(token).sub}`)
+    //@ts-ignore
+    const user = await addNewUser(firstName, lastName, email, jwt_decode(token).sub);
     res.json(user);
 });
 
@@ -139,7 +141,7 @@ app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
 
 
      //@ts-ignore
-     const subFromDB = jwt_decode(user.token).sub;
+     const subFromDB = user.token;
 
      //authenticate user with his sub from DB
      if(recivedTokenSub !== subFromDB){
@@ -154,11 +156,13 @@ app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
  app.get('/user/isNewUser/:email/:token', async (req:Request, res:Response) => {
     //const userEmailF = req.query.userEmail?.toString() ?? "";
     const email = req.params.email;
+
     if(!isValidEmail(email)){
         res.send(`INVALID EMAIL PROVIDED: ${email}`);
         res.status(400);
         throw "Invalid input";
     }
+
     //@ts-ignore
     const recivedTokenSub = jwt_decode(req.params.token).sub; //sub should remain the same
     
@@ -168,9 +172,8 @@ app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
         return res.json(false);
     }
 
-    
     //@ts-ignore
-     const subFromDB = jwt_decode(user.token).sub;
+     const subFromDB = user.token;
 
      //authenticate user with his sub from DB
      if(recivedTokenSub !== subFromDB){
