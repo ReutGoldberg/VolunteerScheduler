@@ -21,11 +21,12 @@ async function isNewUser(userEmail:string, token:string){
 
 
 async function isAdminUser(){
+    console.log("check if admin")
     //@ts-ignore - todo: find a better way to pass this param
-    const userEmail = window?.userObjectGoogle;
+    const userEmail = window?.userObjectGoogle.email;
     //@ts-ignore - todo: find a better way to pass this param
-    const token = window?.userTokenGoogle;
-
+    const token = window?.userObjectGoogle.token;
+    
     const requestURL:string = `http://localhost:5001/user/userEmail/${userEmail}/${token}`;
     const response = await axios.get(requestURL);
     return response.data.is_admin;

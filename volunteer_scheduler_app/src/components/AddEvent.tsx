@@ -1,5 +1,6 @@
 import * as React from "react";
 import "../App.css";
+import axios from 'axios';
 import {
   Button,
   Box,
@@ -19,6 +20,7 @@ import MaximizeIcon from "@mui/icons-material/Maximize";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 import { start } from "repl";
 import { isAdminUser } from "../utils/DataAccessLayer";
+import {fullEventDetails} from "../utils/helper";
 
 export const AddEvent: React.FC = () => {
   const [eventName, setEventName] = React.useState("");
@@ -31,8 +33,10 @@ export const AddEvent: React.FC = () => {
   const [eventLocationValid, setEventLocationValid] = React.useState(true);
 
   const [eventMaxParticipants, setEventMaxParticipants] = React.useState("");
-  const [eventMaxParticipantsValid, setEventMaxParticipantsValid] =
-    React.useState(true);
+  const [eventMaxParticipantsValid, setEventMaxParticipantsValid] = React.useState(true);
+
+  const [eventMinParticipants, setEventMinParticipants] = React.useState("");
+  const [eventMinParticipantsValid, setEventMinParticipantsValid] = React.useState(true);
 
   const [startDate, setStartDate] = React.useState<Date | null>(null);
   const [startDateValid, setStartDateValid] = React.useState(true);
@@ -74,11 +78,23 @@ export const AddEvent: React.FC = () => {
     else setEventMaxParticipantsValid(true);
     setEventMaxParticipants(event.target.value);
   };
-  //TODO: if there is notValid and fix from start its not changing end
+
+  const handleEventMinParticipantsChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!event.target.value.match(/^[1-9]+[0-9]*/i))
+      setEventMinParticipantsValid(false);
+    else setEventMinParticipantsValid(true);
+    setEventMinParticipants(event.target.value);
+  };
+
   const handleEventStartTimeChange = (newVal: Date | null) => {
     var today = new Date();
+    console.log(today)
     if (newVal) {
+      console.log(newVal)
       var inputStartDate = new Date(newVal);
+      console.log(inputStartDate)
       if (
         !(inputStartDate >= today) ||
         (endDate != null && inputStartDate > endDate)
@@ -175,16 +191,42 @@ export const AddEvent: React.FC = () => {
     } else if (endDate == null) {
       setEndDateValid(false);
     } else {
-      if (await isAdminUser()) {
+      // if (await isAdminUser()) {
+      if (true) {
+        console.log("admin!")
         try {
-          //todo: implement event addition based on the above data. and the
-          // data in the server & db classes.
+          var event_details : fullEventDetails = {
+              id: 0,
+              title: eventName, 
+              details: eventInfo,
+              label: "food", 
+              location: eventLocation, 
+              min_volenteers: Number(eventMinParticipants),
+              max_volenteers: Number(eventMaxParticipants), 
+              startAt: startDate, 
+              endAt: endDate,
+              created_by: "Danit"
+            }
+         
+          const response = await axios({
+              method: "post",
+              url: `http://localhost:5001/add_event`,
+              data: JSON.stringify(event_details),
+              headers: { "Content-Type": "application/json"},
+          });
+          if(response.statusText === 'OK')
+              console.log('Event added successfully')
+          else
+            console.log('didnt add event')
+
+        //todo: implement event addition based on the above data. and the
+        // data in the server & db classes.
         } catch {
         } finally {
-        }
       }
     }
-  };
+  }
+};
 
   const handleAllDayChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAllDayChecked(event.target.checked);
@@ -274,7 +316,28 @@ export const AddEvent: React.FC = () => {
           ),
         }}
       />
+      
       <TextField
+        error={!eventMinParticipantsValid}
+        id="outlined-basic"
+        label="Minimum number of participants"
+        variant="outlined"
+        onChange={handleEventMinParticipantsChange}
+        helperText={
+          !eventMinParticipantsValid
+            ? "Please enter a valid minimum of participants "
+            : ""
+        }
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <MinimizeIcon />
+            </InputAdornment>
+          ),
+        }}
+      />
+
+<TextField
         error={!eventMaxParticipantsValid}
         id="outlined-basic"
         label="Maximum number of participants"
@@ -293,6 +356,7 @@ export const AddEvent: React.FC = () => {
           ),
         }}
       />
+
       <Box
         sx={{
           display: "flex",

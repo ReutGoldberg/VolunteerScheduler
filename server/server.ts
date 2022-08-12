@@ -137,19 +137,18 @@ app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
     //@ts-ignore
     const recivedTokenSub = jwt_decode(req.params.token).sub; //sub should remain the same
     
-     const user = await getUserByEmail(email);
+    const user = await getUserByEmail(email);
 
+    //@ts-ignore
+    const subFromDB = user.token;
 
-     //@ts-ignore
-     const subFromDB = user.token;
-
-     //authenticate user with his sub from DB
-     if(recivedTokenSub !== subFromDB){
-        res.send("GOT BAD TOKEN");
-        res.status(400);
-        throw "Invalid input";
-     }
-     res.json(user);
+    //authenticate user with his sub from DB
+    if(recivedTokenSub !== subFromDB){
+    res.send("GOT BAD TOKEN");
+    res.status(400);
+    throw "Invalid input";
+    }
+    res.json(user);
  });
 
 

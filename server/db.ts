@@ -94,19 +94,18 @@ const prisma = new PrismaClient()
   }
 
   async function addNewEvent(event:any){
-    const {title, details, created_by, location, label, min_volenteers, max_volenteers, startAt, endAt}  = event;
-
+    const {id, title, details, label, location, min_volenteers, max_volenteers, startAt, endAt, created_by} = event; 
     const new_event = await prisma.Events.create({
       data: {
         title: title,
         details: details,
-        created_by: created_by,
         location: location,
         label: label,
-        min_volenteers: min_volenteers,
-        max_volenteers: max_volenteers,
-        startAt: startAt,
-        endAt: endAt
+        min_volenteering: min_volenteers,
+        max_volenteering: max_volenteers,
+        start_time: startAt,
+        end_time: endAt,
+        created_by: created_by
       },
     });
     return new_event;

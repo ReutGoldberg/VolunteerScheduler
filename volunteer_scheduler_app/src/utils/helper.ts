@@ -4,18 +4,18 @@ import { v4 } from 'uuid';
 import axios from 'axios';
 
 export interface fullEventDetails{
-  id: BigInteger,
-  startAt: DateTime,
-  endAt: DateTime,
+  id: number,
   title: string,
   details: string,
-  color: string,
-  allDay: false,
+  // allDay: false,
   label: string,
-  location: String,
-  created_by: String,
-  min_volenteers: String,
-  max_volenteers: String,
+  location: string,
+  min_volenteers: number,
+  max_volenteers: number,
+  startAt: Date,
+  endAt: Date,
+  created_by: string,
+  // color: string
 }
 
 export interface eventDetails{
