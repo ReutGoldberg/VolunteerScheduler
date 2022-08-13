@@ -1,6 +1,6 @@
 import express, {Express, Request, Response} from "express";
 import jwt_decode from "jwt-decode";
-import {getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, addNewEvent} from "./db";
+import {getAllLabels, getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, addNewEvent} from "./db";
 
 const config = require('./config')
 
@@ -30,6 +30,14 @@ app.get('/all_events', async (req:Request, res:Response) => {
     const events = await getAllEvents();
     res.json(events);
     console.log(events)
+});
+
+app.get('/all_labels', async (req:Request, res:Response) => {
+    console.log("server get labels")
+    const labels = await getAllLabels();
+    console.log("server get labels2")
+    res.json(labels);
+    console.log(labels)
 });
 
 app.get('/event_details/:event_id', async (req:Request, res:Response) => {
@@ -111,6 +119,7 @@ app.put('/users', async (req:Request, res:Response) => {
         res.status(500);
     }
 });
+
 
 //delete specific user
 app.delete('/users:id', async (req:Request, res:Response) => {

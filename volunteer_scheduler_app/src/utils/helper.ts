@@ -3,6 +3,12 @@ import * as faker from '@faker-js/faker'
 import { v4 } from 'uuid';
 import axios from 'axios';
 
+
+export interface labelOptions{
+  id: number,
+  name: string
+}
+
 export interface fullEventDetails{
   id: number,
   title: string,

@@ -32,5 +32,17 @@ async function isAdminUser(){
     return response.data.is_admin;
 }
 
+async function getLabels(){
+  console.log("check if admin")
+  // //@ts-ignore - todo: find a better way to pass this param
+  // const userEmail = window?.userObjectGoogle.email;
+  // //@ts-ignore - todo: find a better way to pass this param
+  // const token = window?.userObjectGoogle.token;
+  console.log("!!!!!")
+  const requestURL:string = `http://localhost:5001/all_labels`;
+  const response = await axios.get(requestURL);
+  return response.data;
+}
 
-export {isNewUser, createUser, isAdminUser}
+
+export {isNewUser, createUser, isAdminUser, getLabels}
