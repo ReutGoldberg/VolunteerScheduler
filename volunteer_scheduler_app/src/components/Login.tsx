@@ -3,8 +3,8 @@ import "../App.css";
 import { Button, Box, TextField} from "@mui/material";
 import jwt_decode from "jwt-decode";
 import axios from 'axios';
-import {generateFakeUser, generateFakeEvent, generateFakeLabel, generateFakeLog} from "../fakeData";
-import { isNewUser, createUser } from "../utils/DataAccessLayer";
+import {generateFakeUser} from "../fakeData";
+import { isNewUser, createUser, createFakeUser } from "../utils/DataAccessLayer";
 
 export interface NavbarProps {
   setPageApp(page: string): void;
@@ -28,12 +28,11 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
     document.getElementById("signInDiv")!.hidden = true;
     setUserAuth(userObject);
     setPageApp("GeneralEventsCalendar");
-    //@ts-ignore
+    
     //todo: find a safer way to move around the userObject of the logged in value.
     //maybe useContext? 
-    window.userObjectGoogle = userObject; 
     //@ts-ignore
-    window.userTokenGoogle = response.credntial;
+    window.googleToken = response.credential; 
   }
 
   //todo remove when done testing or move to a better position.
@@ -48,7 +47,7 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
     for (let index = 0; index < num_data; index++) {
       const fakeUser = generateFakeUser();  
       const data = {given_name: fakeUser.first_name, family_name: fakeUser.last_name ,email: fakeUser.email, token:fakeUser.token}
-      createUser(data, data.token);      
+      createFakeUser(data, data.token);      
     }
     
   }

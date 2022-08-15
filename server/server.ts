@@ -1,6 +1,7 @@
 import express, {Express, Request, Response} from "express";
 import jwt_decode from "jwt-decode";
-import {getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, addNewEvent} from "./db";
+import { isValidEmail } from "./server_utils";
+import {getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, addNewEvent, getAllAdminUsers} from "./db";
 
 const config = require('./config')
 
@@ -71,11 +72,12 @@ app.post('/users', async (req:Request, res:Response) => {
 app.post('/add_user', async (req:Request, res:Response) => {
     console.log('--------------- Creates new USER ---------------')
     console.log(req.body)
-    const {firstName, lastName, email, token} = req.body;
+    const {firstName, lastName, email, token, is_fake} = req.body;
     //@ts-ignore
-    console.log(`${firstName} \n ${lastName} \n ${email} \n ${jwt_decode(token).sub}`)
-    //@ts-ignore
-    const user = await addNewUser(firstName, lastName, email, jwt_decode(token).sub);
+    const webTokenSub = !is_fake ? jwt_decode(token).sub : token;
+    //todo: remove print when done testing
+    console.log(`This is the logged sub: ${webTokenSub}`)
+    const user = await addNewUser(firstName, lastName, email, webTokenSub, is_fake);
     res.json(user);
 });
 
@@ -89,12 +91,14 @@ app.post('/add_event', async (req:Request, res:Response) => {
 
 //put and not post bc it updates a specific user and doesnt create a new one
 app.put('/add_admin', async (req:Request, res:Response) => {
-    console.log('got put')
-    console.log(req.body)
-  //  console.log(req)
     const {email} = req.body;
-    console.log(`Admins email from request: ${email}`)
-    const user = await addNewAdmin(email);
+    const user = getUserByEmail(email)
+                    .then((dbUser) => {
+                        if(!dbUser.is_fake)
+                            return addNewAdmin(dbUser.email);
+                        else
+                            return Promise.reject("Trying to give a fake user admin privlege");
+                                    })
     res.json(user);
 });
 
@@ -119,12 +123,6 @@ app.delete('/users:id', async (req:Request, res:Response) => {
     res.json(deletedUser);
 });
 
-
-//todo: put this in Utils and use here and in AddAdmin to avoid duplicated code
-const isValidEmail = (email:string) =>{
-    return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
-  }
-
 //Retrevie data from DB section:
 
 app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
@@ -135,15 +133,13 @@ app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
         return;
     }
     //@ts-ignore
-    const recivedTokenSub = jwt_decode(req.params.token).sub; //sub should remain the same
+    const webToken = jwt_decode(req.params.token).sub; //sub should remain the same
     
     const user = await getUserByEmail(email);
-
-    //@ts-ignore
-    const subFromDB = user.token;
+    const dbToken = user.token;
 
     //authenticate user with his sub from DB
-    if(recivedTokenSub !== subFromDB){
+    if(webToken !== dbToken){
     res.send("GOT BAD TOKEN");
     res.status(400);
     throw "Invalid input";
@@ -155,7 +151,6 @@ app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
  app.get('/user/isNewUser/:email/:token', async (req:Request, res:Response) => {
     //const userEmailF = req.query.userEmail?.toString() ?? "";
     const email = req.params.email;
-
     if(!isValidEmail(email)){
         res.send(`INVALID EMAIL PROVIDED: ${email}`);
         res.status(400);
@@ -163,19 +158,18 @@ app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
     }
 
     //@ts-ignore
-    const recivedTokenSub = jwt_decode(req.params.token).sub; //sub should remain the same
+    const webToken = jwt_decode(req.params.token).sub; //sub should remain the same
     
     const user = await getUserByEmail(email);
     
     if (user == null){
         return res.json(false);
     }
-
-    //@ts-ignore
-     const subFromDB = user.token;
+    
+     const dbToken = user.token;
 
      //authenticate user with his sub from DB
-     if(recivedTokenSub !== subFromDB){
+     if(dbToken !== webToken){
         res.send("GOT BAD TOKEN");
         res.status(400);
         throw "Invalid input";
@@ -183,6 +177,30 @@ app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
      return res.json(true);
  });
 
+//todo: change passing token to be picking it internally somehow
+//as this should be an internal API
+ app.get('/user/adminsUserEmail/:email', async (req:Request, res:Response) => {
+    //const userEmailF = req.query.userEmail?.toString() ?? "";
+    //todo: should only be accessible to admin users - must be restricted on DAL level
+    //or before that
+
+    const email = req.params.email;
+
+    if(!isValidEmail(email)){
+        res.send(`Invalid user trying to access admins data: ${email}`);
+        return;
+    }
+    //verify email belongs to an admin
+    const isAdmin = getUserByEmail(email)
+                        .then((dbUser) => dbUser.is_admin);
+    
+    if(!isAdmin){
+        res.send(`Invalid user trying to access admins data: ${email}`);
+        return;
+    }
+    await getAllAdminUsers()
+            .then(adminUsers => res.json(adminUsers));
+ });
 
 
 

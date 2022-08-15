@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import "./App.css";
 import { AddAdmin } from "./components/AddAdmin";
 import { AddEvent } from "./components/AddEvent";
-import { CurrentAdminsList } from "./components/CurrentAdminsList";
+import { AdminsList } from "./components/AdminsList";
 import { PersonalEventsCalendar } from "./components/PersonalEventsCalendar";
 import { Navbar } from "./components/Navbar";
 import { lightTheme } from "./theme";
@@ -38,8 +38,8 @@ function App() {
         return <PersonalEventsCalendar />;
       case "GeneralEventsCalendar":
         return <GeneralEventsCalendar />;
-      case "CurrentAdminsList":
-        return <CurrentAdminsList />;
+      case "AdminsList":
+        return <AdminsList />;
       case "AddEvent":
         return <AddEvent />;
       case "AddAdmin":

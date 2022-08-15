@@ -43,9 +43,10 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
     console.log("handleAddAdmin");
     setPageApp("AddAdmin");
   };
-  const handleCurrentAdminsList = () => {
-    console.log("handleCurrentAdminsList");
-    setPageApp("CurrentAdminsList");
+  const handleAdminsList = () => {
+    console.log("handleAdminsList");
+    //todo: check if the user has admin preveleges
+    setPageApp("AdminsList");
   };
   const handleProfile = () => {
     console.log("handleProfile");
@@ -91,7 +92,7 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
           </Button>
           <Button id="AddEventBtn" onClick={handleAddEvent}>Add Event</Button>
           <Button id="AddAdminBtn" onClick={handleAddAdmin}>Add Admin</Button>
-          <Button id="CurrentAdminsListBtn" onClick={handleCurrentAdminsList}>Current Admins List</Button>
+          <Button id="AdminsListBtn" onClick={handleAdminsList}>Current Admins List</Button>
           <Button id="ProfileBtn" onClick={handleProfile}>Profile</Button>
           <Button id="LogoutBtn" color="warning" onClick={(e) => handleSignOut(e)}>Logout</Button>
         </ButtonGroup>

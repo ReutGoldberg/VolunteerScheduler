@@ -7,14 +7,15 @@
 const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient()
 
-  async function addNewUser(firstName:String, lastName:String, email:string, token:string){
+  async function addNewUser(firstName:String, lastName:String, email:string, token:string, is_fake:boolean){
   const user = await prisma.Users.create({
     data: {
       first_name: firstName,
       last_name: lastName,
       email: email,
       token: token,
-      is_admin: false
+      is_admin: false,
+      is_fake: is_fake
     },
   });
   return user;
@@ -68,7 +69,15 @@ const prisma = new PrismaClient()
     });
     return user;
   }
-  
+  //shuld be private function and only be used by db.ts and server.ts 
+  async function getAllAdminUsers(){
+    const users = await prisma.Users.findMany({
+      where:{
+        is_admin: true,
+      }
+    });
+    return users;
+  }
   // ------------- Events ----------------------- 
   async function getAllEvents(){
     const events = await prisma.Events.findMany();
@@ -130,4 +139,4 @@ const prisma = new PrismaClient()
 */
 
   
-  export {getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent};
+  export {getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers};
