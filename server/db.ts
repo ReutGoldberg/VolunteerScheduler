@@ -120,6 +120,11 @@ const prisma = new PrismaClient()
     return new_event;
     }
 
+    async function getAllLabels() {
+      const labels = await prisma.Labels.findMany();
+      return labels;
+    }
+
 
 /*Event properties to update: 
         const full_event_details={
@@ -139,4 +144,4 @@ const prisma = new PrismaClient()
 */
 
   
-  export {getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers};
+  export {getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers};

@@ -19,8 +19,8 @@ import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutli
 import MaximizeIcon from "@mui/icons-material/Maximize";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 import { start } from "repl";
-import { isAdminUser } from "../utils/DataAccessLayer";
-import {fullEventDetails} from "../utils/helper";
+import { isAdminUser, getLabels} from "../utils/DataAccessLayer";
+import {fullEventDetails, labelOptions} from "../utils/helper";
 
 export const AddEvent: React.FC = () => {
   const [eventName, setEventName] = React.useState("");
@@ -46,6 +46,32 @@ export const AddEvent: React.FC = () => {
   const [allDayChecked, setAllDayChecked] = React.useState(false);
   const [isAllDayDisable, setIsAllDayDisable] = React.useState(false);
 
+  const [labelOptions, setlabelOptions] = React.useState<labelOptions[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [label, setlabel] = React.useState("");
+
+  React.useEffect(() => {
+    async function callAsync() {
+      try{
+          
+          const data:[] = await getLabels();
+          if(data){
+            setLoading(false)
+              if(data.length === 0){
+                  return
+              }
+              setlabelOptions(data)
+          }
+      } catch(error) {
+          alert("An error accured in server. can't get labels")
+          setLoading(false)
+          return
+      }                   
+   }
+
+   callAsync()
+   
+}, [])
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -144,6 +170,15 @@ export const AddEvent: React.FC = () => {
       }
     }
   };
+
+  const handleChangeLabel = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    event.preventDefault();
+    var label = event.target.value;
+    if (event.target.value == 'No label'){
+      label=''
+    }
+    setlabel(label)
+  }
   //const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
   // event.preventDefault();
   // if(adminPasswordVerificationValid){
@@ -184,6 +219,9 @@ export const AddEvent: React.FC = () => {
   //     }
   // }
   //};
+
+
+
   const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (startDate == null) {
@@ -199,7 +237,7 @@ export const AddEvent: React.FC = () => {
               id: 0,
               title: eventName, 
               details: eventInfo,
-              label: "food", 
+              label: label, 
               location: eventLocation, 
               min_volenteers: Number(eventMinParticipants),
               max_volenteers: Number(eventMaxParticipants), 
@@ -300,6 +338,29 @@ export const AddEvent: React.FC = () => {
           ),
         }}
       />
+
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 4.7,
+        }}
+      >
+      <div>
+        <label> Label </label>
+        <select name="label" onChange={(e)=>handleChangeLabel(e)}>
+                  
+                   <option>No label</option>
+                   {
+                     labelOptions.map( (label)=>(
+                   <option key={label.id} value={label.name}> { label.name}</option>
+                     ))
+                }
+        </select>
+      </div>
+      </Box>
+
       <TextField
         required
         error={!eventLocationValid}
