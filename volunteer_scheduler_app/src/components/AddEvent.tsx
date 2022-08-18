@@ -1,6 +1,7 @@
 import * as React from "react";
 import "../App.css";
 import axios from 'axios';
+import jwt_decode from "jwt-decode";
 import {
   Button,
   Box,
@@ -179,48 +180,6 @@ export const AddEvent: React.FC = () => {
     }
     setlabel(label)
   }
-  //const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
-  // event.preventDefault();
-  // if(adminPasswordVerificationValid){
-  //     let loggedUser= getUser()
-  //     if (!loggedUser) return;
-  //     let token:string = window.btoa(`${loggedUser!![0]}:${loggedUser!![1]}`)
-  //     console.log("token:"+ token + "loggeduser" + loggedUser);
-  //     let data = new FormData();    //formdata object
-  //     data.append('adminName', adminName);
-  //     data.append('adminPassword', adminPassword);
-  //     try {
-  //         const res = await axios({
-  //             method: "post",
-  //             url: `http://localhost:${process.env.REACT_APP_BACKEND_PORT}/register_admin`,
-  //             data: data,
-  //             headers: {  "Content-Type": "multipart/form-data", 'Authorization': `Basic ${token}` },
-  //         });
-  //         if(res.statusText === 'OK'){
-  //             setPageApp("CurrentAdminsList")
-  //         }
-  //     } catch(err:any) {
-  //         if (axios.isAxiosError(err)) {
-  //             if(err.response){
-  //                 let message: string = ""
-  //                 if( err.response.status === 409){
-  //                     message = "A problem occurred! probably name is taken";
-  //                 }
-  //                 else {
-  //                     message = "error! " + err.response.status.toString() + " " + err.response.statusText;
-  //                 }
-  //                 alert(message)
-  //             } else if(err.request){
-  //                 alert("The request was made but no response was received from server")
-  //             } else {
-  //                 alert(err.message)
-  //             }
-  //         }
-  //     }
-  // }
-  //};
-
-
 
   const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -228,7 +187,7 @@ export const AddEvent: React.FC = () => {
       setStartDateValid(false);
     } else if (endDate == null) {
       setEndDateValid(false);
-    } else {
+    } else if(endDateValid && startDateValid && eventNameValid && eventInfoValid && eventLocationValid && eventMinParticipantsValid && eventMaxParticipantsValid) {
       // if (await isAdminUser()) {
       if (true) {
         console.log("admin!")
@@ -243,7 +202,9 @@ export const AddEvent: React.FC = () => {
               max_volenteers: Number(eventMaxParticipants), 
               startAt: startDate, 
               endAt: endDate,
-              created_by: "Danit"
+              //@ts-ignore
+              created_by: `${jwt_decode(window.googleToken).email}.`,
+              is_fake: false
             }
          
           const response = await axios({

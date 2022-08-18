@@ -8,16 +8,19 @@ import "kalend/dist/styles/index.css";
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Button } from "@mui/material";
+import { Button, ButtonGroup } from "@mui/material";
 import Box from '@mui/material/Box';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import Typography from '@mui/material/Typography';
+import { isAdminUser } from "../utils/DataAccessLayer";
 
 const CalendComponent = (props: any) => {
   const [demoEvents, setDemoEvents] = useState<eventDetails[] | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<fullEventDetails | null>(null);
+  const [isAdmin, setIsAdmin] = useState(isAdminUser());
+  const [isEnrolled, setIsEnrolled] = useState(false);
 
   //Create and load demo events
   useEffect((): void => {
@@ -34,6 +37,26 @@ const CalendComponent = (props: any) => {
   const handleCloseDialog = () => {
     setOpenDialog(false);
   }; 
+
+  const handleEnrollment = () => {
+    setIsEnrolled(!isEnrolled);
+    //and send to 
+  }
+
+  const handleSaveEvent = () => {
+    //setIsEnrolled(!isEnrolled);
+    //and send to 
+  }
+
+  const handleDeleteEvent = () => {
+    //setIsEnrolled(!isEnrolled);
+    //and send to 
+  }
+  
+
+
+
+
 
 
   const onNewEventClick = (data: any) => {
@@ -130,11 +153,32 @@ const CalendComponent = (props: any) => {
           <Typography gutterBottom>
             in charge of: {selectedEvent["created_by"]}
           </Typography>
-          <Typography gutterBottom>
+          {selectedEvent["label"] && <Typography gutterBottom>
             label: {selectedEvent["label"]}
-          </Typography>
+          </Typography>}
           <Typography gutterBottom>
             it works!
+          </Typography>
+          <Typography gutterBottom>
+            <Button id="enrollmentEvenBtn" onClick={handleEnrollment}>
+                 {isEnrolled ? "":"Not "} Enrolled to the event
+              </Button>
+          </Typography>
+          <Typography gutterBottom>
+            <ButtonGroup
+            size="large"
+            color="info"
+            variant="text"
+            aria-label="text button group"
+            fullWidth={true}
+            //hidden = {isAdmin} -todo: find solution, now returns a promise and therefore breaks
+          >
+            {/* <Button color={"secondary"} onClick={handleLogOut}> <LogoutIcon color={"secondary"}/>  Log out </Button> */}
+            <Button id="saveEventBtn" onClick={handleSaveEvent}>
+              Save Event
+            </Button>
+            <Button id="deleteEventBtn" onClick={handleDeleteEvent}>Delete Event</Button>          
+          </ButtonGroup>
           </Typography>
         </DialogContent>
           <DialogActions>

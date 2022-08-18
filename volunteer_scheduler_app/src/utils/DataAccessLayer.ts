@@ -8,8 +8,18 @@ async function isNewUser(userEmail:string, token:string){
     const response = await axios.get(requestURL);
     return !response.data
   }
+  async function isValidUser(){
+    //@ts-ignore
+    const usertoken = window.googleToken;
+    const userData:any = jwt_decode(usertoken);
+    
 
-  
+  }
+
+  async function isValidAdminUser() {
+    
+  }
+ 
   async function createUser(userObject:any, userToken:string){
     const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email,token:userToken, is_fake: false};
     const response = await axios({
@@ -40,8 +50,7 @@ async function isAdminUser(){
     
     const requestURL:string = `http://localhost:5001/user/userEmail/${userData.email}/${usertoken}`;
     const response = await axios.get(requestURL);
->>>>>>> 270f076eadbff4a12db030e34b62ed3e95ea1514
-  return response.data;
+    return response.data;
 }
 
 async function getLabels(){

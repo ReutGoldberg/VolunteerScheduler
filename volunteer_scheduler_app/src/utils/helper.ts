@@ -21,6 +21,7 @@ export interface fullEventDetails{
   startAt: Date,
   endAt: Date,
   created_by: string,
+  is_fake: boolean,
   // color: string
 }
 
