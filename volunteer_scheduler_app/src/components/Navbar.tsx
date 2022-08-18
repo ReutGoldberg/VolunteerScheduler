@@ -9,18 +9,18 @@ export interface NavbarProps {
   setUserAuth(user: any): void;
 }
 
-// Applying focus to tab buttons when pressesd 
+// Applying focus to tab buttons when pressesd
 // not working yet
-function getFocus(elementId:string) {
+function getFocus(elementId: string) {
   let button = document.getElementById(elementId);
-  button?.setAttribute("color","primary");
-  button?.setAttribute("variant","contained");
+  button?.setAttribute("color", "primary");
+  button?.setAttribute("variant", "contained");
 }
 
-function loseFocus(elementId:string) {
+function loseFocus(elementId: string) {
   let button = document.getElementById(elementId);
-  button?.setAttribute("color","");
-  button?.setAttribute("variant","");
+  button?.setAttribute("color", "");
+  button?.setAttribute("variant", "");
 }
 //end of applying focus to tab buttons when pressesd
 
@@ -37,7 +37,7 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
   };
   const handleAddEvent = () => {
     console.log("handleAddEvent");
-    setPageApp("AddEvent");
+    setPageApp("AddOrEditEvent");
   };
   const handleAddAdmin = () => {
     console.log("handleAddAdmin");
@@ -84,17 +84,37 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
           fullWidth={true}
         >
           {/* <Button color={"secondary"} onClick={handleLogOut}> <LogoutIcon color={"secondary"}/>  Log out </Button> */}
-          <Button id="PersonalEventsCalendarBtn" onClick={handlePersonalEventsCalendar}>
+          <Button
+            id="PersonalEventsCalendarBtn"
+            onClick={handlePersonalEventsCalendar}
+          >
             Personal Events Calendar
           </Button>
-          <Button id="GeneralEventsCalendarBtn" onClick={handleGeneralEventsCalendar}>
+          <Button
+            id="GeneralEventsCalendarBtn"
+            onClick={handleGeneralEventsCalendar}
+          >
             General Events Calendar
           </Button>
-          <Button id="AddEventBtn" onClick={handleAddEvent}>Add Event</Button>
-          <Button id="AddAdminBtn" onClick={handleAddAdmin}>Add Admin</Button>
-          <Button id="AdminsListBtn" onClick={handleAdminsList}>Current Admins List</Button>
-          <Button id="ProfileBtn" onClick={handleProfile}>Profile</Button>
-          <Button id="LogoutBtn" color="warning" onClick={(e) => handleSignOut(e)}>Logout</Button>
+          <Button id="AddEventBtn" onClick={handleAddEvent}>
+            Add Event
+          </Button>
+          <Button id="AddAdminBtn" onClick={handleAddAdmin}>
+            Add Admin
+          </Button>
+          <Button id="AdminsListBtn" onClick={handleAdminsList}>
+            Current Admins List
+          </Button>
+          <Button id="ProfileBtn" onClick={handleProfile}>
+            Profile
+          </Button>
+          <Button
+            id="LogoutBtn"
+            color="warning"
+            onClick={(e) => handleSignOut(e)}
+          >
+            Logout
+          </Button>
         </ButtonGroup>
       </Box>
     </Box>

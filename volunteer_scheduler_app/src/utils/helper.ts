@@ -26,7 +26,7 @@ export interface fullEventDetails{
 }
 
 export interface eventDetails{
-  id: BigInteger,
+  id: number,
   startAt: DateTime,
   endAt: DateTime,
   summary: string,

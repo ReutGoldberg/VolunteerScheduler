@@ -4,7 +4,7 @@ import "kalend/dist/styles/index.css"; // import styles
 import React, { useState } from "react";
 import "./App.css";
 import { AddAdmin } from "./components/AddAdmin";
-import { AddEvent } from "./components/AddEvent";
+import { AddOrEditEvent } from "./components/AddOrEditEvent";
 import { AdminsList } from "./components/AdminsList";
 import { PersonalEventsCalendar } from "./components/PersonalEventsCalendar";
 import { Navbar } from "./components/Navbar";
@@ -40,8 +40,8 @@ function App() {
         return <GeneralEventsCalendar />;
       case "AdminsList":
         return <AdminsList />;
-      case "AddEvent":
-        return <AddEvent />;
+      case "AddOrEditEvent":
+        return <AddOrEditEvent toEditEventDetails={null} />;
       case "AddAdmin":
         return <AddAdmin />;
       case "Profile":
@@ -66,9 +66,9 @@ function App() {
             Volunteer Scheduler
           </Typography>
         </Box>
-        {Object.keys(user).length != 0 && 
-          <Navbar setPageApp={setPageApp} setUserAuth={setUserAuth}/>
-        }
+        {Object.keys(user).length != 0 && (
+          <Navbar setPageApp={setPageApp} setUserAuth={setUserAuth} />
+        )}
         <Box
           sx={{
             display: "flex",
