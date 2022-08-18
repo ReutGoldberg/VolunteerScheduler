@@ -495,7 +495,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       </FormGroup>
       {/*TODO: change "add event" to white */}
       <Button type="submit" form="registerForm" variant="contained">
-        Add Event
+        {toEditEventDetails ? "Edit Event" : "Add Event"}
       </Button>
     </Box>
   );
