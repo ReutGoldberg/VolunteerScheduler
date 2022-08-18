@@ -1,7 +1,8 @@
 const config = {
     server_app: {
       port: 5001, 
-      name: 'myapp'
+      name: 'myapp',
+      localhost: `'http://localhost`
     },
     client_app:{
       port: 3000, 

@@ -12,6 +12,7 @@ app.use(cors({origin: config.client_app.localhost}))
 app.use(express.json());
 
 const myPort = config.server_app.port;
+const myLocalhost = config.server_app.localhost;
 app.listen(myPort, ()=>{
     console.log(`server running on port ${myPort}`);
 });
