@@ -4,7 +4,6 @@ import "kalend/dist/styles/index.css"; // import styles
 import React, { useState } from "react";
 import "./App.css";
 import { AddAdmin } from "./components/AddAdmin";
-import { AddOrEditEvent } from "./components/AddOrEditEvent";
 import { AdminsList } from "./components/AdminsList";
 import { PersonalEventsCalendar } from "./components/PersonalEventsCalendar";
 import { Navbar } from "./components/Navbar";
@@ -13,6 +12,7 @@ import { Login } from "./components/Login";
 import { GeneralEventsCalendar } from "./components/GeneralEventsCalendar";
 import { Profile } from "./components/Profile";
 import { getPage } from "./utils/helper";
+import { AddOrEditEvent } from "./components/AddOrEditEvent";
 
 function App() {
   /*Google Login Part*/

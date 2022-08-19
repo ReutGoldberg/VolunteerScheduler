@@ -128,14 +128,14 @@ const CalendComponent = (props: any) => {
         //   },
         // }}
       />
-      {selectedEvent ? (
+      {/* {selectedEvent ? (
         <PopupEvent
           calenderOpenDialog={openDialog}
           calenderSelectedEvent={selectedEvent}
         />
       ) : (
         <Box />
-      )}
+      )} */}
       {selectedEvent && (
         <Dialog
           open={openDialog}
