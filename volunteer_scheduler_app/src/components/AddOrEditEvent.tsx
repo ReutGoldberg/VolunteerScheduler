@@ -38,41 +38,27 @@ export interface AddOrEditProps {
 export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   toEditEventDetails,
 }) => {
-  const [eventName, setEventName] = React.useState(
-    toEditEventDetails ? toEditEventDetails.title : ""
-  );
+  const [eventName, setEventName] = React.useState("");
   const [eventNameValid, setEventNameValid] = React.useState(true);
 
-  const [eventInfo, setEventInfo] = React.useState(
-    toEditEventDetails ? toEditEventDetails.details : ""
-  );
+  const [eventInfo, setEventInfo] = React.useState("");
   const [eventInfoValid, setEventInfoValid] = React.useState(true);
 
-  const [eventLocation, setEventLocation] = React.useState(
-    toEditEventDetails ? toEditEventDetails.location : ""
-  );
+  const [eventLocation, setEventLocation] = React.useState("");
   const [eventLocationValid, setEventLocationValid] = React.useState(true);
 
-  const [eventMaxParticipants, setEventMaxParticipants] = React.useState(
-    toEditEventDetails ? toEditEventDetails.max_volenteers : ""
-  );
+  const [eventMaxParticipants, setEventMaxParticipants] = React.useState("");
   const [eventMaxParticipantsValid, setEventMaxParticipantsValid] =
     React.useState(true);
 
-  const [eventMinParticipants, setEventMinParticipants] = React.useState(
-    toEditEventDetails ? toEditEventDetails.min_volenteers : ""
-  );
+  const [eventMinParticipants, setEventMinParticipants] = React.useState("");
   const [eventMinParticipantsValid, setEventMinParticipantsValid] =
     React.useState(true);
 
-  const [startDate, setStartDate] = React.useState<Date | null>(
-    toEditEventDetails ? toEditEventDetails.startAt : null
-  );
+  const [startDate, setStartDate] = React.useState<Date | null>(null);
   const [startDateValid, setStartDateValid] = React.useState(true);
 
-  const [endDate, setEndDate] = React.useState<Date | null>(
-    toEditEventDetails ? toEditEventDetails.endAt : null
-  );
+  const [endDate, setEndDate] = React.useState<Date | null>(null);
   const [endDateValid, setEndDateValid] = React.useState(true);
 
   const [allDayChecked, setAllDayChecked] = React.useState(false);
@@ -80,16 +66,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
 
   const [labelOptions, setlabelOptions] = React.useState<labelOptions[]>([]);
   const [loading, setLoading] = React.useState(true);
-  const [label, setlabel] = React.useState(
-    toEditEventDetails ? toEditEventDetails.label : ""
-  );
-
-  const setInit = () => {
-    if (toEditEventDetails != null) {
-      setEventName(toEditEventDetails.title);
-      setEventInfo(toEditEventDetails.details);
-    }
-  };
+  const [label, setlabel] = React.useState("");
 
   React.useEffect(() => {
     async function callAsync() {
@@ -101,7 +78,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             return;
           }
           setlabelOptions(data);
-          setInit();
         }
       } catch (error) {
         alert("An error accured in server. can't get labels");
@@ -276,6 +252,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   };
 
   const handleEditEvent = async (event: React.FormEvent<HTMLFormElement>) => {
+    //TODO: change only not empty\null values
     event.preventDefault();
     if (startDate == null) {
       setStartDateValid(false);
@@ -377,6 +354,10 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         {toEditEventDetails ? " Edit Event" : "Add New Event"}
       </Typography>
 
+      <Typography hidden={!toEditEventDetails} color="green">
+        current name: {toEditEventDetails ? toEditEventDetails.title : ""}
+      </Typography>
+
       <TextField
         required
         error={!eventNameValid}
@@ -391,9 +372,12 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
               <DriveFileRenameOutlineIcon />
             </InputAdornment>
           ),
-          // value = { ...(toEditEventDetails ? toEditEventDetails.title : ""s) },
         }}
       />
+
+      <Typography hidden={!toEditEventDetails} color="green">
+        current info: {toEditEventDetails ? toEditEventDetails.details : ""}
+      </Typography>
 
       <TextField
         required
@@ -420,6 +404,14 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           gap: 4.7,
         }}
       >
+        <Typography hidden={!toEditEventDetails} color="green">
+          current lable:{" "}
+          {toEditEventDetails
+            ? toEditEventDetails.label
+              ? toEditEventDetails.label
+              : "\n"
+            : ""}
+        </Typography>
         <FormControl fullWidth>
           <InputLabel id="select-label">Label</InputLabel>
           <Select
@@ -442,6 +434,11 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         </FormControl>
       </Box>
 
+      <Typography hidden={!toEditEventDetails} color="green">
+        current location:{" "}
+        {toEditEventDetails ? toEditEventDetails.location : ""}
+      </Typography>
+
       <TextField
         required
         error={!eventLocationValid}
@@ -458,6 +455,15 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           ),
         }}
       />
+
+      <Typography hidden={!toEditEventDetails} color="green">
+        current minimum number of participants :{" "}
+        {toEditEventDetails
+          ? toEditEventDetails.min_volenteers
+            ? toEditEventDetails.min_volenteers
+            : "\n"
+          : ""}
+      </Typography>
 
       <TextField
         error={!eventMinParticipantsValid}
@@ -479,6 +485,15 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         }}
       />
 
+      <Typography hidden={!toEditEventDetails} color="green">
+        current maximum number of participants :{" "}
+        {toEditEventDetails
+          ? toEditEventDetails.max_volenteers
+            ? toEditEventDetails.max_volenteers
+            : "\n"
+          : ""}
+      </Typography>
+
       <TextField
         error={!eventMaxParticipantsValid}
         id="outlined-basic"
@@ -498,6 +513,16 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           ),
         }}
       />
+
+      <Typography hidden={!toEditEventDetails} color="green">
+        current date of event:
+      </Typography>
+      <Typography hidden={!toEditEventDetails} color="green">
+        from- {toEditEventDetails ? toEditEventDetails.startAt : ""} {"\n"}
+      </Typography>
+      <Typography hidden={!toEditEventDetails} color="green">
+        to- {toEditEventDetails ? toEditEventDetails.endAt : ""}
+      </Typography>
 
       <Box
         sx={{
