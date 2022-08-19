@@ -61,11 +61,11 @@ export const getAllEvents = async () => {
       headers: {  "Content-Type": "application/json"},
   });
   if(response.statusText === 'OK'){
-      console.log('got events')
-      console.log(response.data)
+      // console.log('got events')
+      // console.log(response.data)
       const event1= response.data[0]
-      console.log(event1)
-      console.log(event1["id"])
+      // console.log(event1)
+      // console.log(event1["id"])
       const new_event: any={
         id: v4(),
         startAt: event1["start_time"],
@@ -75,7 +75,7 @@ export const getAllEvents = async () => {
         allDay: false,
         label: event1["label"],
       }
-      console.log(new_event)
+      // console.log(new_event)
       // const event: any = {
       //   id: v4(),
       //   startAt: startDate.toUTC().toString(),

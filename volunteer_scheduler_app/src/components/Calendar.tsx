@@ -18,6 +18,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import Typography from "@mui/material/Typography";
 import { isAdminUser } from "../utils/DataAccessLayer";
+import { PopupEvent } from "./PopupEvent";
+import { AddOrEditEvent } from "./AddOrEditEvent";
 
 const CalendComponent = (props: any) => {
   const [demoEvents, setDemoEvents] = useState<eventDetails[] | null>(null);
@@ -26,8 +28,18 @@ const CalendComponent = (props: any) => {
     null
   );
   const [isAdmin, setIsAdmin] = useState(isAdminUser());
+  // const [isEnrolled, setIsEnrolled] = useState(false);
+
   const [isEnrolled, setIsEnrolled] = useState(false);
 
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleEnrollment = () => {
+    setIsEnrolled(!isEnrolled);
+    //and send to
+  };
   //Create and load demo events
   useEffect((): void => {
     generateDemoEvents1()
@@ -41,27 +53,7 @@ const CalendComponent = (props: any) => {
   //   setDemoEvents(generateDemoEvents1());
   // }, []);
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-
-  const handleEnrollment = () => {
-    setIsEnrolled(!isEnrolled);
-    //and send to
-  };
-
-  const handleSaveEvent = () => {
-    //setIsEnrolled(!isEnrolled);
-    //and send to
-  };
-
-  const handleDeleteEvent = () => {
-    //setIsEnrolled(!isEnrolled);
-    //and send to
-  };
-
   const onNewEventClick = (data: any) => {
-    console.log(data.event);
     const msg = `New event click action\n\n Callback data:\n\n${JSON.stringify({
       hour: data.hour,
       day: data.day,
@@ -70,7 +62,7 @@ const CalendComponent = (props: any) => {
       view: data.view,
       event: "click event ",
     })}`;
-    console.log(msg);
+    // console.log(msg);
   };
 
   // Callback for event click
@@ -80,7 +72,6 @@ const CalendComponent = (props: any) => {
     )}`;
     console.log(msg);
     const request_data = data["id"];
-    console.log(request_data);
     const response = await axios({
       method: "get",
       url: `http://localhost:5001/event_details/${request_data}`,
@@ -88,8 +79,8 @@ const CalendComponent = (props: any) => {
       headers: { "Content-Type": "application/json" },
     });
     if (response.statusText === "OK") {
-      console.log("got event details");
-      console.log(response.data);
+      // console.log("got event details");
+      // console.log(response.data);
       setSelectedEvent(response.data);
       setOpenDialog(true);
     } else console.log("didnt get event details");
@@ -105,7 +96,7 @@ const CalendComponent = (props: any) => {
   // };
 
   return (
-    <div className={"Calendar__wrapper"}>
+    <Box className={"Calendar__wrapper"}>
       <Kalend
         kalendRef={props.kalendRef}
         onNewEventClick={onNewEventClick}
@@ -138,6 +129,14 @@ const CalendComponent = (props: any) => {
         // }}
       />
       {selectedEvent ? (
+        <PopupEvent
+          calenderOpenDialog={openDialog}
+          calenderSelectedEvent={selectedEvent}
+        />
+      ) : (
+        <Box />
+      )}
+      {selectedEvent && (
         <Dialog
           open={openDialog}
           onClose={handleCloseDialog}
@@ -146,12 +145,17 @@ const CalendComponent = (props: any) => {
           aria-labelledby="scroll-dialog-title"
           aria-describedby="scroll-dialog-description"
         >
+          {/* {console.log("selectedEvent: \n")}
+          {console.log(selectedEvent)} */}
           <DialogTitle id="scroll-dialog-title">
             {selectedEvent["title"]}
           </DialogTitle>
           <DialogContent dividers>
             <Typography gutterBottom>
               in charge of: {selectedEvent["created_by"]}
+            </Typography>
+            <Typography gutterBottom>
+              <AddOrEditEvent toEditEventDetails={selectedEvent} />
             </Typography>
             {selectedEvent["label"] && (
               <Typography gutterBottom>
@@ -164,33 +168,13 @@ const CalendComponent = (props: any) => {
                 {isEnrolled ? "" : "Not "} Enrolled to the event
               </Button>
             </Typography>
-            <Typography gutterBottom>
-              <ButtonGroup
-                size="large"
-                color="info"
-                variant="text"
-                aria-label="text button group"
-                fullWidth={true}
-                //hidden = {isAdmin} -todo: find solution, now returns a promise and therefore breaks
-              >
-                {/* <Button color={"secondary"} onClick={handleLogOut}> <LogoutIcon color={"secondary"}/>  Log out </Button> */}
-                <Button id="saveEventBtn" onClick={handleSaveEvent}>
-                  Save Event
-                </Button>
-                <Button id="deleteEventBtn" onClick={handleDeleteEvent}>
-                  Delete Event
-                </Button>
-              </ButtonGroup>
-            </Typography>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog}>close</Button>
           </DialogActions>
         </Dialog>
-      ) : (
-        <div></div>
       )}
-    </div>
+    </Box>
   );
 };
 

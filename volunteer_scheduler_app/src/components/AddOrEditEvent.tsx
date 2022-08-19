@@ -9,6 +9,12 @@ import {
   FormControlLabel,
   FormGroup,
   Checkbox,
+  ButtonGroup,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
@@ -22,6 +28,8 @@ import MinimizeIcon from "@mui/icons-material/Minimize";
 import { start } from "repl";
 import { isAdminUser, getLabels } from "../utils/DataAccessLayer";
 import { fullEventDetails, labelOptions } from "../utils/helper";
+import { setMinutes } from "date-fns/esm";
+import SortIcon from "@mui/icons-material/Sort";
 
 export interface AddOrEditProps {
   toEditEventDetails: fullEventDetails | null;
@@ -76,6 +84,13 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     toEditEventDetails ? toEditEventDetails.label : ""
   );
 
+  const setInit = () => {
+    if (toEditEventDetails != null) {
+      setEventName(toEditEventDetails.title);
+      setEventInfo(toEditEventDetails.details);
+    }
+  };
+
   React.useEffect(() => {
     async function callAsync() {
       try {
@@ -86,6 +101,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             return;
           }
           setlabelOptions(data);
+          setInit();
         }
       } catch (error) {
         alert("An error accured in server. can't get labels");
@@ -96,6 +112,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
 
     callAsync();
   }, []);
+
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -103,6 +120,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     else setEventNameValid(true);
     setEventName(event.target.value);
   };
+
   const handleEventInfoChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -195,7 +213,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     }
   };
 
-  const handleChangeLabel = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleChangeLabel = (event: SelectChangeEvent<string>) => {
     event.preventDefault();
     var label = event.target.value;
     if (event.target.value == "No label") {
@@ -319,6 +337,11 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     }
   };
 
+  const handleDeleteEvent = () => {
+    //setIsEnrolled(!isEnrolled);
+    //and send to
+  };
+
   return (
     <Box
       component="form"
@@ -333,11 +356,17 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       id="registerForm"
       onSubmit={toEditEventDetails ? handleEditEvent : handleAddEvent}
     >
-      <Box
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-      >
-        <ManageAccountsTwoToneIcon color="info" sx={{ fontSize: "1000%" }} />
-      </Box>
+      {!toEditEventDetails && (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <ManageAccountsTwoToneIcon color="info" sx={{ fontSize: "1000%" }} />
+        </Box>
+      )}
       <Typography
         variant="h2"
         color="text.primary"
@@ -345,8 +374,9 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         gutterBottom
         component="div"
       >
-        add new Event
+        {toEditEventDetails ? " Edit Event" : "Add New Event"}
       </Typography>
+
       <TextField
         required
         error={!eventNameValid}
@@ -361,8 +391,10 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
               <DriveFileRenameOutlineIcon />
             </InputAdornment>
           ),
+          // value = { ...(toEditEventDetails ? toEditEventDetails.title : ""s) },
         }}
       />
+
       <TextField
         required
         error={!eventInfoValid}
@@ -388,18 +420,26 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           gap: 4.7,
         }}
       >
-        <div>
-          <label> Label </label>
-          <select name="label" onChange={(e) => handleChangeLabel(e)}>
-            <option>No label</option>
+        <FormControl fullWidth>
+          <InputLabel id="select-label">Label</InputLabel>
+          <Select
+            labelId="select-label"
+            id="select"
+            value={label}
+            label="label"
+            name="label"
+            onChange={(e) => handleChangeLabel(e)}
+            // IconComponent={<SortIcon />}
+          >
+            <MenuItem>No label</MenuItem>
             {labelOptions.map((label) => (
-              <option key={label.id} value={label.name}>
+              <MenuItem key={label.id} value={label.name}>
                 {" "}
                 {label.name}
-              </option>
+              </MenuItem>
             ))}
-          </select>
-        </div>
+          </Select>
+        </FormControl>
       </Box>
 
       <TextField
@@ -494,9 +534,29 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         />
       </FormGroup>
       {/*TODO: change "add event" to white */}
-      <Button type="submit" form="registerForm" variant="contained">
-        {toEditEventDetails ? "Edit Event" : "Add Event"}
-      </Button>
+      <ButtonGroup
+        size="large"
+        color="info"
+        variant="text"
+        aria-label="text button group"
+        fullWidth={true}
+        //hidden = {isAdmin} -todo: find solution, now returns a promise and therefore breaks
+      >
+        {toEditEventDetails ? (
+          <Button
+            id="deleteEventBtn"
+            hidden={toEditEventDetails ? false : true}
+            onClick={handleDeleteEvent}
+          >
+            Delete Event
+          </Button>
+        ) : (
+          <Box />
+        )}
+        <Button type="submit" form="registerForm" variant="contained">
+          {toEditEventDetails ? "Edit Event" : "Add Event"}
+        </Button>
+      </ButtonGroup>
     </Box>
   );
 };

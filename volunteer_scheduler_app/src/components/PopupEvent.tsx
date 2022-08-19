@@ -1,60 +1,86 @@
-
-import * as React from "react";
-import "../App.css";
-import axios from 'axios';
-import jwt_decode from "jwt-decode";
+import React, { useEffect, useState } from "react";
 import {
-  Button,
-  Box,
-  InputAdornment,
-  FormControlLabel,
-  FormGroup,
-  Checkbox,
-} from "@mui/material";
-import TextField from "@mui/material/TextField";
-import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
+  eventDetails,
+  fullEventDetails,
+  generateDemoEvents1,
+} from "../utils/helper";
+import { getAllEvents } from "../utils/helper";
+import axios from "axios";
+import { DateTime } from "luxon";
+import Kalend, { CalendarView, OnEventDragFinish } from "kalend";
+import "kalend/dist/styles/index.css";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogTitle from "@mui/material/DialogTitle";
+import { Button, ButtonGroup } from "@mui/material";
+import Box from "@mui/material/Box";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 import Typography from "@mui/material/Typography";
-import { EventDatePicker } from "./EventDatePicker";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import InfoIcon from "@mui/icons-material/Info";
-import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
-import MaximizeIcon from "@mui/icons-material/Maximize";
-import MinimizeIcon from "@mui/icons-material/Minimize";
-import { start } from "repl";
-import { isAdminUser, getLabels} from "../utils/DataAccessLayer";
-import {fullEventDetails, labelOptions} from "../utils/helper";
+import { isAdminUser } from "../utils/DataAccessLayer";
 
-
-export const PopupEvent: React.FC = () => {
-
-    const [eventName, setEventName] = React.useState("");
-    const [eventNameValid, setEventNameValid] = React.useState(true);
-
-    const [eventInfo, setEventInfo] = React.useState("");
-    const [eventInfoValid, setEventInfoValid] = React.useState(true);
-
-    const [eventLocation, setEventLocation] = React.useState("");
-    const [eventLocationValid, setEventLocationValid] = React.useState(true);
-
-    const [eventMaxParticipants, setEventMaxParticipants] = React.useState("");
-    const [eventMaxParticipantsValid, setEventMaxParticipantsValid] = React.useState(true);
-
-    const [eventMinParticipants, setEventMinParticipants] = React.useState("");
-    const [eventMinParticipantsValid, setEventMinParticipantsValid] = React.useState(true);
-
-    const [startDate, setStartDate] = React.useState<Date | null>(null);
-    const [startDateValid, setStartDateValid] = React.useState(true);
-    const [endDate, setEndDate] = React.useState<Date | null>(null);
-    const [endDateValid, setEndDateValid] = React.useState(true);
-
-    const [allDayChecked, setAllDayChecked] = React.useState(false);
-    const [isAllDayDisable, setIsAllDayDisable] = React.useState(false);
-
-    const [labelOptions, setlabelOptions] = React.useState<labelOptions[]>([]);
-    const [loading, setLoading] = React.useState(true);
-    const [label, setlabel] = React.useState("");
-
-    return (
-        <Box/>        
-    )
+export interface PopupEventProps {
+  calenderOpenDialog: boolean;
+  calenderSelectedEvent: fullEventDetails | null;
 }
+
+export const PopupEvent: React.FC<PopupEventProps> = ({
+  calenderOpenDialog,
+  calenderSelectedEvent,
+}) => {
+  const [selectedEvent, setSelectedEvent] = useState<fullEventDetails | null>(
+    calenderSelectedEvent
+  );
+  const [openDialog, setOpenDialog] = useState(calenderOpenDialog);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(isAdminUser());
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleEnrollment = () => {
+    setIsEnrolled(!isEnrolled);
+    //and send to
+  };
+
+  return (
+    <Box>
+      {selectedEvent && (
+        <Dialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          scroll="body"
+          PaperProps={{ sx: { width: "35%" } }}
+          aria-labelledby="scroll-dialog-title"
+          aria-describedby="scroll-dialog-description"
+        >
+          {/* {console.log("selectedEvent: \n")}
+          {console.log(selectedEvent)} */}
+          <DialogTitle id="scroll-dialog-title">
+            {selectedEvent["title"]}
+          </DialogTitle>
+          <DialogContent dividers>
+            <Typography gutterBottom>
+              in charge of: {selectedEvent["created_by"]}
+            </Typography>
+            {selectedEvent["label"] && (
+              <Typography gutterBottom>
+                label: {selectedEvent["label"]}
+              </Typography>
+            )}
+            <Typography gutterBottom>it works!</Typography>
+            <Typography gutterBottom>
+              <Button id="enrollmentEvenBtn" onClick={handleEnrollment}>
+                {isEnrolled ? "" : "Not "} Enrolled to the event
+              </Button>
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog}>close</Button>
+          </DialogActions>
+        </Dialog>
+      )}
+    </Box>
+  );
+};
