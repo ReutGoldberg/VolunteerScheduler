@@ -14,7 +14,7 @@ export interface fullEventDetails{
   title: string,
   details: string,
   // allDay: false,
-  label: string,
+  labels: labelOptions[],
   location: string,
   min_volenteers: number,
   max_volenteers: number,
@@ -32,7 +32,7 @@ export interface eventDetails{
   summary: string,
   color: string,
   allDay: false,
-  label: string,
+  labels: labelOptions[],
 }
 
 const colors: string[] = [
@@ -49,9 +49,6 @@ const colors: string[] = [
   'MediumPurple',
   'salmon',
 ];
-
-
-
 
 export const getAllEvents = async () => {
   const events: any = [];
@@ -93,19 +90,6 @@ export const getAllEvents = async () => {
   console.log(events)
   return events;
 };
-// const getAllEvents = async (event: React.FormEvent<HTMLFormElement>) => {
-//   event.preventDefault();
-//   const response = await axios({
-//       method: "get",
-//       url: `http://localhost:5001/all_events`,
-//       headers: {  "Content-Type": "application/json"},
-//   });
-//   if(response.statusText === 'OK')
-//       console.log('got events')
-//   else
-//     console.log('didnt get events')
-// };
-
 
 export const getPage = () => {
   return sessionStorage.getItem("page") || "main";
@@ -194,7 +178,8 @@ export const generateDemoEvents1 =  async(): Promise<eventDetails[] | null> => {
           summary: event1["title"],
           color: 'green',
           allDay: false,
-          label: event1["label"],
+          // TODO:change in backend? check how to do that
+          labels: event1["labels"],
         };
         console.log(event)
         all_events.push(event);

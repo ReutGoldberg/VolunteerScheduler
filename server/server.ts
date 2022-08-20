@@ -55,7 +55,7 @@ app.get('/event_details/:event_id', async (req:Request, res:Response) => {
             details: event_details["details"],
             color: 'blue',
             allDay: false,
-            label: event_details["label"],
+            labels: [],//TODO:change Danit labels backend+DB
             location: event_details["location"],
             created_by: event_details["created_by"],
             min_volenteers: event_details["min_volenteering"],

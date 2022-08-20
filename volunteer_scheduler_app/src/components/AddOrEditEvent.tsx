@@ -1,4 +1,3 @@
-import * as React from "react";
 import "../App.css";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
@@ -10,26 +9,23 @@ import {
   FormGroup,
   Checkbox,
   ButtonGroup,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
+  ListItem,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
 import Typography from "@mui/material/Typography";
-import { EventDatePicker } from "./EventDatePicker";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import InfoIcon from "@mui/icons-material/Info";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import MaximizeIcon from "@mui/icons-material/Maximize";
 import MinimizeIcon from "@mui/icons-material/Minimize";
-import { start } from "repl";
-import { isAdminUser, getLabels } from "../utils/DataAccessLayer";
+import { getLabels } from "../utils/DataAccessLayer";
 import { fullEventDetails, labelOptions } from "../utils/helper";
-import { setMinutes } from "date-fns/esm";
-import SortIcon from "@mui/icons-material/Sort";
+import React from "react";
 
 export interface AddOrEditProps {
   toEditEventDetails: fullEventDetails | null;
@@ -65,19 +61,26 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const [isAllDayDisable, setIsAllDayDisable] = React.useState(false);
 
   const [labelOptions, setlabelOptions] = React.useState<labelOptions[]>([]);
+  const [checkedLabels, setCheckedLabels] = React.useState<labelOptions[]>([]);
+
   const [loading, setLoading] = React.useState(true);
-  const [label, setlabel] = React.useState("");
 
   React.useEffect(() => {
     async function callAsync() {
       try {
-        const data: [] = await getLabels();
+        const data: labelOptions[] = await getLabels();
         if (data) {
           setLoading(false);
           if (data.length === 0) {
             return;
           }
-          setlabelOptions(data);
+          console.log("im here");
+          console.log(data);
+          setlabelOptions(
+            data.map((labelOption) => {
+              return { id: labelOption.id, name: labelOption.name };
+            })
+          );
         }
       } catch (error) {
         alert("An error accured in server. can't get labels");
@@ -132,11 +135,13 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     setEventMinParticipants(event.target.value);
   };
 
-  const handleEventStartTimeChange = (newVal: Date | null) => {
+  const handleEventStartTimeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     var today = new Date();
-    console.log(today);
+    var newVal = event.target.value;
+    console.log(event.target.value);
     if (newVal) {
-      console.log(newVal);
       var inputStartDate = new Date(newVal);
       console.log(inputStartDate);
       if (
@@ -163,8 +168,12 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     }
   };
 
-  const handleEventEndTimeChange = (newVal: Date | null) => {
+  const handleEventEndTimeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     var today = new Date();
+    var newVal = event.target.value;
+    console.log(newVal);
     if (newVal) {
       var inputEndDate = new Date(newVal);
       if (
@@ -172,7 +181,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         (startDate != null && inputEndDate < startDate)
       ) {
         console.log("endDate not valid");
-        //TODO: do we want to have min time to event?
         setEndDateValid(false);
       } else {
         console.log("endDate valid");
@@ -187,15 +195,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         }
       }
     }
-  };
-
-  const handleChangeLabel = (event: SelectChangeEvent<string>) => {
-    event.preventDefault();
-    var label = event.target.value;
-    if (event.target.value == "No label") {
-      label = "";
-    }
-    setlabel(label);
   };
 
   const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -221,7 +220,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             id: 0,
             title: eventName,
             details: eventInfo,
-            label: label,
+            labels: checkedLabels,
             location: eventLocation,
             min_volenteers: Number(eventMinParticipants),
             max_volenteers: Number(eventMaxParticipants),
@@ -252,7 +251,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   };
 
   const handleEditEvent = async (event: React.FormEvent<HTMLFormElement>) => {
-    //TODO: change only not empty\null values
     event.preventDefault();
     if (startDate == null) {
       setStartDateValid(false);
@@ -275,7 +273,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             id: 0,
             title: eventName,
             details: eventInfo,
-            label: label,
+            labels: checkedLabels,
             location: eventLocation,
             min_volenteers: Number(eventMinParticipants),
             max_volenteers: Number(eventMaxParticipants),
@@ -319,11 +317,22 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     //and send to
   };
 
+  const handleToggle = (value: labelOptions) => () => {
+    const currentIndex = checkedLabels.map((cl) => cl.id).indexOf(value.id);
+    const newChecked = [...checkedLabels];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+    setCheckedLabels(newChecked);
+  };
+
   return (
     <Box
       component="form"
       sx={{
-        width: "30%",
         height: "100vh",
         display: "flex",
         flexDirection: "column",
@@ -354,10 +363,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         {toEditEventDetails ? " Edit Event" : "Add New Event"}
       </Typography>
 
-      <Typography hidden={!toEditEventDetails} color="green">
-        current name: {toEditEventDetails ? toEditEventDetails.title : ""}
-      </Typography>
-
       <TextField
         required
         error={!eventNameValid}
@@ -366,6 +371,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         variant="outlined"
         onChange={handleEventNameChange}
         helperText={!eventNameValid ? "Please enter a valid name " : ""}
+        defaultValue={toEditEventDetails ? toEditEventDetails.title : ""}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -375,10 +381,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         }}
       />
 
-      <Typography hidden={!toEditEventDetails} color="green">
-        current info: {toEditEventDetails ? toEditEventDetails.details : ""}
-      </Typography>
-
       <TextField
         required
         error={!eventInfoValid}
@@ -387,6 +389,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         variant="outlined"
         onChange={handleEventInfoChange}
         helperText={!eventInfoValid ? "Please enter a valid info " : ""}
+        defaultValue={toEditEventDetails ? toEditEventDetails.details : ""}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -396,49 +399,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         }}
       />
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 4.7,
-        }}
-      >
-        <Typography hidden={!toEditEventDetails} color="green">
-          current lable:{" "}
-          {toEditEventDetails
-            ? toEditEventDetails.label
-              ? toEditEventDetails.label
-              : "\n"
-            : ""}
-        </Typography>
-        <FormControl fullWidth>
-          <InputLabel id="select-label">Label</InputLabel>
-          <Select
-            labelId="select-label"
-            id="select"
-            value={label}
-            label="label"
-            name="label"
-            onChange={(e) => handleChangeLabel(e)}
-            // IconComponent={<SortIcon />}
-          >
-            <MenuItem>No label</MenuItem>
-            {labelOptions.map((label) => (
-              <MenuItem key={label.id} value={label.name}>
-                {" "}
-                {label.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
-
-      <Typography hidden={!toEditEventDetails} color="green">
-        current location:{" "}
-        {toEditEventDetails ? toEditEventDetails.location : ""}
-      </Typography>
-
       <TextField
         required
         error={!eventLocationValid}
@@ -447,6 +407,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         variant="outlined"
         onChange={handleEventLocationChange}
         helperText={!eventLocationValid ? "Please enter a valid location " : ""}
+        defaultValue={toEditEventDetails ? toEditEventDetails.location : ""}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -455,15 +416,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           ),
         }}
       />
-
-      <Typography hidden={!toEditEventDetails} color="green">
-        current minimum number of participants :{" "}
-        {toEditEventDetails
-          ? toEditEventDetails.min_volenteers
-            ? toEditEventDetails.min_volenteers
-            : "\n"
-          : ""}
-      </Typography>
 
       <TextField
         error={!eventMinParticipantsValid}
@@ -476,6 +428,13 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             ? "Please enter a valid minimum of participants "
             : ""
         }
+        defaultValue={
+          toEditEventDetails
+            ? toEditEventDetails.min_volenteers
+              ? toEditEventDetails.min_volenteers
+              : "\n"
+            : ""
+        }
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -484,15 +443,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           ),
         }}
       />
-
-      <Typography hidden={!toEditEventDetails} color="green">
-        current maximum number of participants :{" "}
-        {toEditEventDetails
-          ? toEditEventDetails.max_volenteers
-            ? toEditEventDetails.max_volenteers
-            : "\n"
-          : ""}
-      </Typography>
 
       <TextField
         error={!eventMaxParticipantsValid}
@@ -505,6 +455,13 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             ? "Please enter a valid maximum of participants "
             : ""
         }
+        defaultValue={
+          toEditEventDetails
+            ? toEditEventDetails.max_volenteers
+              ? toEditEventDetails.max_volenteers
+              : "\n"
+            : ""
+        }
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -514,15 +471,59 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         }}
       />
 
-      <Typography hidden={!toEditEventDetails} color="green">
-        current date of event:
-      </Typography>
-      <Typography hidden={!toEditEventDetails} color="green">
-        from- {toEditEventDetails ? toEditEventDetails.startAt : ""} {"\n"}
-      </Typography>
-      <Typography hidden={!toEditEventDetails} color="green">
-        to- {toEditEventDetails ? toEditEventDetails.endAt : ""}
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 4.7,
+        }}
+      >
+        <TextField
+          required
+          error={!setStartDateValid}
+          id="datetime-local"
+          label="enter start date"
+          type="datetime-local"
+          defaultValue={toEditEventDetails ? toEditEventDetails.startAt : null}
+          sx={{ width: 250 }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={handleEventStartTimeChange}
+        />
+
+        <TextField
+          required
+          error={!setEndDateValid}
+          id="datetime-local"
+          label="enter end date"
+          type="datetime-local"
+          defaultValue={toEditEventDetails ? toEditEventDetails.endAt : null}
+          sx={{ width: 250 }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={handleEventEndTimeChange}
+        />
+      </Box>
+
+      <Box sx={{ maxWidth: "20%" }}>
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={allDayChecked}
+                onChange={handleAllDayChecked}
+              />
+            }
+            label="All Day"
+            disabled={!isAllDayDisable}
+          />
+        </FormGroup>
+      </Box>
+
+      <Typography>lables:</Typography>
 
       <Box
         sx={{
@@ -532,32 +533,56 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           gap: 4.7,
         }}
       >
-        <EventDatePicker
-          {...{
-            onChangeHandler: handleEventStartTimeChange,
-            label: "enter start date",
-            value: startDate,
-            isValid: startDateValid,
+        <List
+          sx={{
+            width: "100%",
+            maxWidth: 360,
+            maxHeight: 100,
+            border: 1,
+            borderBlockColor: "grey",
+            borderRadius: 1,
+            overflow: "auto",
           }}
-        />
-        <EventDatePicker
-          {...{
-            onChangeHandler: handleEventEndTimeChange,
-            label: "enter end date",
-            value: endDate,
-            isValid: endDateValid,
-          }}
-        />
+        >
+          {labelOptions.map((value) => {
+            const labelId = value.id;
+            return (
+              <ListItem key={value.id} disablePadding>
+                <ListItemButton
+                  role={undefined}
+                  onClick={handleToggle(value)}
+                  dense
+                >
+                  <ListItemIcon>
+                    <Checkbox
+                      edge="start"
+                      checked={
+                        toEditEventDetails
+                          ? toEditEventDetails.labels
+                              .map((cl) => cl.id)
+                              .indexOf(value.id) !== -1 ||
+                            checkedLabels
+                              .map((cl) => cl.id)
+                              .indexOf(value.id) !== -1
+                          : checkedLabels
+                              .map((cl) => cl.id)
+                              .indexOf(value.id) !== -1
+                      }
+                      tabIndex={-1}
+                      disableRipple
+                      inputProps={{
+                        "aria-labelledby": labelId.toString(),
+                      }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText id={labelId.toString()} primary={value.name} />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
       </Box>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Checkbox checked={allDayChecked} onChange={handleAllDayChecked} />
-          }
-          label="All Day"
-          disabled={!isAllDayDisable}
-        />
-      </FormGroup>
+
       {/*TODO: change "add event" to white */}
       <ButtonGroup
         size="large"

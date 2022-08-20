@@ -13,6 +13,7 @@ import { GeneralEventsCalendar } from "./components/GeneralEventsCalendar";
 import { Profile } from "./components/Profile";
 import { getPage } from "./utils/helper";
 import { AddOrEditEvent } from "./components/AddOrEditEvent";
+import { Footer } from "./components/Footer";
 
 function App() {
   /*Google Login Part*/
@@ -30,6 +31,7 @@ function App() {
   };
 
   const pageToPresent = (page: string) => {
+    // if(not auth) return <Login setPageApp={setPageApp} setUserAuth={setUserAuth}
     sessionStorage.setItem("page", page);
     switch (page) {
       case "AddAdmin":
@@ -65,18 +67,21 @@ function App() {
           >
             Volunteer Scheduler
           </Typography>
-        </Box>
-        {Object.keys(user).length != 0 && (
-          <Navbar setPageApp={setPageApp} setUserAuth={setUserAuth} />
-        )}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          {pageToPresent(page)}
+
+          {Object.keys(user).length != 0 && (
+            <Navbar setPageApp={setPageApp} setUserAuth={setUserAuth} />
+          )}
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            {pageToPresent(page)}
+          </Box>
+          <Footer />
         </Box>
       </div>
     </ThemeProvider>
