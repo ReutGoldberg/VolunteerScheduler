@@ -237,8 +237,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             data: JSON.stringify(event_details),
             headers: { "Content-Type": "application/json" },
           });
-          if (response.statusText === "OK")
-            console.log("Event added successfully");
+          if (response.statusText === "OK") alert("Event added successfully");
           else console.log("didnt add event");
 
           //todo: implement event addition based on the above data. and the
