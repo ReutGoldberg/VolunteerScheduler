@@ -27,9 +27,7 @@ const CalendComponent = (props: any) => {
   const [selectedEvent, setSelectedEvent] = useState<fullEventDetails | null>(
     null
   );
-  const [isAdmin, setIsAdmin] = useState(isAdminUser());
-  // const [isEnrolled, setIsEnrolled] = useState(false);
-
+  //const [isAdmin, setIsAdmin] = useState(isAdminUser());
   const [isEnrolled, setIsEnrolled] = useState(false);
 
   const handleCloseDialog = () => {

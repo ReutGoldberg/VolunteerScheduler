@@ -1,6 +1,5 @@
 import * as React from "react";
 import "../App.css";
-import axios from "axios";
 import jwt_decode from "jwt-decode";
 import {
   Button,
@@ -26,7 +25,7 @@ import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutli
 import MaximizeIcon from "@mui/icons-material/Maximize";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 import { start } from "repl";
-import { isAdminUser, getLabels } from "../utils/DataAccessLayer";
+import { isAdminUser, getLabels, editEventReq, addEventReq } from "../utils/DataAccessLayer";
 import { fullEventDetails, labelOptions } from "../utils/helper";
 import { setMinutes } from "date-fns/esm";
 import SortIcon from "@mui/icons-material/Sort";
@@ -228,16 +227,10 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             startAt: startDate,
             endAt: endDate,
             //@ts-ignore
-            created_by: `${jwt_decode(window.googleToken).email}.`,
-            is_fake: false,
+            created_by: `${jwt_decode(window.googleToken).email}`,
           };
-
-          const response = await axios({
-            method: "post",
-            url: `http://localhost:5001/add_event`,
-            data: JSON.stringify(event_details),
-            headers: { "Content-Type": "application/json" },
-          });
+          //@ts-ignore 
+          const response = await addEventReq(event_details, window.googleToken);
           if (response.statusText === "OK")
             console.log("Event added successfully");
           else console.log("didnt add event");
@@ -272,7 +265,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         console.log("admin!");
         try {
           var event_details: fullEventDetails = {
-            id: 0,
+            id: toEditEventDetails? toEditEventDetails.id : -1,
             title: eventName,
             details: eventInfo,
             label: label,
@@ -282,16 +275,11 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             startAt: startDate,
             endAt: endDate,
             //@ts-ignore
-            created_by: `${jwt_decode(window.googleToken).email}.`,
-            is_fake: false,
+            created_by: `${jwt_decode(window.googleToken).email}`,
           };
 
-          const response = await axios({
-            method: "post",
-            url: `http://localhost:5001/edit_event/${toEditEventDetails?.id}`,
-            data: JSON.stringify(event_details),
-            headers: { "Content-Type": "application/json" },
-          });
+          //@ts-ignore
+          const response = await editEventReq(event_details, window.googleToken)
           if (response.statusText === "OK")
             console.log("Event edited successfully");
           else console.log("didnt edit event");

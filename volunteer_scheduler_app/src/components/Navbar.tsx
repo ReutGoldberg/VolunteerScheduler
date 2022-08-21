@@ -110,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
           </Button>
           <Button
             id="LogoutBtn"
-            color="warning"
+            color="error"
             onClick={(e) => handleSignOut(e)}
           >
             Logout

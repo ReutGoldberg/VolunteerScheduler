@@ -5,7 +5,7 @@ import jwt_decode from "jwt-decode";
 import axios from 'axios';
 import {generateFakeUser} from "../fakeData";
 import { isNewUser, createUser, createFakeUser } from "../utils/DataAccessLayer";
-
+import {AppConfig} from "../AppConfig";
 export interface NavbarProps {
   setPageApp(page: string): void;
   setUserAuth(user: any): void;
@@ -14,16 +14,15 @@ export interface NavbarProps {
 export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
   const CLIENT_ID = process.env.CLIENT_ID;
   const CLIENT_CONTENT = `${CLIENT_ID}.apps.googleusercontent.com`;
-  const clientId: string =
-    "83163129776-q90s185nilupint4nb1bp0gsi0fb61vs.apps.googleusercontent.com"; //todo: put in Config/ .env file
+  const clientId: string = AppConfig.client_id;
   
   
   async function handleCallbackResponse(response: any) {
     console.log("Encoded JWT ID Token" + response.credential); //todo: remove when done testing
     let userObject:any = jwt_decode(response.credential); 
-    const isNewUserResult = await isNewUser(userObject?.email, response.credential);
+    const isNewUserResult = await isNewUser(response.credential);
     if(isNewUserResult){
-      createUser(userObject,response.credential);
+      createUser(response.credential);
     }
     document.getElementById("signInDiv")!.hidden = true;
     setUserAuth(userObject);
@@ -33,6 +32,8 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
     //maybe useContext? 
     //@ts-ignore
     window.googleToken = response.credential; 
+
+    //todo: remove when done testing:
   }
 
   //todo remove when done testing or move to a better position.

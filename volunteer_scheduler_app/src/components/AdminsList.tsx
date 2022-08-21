@@ -23,7 +23,9 @@ export const AdminsList: React.FC = () => {
 
   //set admin list one on initial load
   useEffect(()=>{
-    getAdminsList()
+    //@ts-ignore
+    const userToken = window.googleToken;
+    getAdminsList(userToken)
       .then(data => {
         console.log("Below are the admins")
         console.log(data);

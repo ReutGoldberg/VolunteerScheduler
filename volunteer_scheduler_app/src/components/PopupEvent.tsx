@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   eventDetails,
-  fullEventDetails,
   generateDemoEvents1,
 } from "../utils/helper";
 import { getAllEvents } from "../utils/helper";
@@ -17,7 +16,15 @@ import Box from "@mui/material/Box";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import Typography from "@mui/material/Typography";
-import { isAdminUser } from "../utils/DataAccessLayer";
+import { EventDatePicker } from "./EventDatePicker";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import InfoIcon from "@mui/icons-material/Info";
+import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+import MaximizeIcon from "@mui/icons-material/Maximize";
+import MinimizeIcon from "@mui/icons-material/Minimize";
+import { start } from "repl";
+import {getLabels} from "../utils/DataAccessLayer";
+import {fullEventDetails, labelOptions} from "../utils/helper";
 
 export interface PopupEventProps {
   calenderOpenDialog: boolean;
@@ -33,7 +40,6 @@ export const PopupEvent: React.FC<PopupEventProps> = ({
   );
   const [openDialog, setOpenDialog] = useState(calenderOpenDialog);
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(isAdminUser());
 
   const handleCloseDialog = () => {
     setOpenDialog(false);

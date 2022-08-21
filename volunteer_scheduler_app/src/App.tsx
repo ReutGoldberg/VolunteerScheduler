@@ -15,8 +15,6 @@ import { getPage } from "./utils/helper";
 import { AddOrEditEvent } from "./components/AddOrEditEvent";
 
 function App() {
-  /*Google Login Part*/
-  //this is the function that handles/runs after the user logs in successfully
 
   const [user, setUser] = React.useState<any>({});
   const [page, setPage] = React.useState<string>(getPage());
