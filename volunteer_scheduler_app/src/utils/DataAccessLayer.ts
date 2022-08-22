@@ -125,6 +125,18 @@ async function getAdminsList(usertoken:string){
 
 
 
+export async function addAdmin(email:string, usertoken:string) {
+  return await axios({
+    method: "put",
+    url: `${AppConfig.server_url}/add_admin`,
+    data: {email:email},
+    headers: { "Content-Type": "application/json; charset=utf-8",
+    "authorization": usertoken }, 
+  });
+}
+
+
+
 export async function editEventReq(event_details:fullEventDetails, token:string){
   try{
   const response =  await axios({

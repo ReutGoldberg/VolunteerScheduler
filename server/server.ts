@@ -152,19 +152,23 @@ app.put('/add_admin', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     try {
         if(await !isVerifiedUser(authToken)){
+            res.status(401);
             throw new Error("User is not verified");
         }
         const webUser = jwt_decode(authToken);
         //@ts-ignore
         if(await !getUserByToken(webUser.sub).then((user) => user.is_admin)){
+            res.status(401);
             throw new Error("User is not admin");
         }
+
         const userToUpdate = getUserByEmail(email)
         .then((dbUser) => {addNewAdmin(dbUser.email);});
+
         res.json(userToUpdate);   
+        res.status(200);
     } catch (error:any) {
-        console.error(error.message)
-        res.status(500);
+        console.error(error.message);
     }
 });
 

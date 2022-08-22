@@ -29,6 +29,7 @@ import { isAdminUser, getLabels, editEventReq, addEventReq } from "../utils/Data
 import { fullEventDetails, labelOptions } from "../utils/helper";
 import { setMinutes } from "date-fns/esm";
 import SortIcon from "@mui/icons-material/Sort";
+import { UserObjectContext } from "../App";
 
 export interface AddOrEditProps {
   toEditEventDetails: fullEventDetails | null;
@@ -66,6 +67,9 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const [labelOptions, setlabelOptions] = React.useState<labelOptions[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [label, setlabel] = React.useState("");
+
+
+  const {user} = React.useContext(UserObjectContext) //importing the context - user object by google token
 
   React.useEffect(() => {
     async function callAsync() {
@@ -212,7 +216,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       eventMinParticipantsValid &&
       eventMaxParticipantsValid
     ) {
-      // if (await isAdminUser()) {
+      // if (await isAdminUser(user.sub)) {
       if (true) {
         console.log("admin!");
         try {
@@ -227,7 +231,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             startAt: startDate,
             endAt: endDate,
             //@ts-ignore
-            created_by: `${jwt_decode(window.googleToken).email}`,
+            created_by: `${user.email}`,
           };
           //@ts-ignore 
           const response = await addEventReq(event_details, window.googleToken);
@@ -275,7 +279,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             startAt: startDate,
             endAt: endDate,
             //@ts-ignore
-            created_by: `${jwt_decode(window.googleToken).email}`,
+            created_by: `${user.email}`,
           };
 
           //@ts-ignore

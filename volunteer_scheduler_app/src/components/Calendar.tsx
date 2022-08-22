@@ -17,7 +17,7 @@ import Box from "@mui/material/Box";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import Typography from "@mui/material/Typography";
-import { isAdminUser } from "../utils/DataAccessLayer";
+
 import { PopupEvent } from "./PopupEvent";
 import { AddOrEditEvent } from "./AddOrEditEvent";
 
@@ -27,7 +27,7 @@ const CalendComponent = (props: any) => {
   const [selectedEvent, setSelectedEvent] = useState<fullEventDetails | null>(
     null
   );
-  //const [isAdmin, setIsAdmin] = useState(isAdminUser());
+
   const [isEnrolled, setIsEnrolled] = useState(false);
 
   const handleCloseDialog = () => {

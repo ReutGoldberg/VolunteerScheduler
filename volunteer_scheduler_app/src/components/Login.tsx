@@ -1,11 +1,11 @@
 import React from "react";
-import "../App.css";
 import { Button, Box, TextField} from "@mui/material";
 import jwt_decode from "jwt-decode";
 import axios from 'axios';
 import {generateFakeUser} from "../fakeData";
 import { isNewUser, createUser, createFakeUser } from "../utils/DataAccessLayer";
 import {AppConfig} from "../AppConfig";
+import { UserObjectContext } from "../App";
 export interface NavbarProps {
   setPageApp(page: string): void;
   setUserAuth(user: any): void;
@@ -15,14 +15,20 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
   const CLIENT_ID = process.env.CLIENT_ID;
   const CLIENT_CONTENT = `${CLIENT_ID}.apps.googleusercontent.com`;
   const clientId: string = AppConfig.client_id;
+
+  const {setUser} = React.useContext(UserObjectContext)
   
   
   async function handleCallbackResponse(response: any) {
-    console.log("Encoded JWT ID Token" + response.credential); //todo: remove when done testing
-    let userObject:any = jwt_decode(response.credential); 
-    const isNewUserResult = await isNewUser(response.credential);
+    const googleUserToken:string = String(response.credential);
+    console.log("Encoded JWT ID Token " + googleUserToken); //todo: remove when done testing
+    const token = {token : googleUserToken};
+    const userObject:any = {...jwt_decode(googleUserToken), ...token};
+    setUser(userObject); //sets the App's context
+
+    const isNewUserResult = await isNewUser(token.token);
     if(isNewUserResult){
-      createUser(response.credential);
+      createUser(token.token);
     }
     document.getElementById("signInDiv")!.hidden = true;
     setUserAuth(userObject);
@@ -31,7 +37,7 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
     //todo: find a safer way to move around the userObject of the logged in value.
     //maybe useContext? 
     //@ts-ignore
-    window.googleToken = response.credential; 
+    window.googleToken = token.token; 
 
     //todo: remove when done testing:
   }

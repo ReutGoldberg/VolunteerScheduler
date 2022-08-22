@@ -1,27 +1,24 @@
 import React from "react";
-import "../App.css";
 import { Button, Box, InputAdornment } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { AccountCircle } from "@mui/icons-material";
-import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
 import Typography from "@mui/material/Typography";
-import axios from 'axios';
-// import axios from "axios";
-// import {getUser} from "../Utils";
+import { AdminsList } from "./AdminsList";
+import { addAdmin, getAdminsList } from "../utils/DataAccessLayer";
+import { UserObjectContext } from "../App";
+import { isValidEmail } from "../utils/helper";
 
-// export interface AddAdminProps {
-//     setPageApp(page:string) : void;
-// }
+
 
 export const AddAdmin: React.FC = () => {
   const [adminEmail, setAdminEmail] = React.useState("");
   const [adminEmailValid, setAdminEmailValid] = React.useState(true);
+  const [adminsList, setAdminsList] = React.useState([]);
+  
+  const {user} = React.useContext(UserObjectContext) //using App's context
+  
 
-
-  const isValidEmail = (email:string) =>{
-    return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
-  }
 
   const handleAdminEmailChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -34,17 +31,15 @@ export const AddAdmin: React.FC = () => {
 
   const handleAddAdmin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = {email: adminEmail}
-    const response = await axios({
-        method: "put",
-        url: `http://localhost:5001/add_admin`, //todo: use config file for this
-        data: JSON.stringify(data),
-        headers: { "Content-Type": "application/json"},
-    });
-    if(response.statusText === 'OK')
-        console.log('Admin added successfully')
-    else
-      console.log('didnt add admin')
+    const response = await addAdmin(adminEmail, user.token).then(()=>{
+      console.log("Admin added successfully");
+      return getAdminsList(user.token);      
+    }).catch((err) => {
+      console.log('Error! Didn`t add admin');
+      throw err;
+     });    
+     console.log(response); // todo: remove when done testing
+     setAdminsList(response);
   };
 
   return (
@@ -94,6 +89,17 @@ export const AddAdmin: React.FC = () => {
       <Button type="submit" form="registerForm" variant="contained">
         Add Admin
       </Button>
+      <Typography
+        variant="h4"
+        color="text.primary"
+        textAlign={"center"}
+        gutterBottom
+        component="div"
+        margin={"10%"}
+      >
+        Admins List
+      </Typography>
+      <AdminsList curAdminList={adminsList}/>
     </Box>
   );
 };
