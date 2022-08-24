@@ -25,7 +25,7 @@ import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutli
 import MaximizeIcon from "@mui/icons-material/Maximize";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 import { start } from "repl";
-import { isAdminUser, getLabels, editEventReq, addEventReq } from "../utils/DataAccessLayer";
+import { getLabels, editEventReq, addEventReq } from "../utils/DataAccessLayer";
 import { fullEventDetails, labelOptions } from "../utils/helper";
 import { setMinutes } from "date-fns/esm";
 import SortIcon from "@mui/icons-material/Sort";
@@ -69,12 +69,13 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const [label, setlabel] = React.useState("");
 
 
-  const {user} = React.useContext(UserObjectContext) //importing the context - user object by google token
+  const {user,setUser} = React.useContext(UserObjectContext) //importing the context - user object by google token
+  
 
   React.useEffect(() => {
     async function callAsync() {
       try {
-        const data: [] = await getLabels();
+        const data: [] = await getLabels(user.token);
         if (data) {
           setLoading(false);
           if (data.length === 0) {

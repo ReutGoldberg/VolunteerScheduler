@@ -25,7 +25,7 @@ export const AdminsList: React.FC<AdminListProps> = ({curAdminList}) => {
   const boxRef = useRef(null);
   const listRef = useRef(null);
 
-  const {user} = React.useContext(UserObjectContext)
+  const {user} = React.useContext(UserObjectContext);
 
   //set admin list one on initial load
   useEffect(()=>{
@@ -44,13 +44,14 @@ export const AdminsList: React.FC<AdminListProps> = ({curAdminList}) => {
     if(curAdminList.length > 0){
       console.log("CurAdminList is greater than 0")
       setAdmins(curAdminList)
+      setIsPending(false);
     }},[curAdminList]);
     
 
   return (
     <Box id="AdminListTabId" ref={boxRef} >
       <List  id="adminsList" ref={listRef} style={{maxHeight:200, overflow:'auto'}}>
-      {//isPending && <CircularProgress color="primary" size={100}/>
+      {isPending && <CircularProgress color="primary" size={100}/>
       }
       {admins && (
         //@ts-ignore

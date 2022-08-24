@@ -66,6 +66,7 @@ app.get('/all_labels', async (req:Request, res:Response) => {
     catch(err:any){
         console.error(err.message);
         res.status(500);
+        throw err;
     }
 });
 
@@ -226,8 +227,8 @@ app.get('/user/userEmail/', async (req:Request, res:Response) => {
         res.json(user);
     }
     catch(err:any){
-        console.error(err.message);
-        throw err;
+        console.log(err);
+        console.error(err.message);       
     }
  });
 

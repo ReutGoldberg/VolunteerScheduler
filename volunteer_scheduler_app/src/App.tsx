@@ -13,6 +13,7 @@ import { GeneralEventsCalendar } from "./components/GeneralEventsCalendar";
 import { Profile } from "./components/Profile";
 import { getPage } from "./utils/helper";
 import { AddOrEditEvent } from "./components/AddOrEditEvent";
+import { AppConfig } from "./AppConfig";
 
 
 
@@ -21,6 +22,9 @@ export const UserObjectContext =  React.createContext<any>({
   user: '',
   setUser: () => {},
 });
+
+  //todo: maybe make generic and pass a callback
+
 
 function App() {
 
@@ -31,28 +35,50 @@ function App() {
     ()=> ({user, setUser}), [user]
   );
 
-
   const setPageApp = (page: string) => {
-    setPage(page);
+  setPage(page);
   };
 
-  //  todo: remove below after merge with master - confirmed no need for this wrapper. Just use setUser instead which does the same
-  // confirmed there are no errors after the change in the App
-  // const setUserAuth = (user: any) => {
-  //   setUser(user);
-  // };
+  function isUserExists(){
+    const data:string = window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
+    if(data === "") 
+      return false;  
+    
+    return true;
+    }
+  
+
+    //This hook will set the value to the localStorage upon erasing the User on Refresh
+    React.useEffect(()=>{
+
+      if(JSON.stringify(user) !== "{}"){//making sure I'm not saving an erased context to the localstorage
+        console.log(`Setting Context!!! ${JSON.stringify(user)}`)
+        window.sessionStorage.setItem(AppConfig.sessionStorageContextKey, JSON.stringify(user));      
+      } 
+  
+    }, [user])
+  
+    //This hook will be fetching the data from the localstorage upon page refresh
+    React.useEffect(()=>{
+      const data:string = sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
+  
+      if(data !== "" && JSON.stringify(user) === "{}"){
+        console.log(`Fetching Context!!! ${data}`)
+        setUser(JSON.parse(data));            
+      } 
+      
+    }, [])
+
 
   const pageToPresent = (page: string) => {
     sessionStorage.setItem("page", page);
     switch (page) {
-      case "AddAdmin":
-        return <AddAdmin />;
       case "PersonalEventsCalendar":
         return <PersonalEventsCalendar />;
       case "GeneralEventsCalendar":
         return <GeneralEventsCalendar />;
-      case "AdminsList":
-        return <AdminsList curAdminList={[]}/>;
+      // case "AdminsList": //todo: remove this as this is united with AddAdmin now :)
+      //   return <AdminsList curAdminList={[]}/>;
       case "AddOrEditEvent":
         return <AddOrEditEvent toEditEventDetails={null} />;
       case "AddAdmin":
@@ -66,7 +92,7 @@ function App() {
     }
   };
   return (
-    <UserObjectContext.Provider value={userValue}>
+    <UserObjectContext.Provider value={userValue} >
       <UserObject/>
       <ThemeProvider theme={lightTheme}>
         <div className={"root"}>
@@ -81,8 +107,9 @@ function App() {
               Volunteer Scheduler
             </Typography>
           </Box>
-          {Object.keys(user).length != 0 && (
-            <Navbar setPageApp={setPageApp} setUserAuth={setUser} />
+          { console.log("------- Object.keys Printing ------")} 
+          {isUserExists() && (
+            <Navbar setPageApp={setPageApp} setUserAuth={setUser}/>
           )}
           <Box
             sx={{
@@ -99,6 +126,9 @@ function App() {
   );
 }
 
+
+//this object is for the useMemo hook, evertyihng below it being memoized, so the app doesn't re-render the user object if it
+// didn't change
 function UserObject() {
   const { userObj, setUserObject } = React.useContext(UserObjectContext);
   const changeHandler = (event:any) => setUserObject(event?.target?.value)

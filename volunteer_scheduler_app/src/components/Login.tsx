@@ -34,12 +34,7 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
     setUserAuth(userObject);
     setPageApp("GeneralEventsCalendar");
     
-    //todo: find a safer way to move around the userObject of the logged in value.
-    //maybe useContext? 
-    //@ts-ignore
-    window.googleToken = token.token; 
-
-    //todo: remove when done testing:
+    window.sessionStorage.setItem(AppConfig.sessionStorageContextKey, JSON.stringify(userObject))
   }
 
   //todo remove when done testing or move to a better position.

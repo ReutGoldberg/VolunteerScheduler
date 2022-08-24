@@ -53,10 +53,14 @@ import { fullEventDetails } from "./helper";
   }
 
 //make this a private function for the class DAL
- async function isAdminUser(){
+ async function isAdminUser(usertoken:string){
     console.log("todo: check if admin")
     //@ts-ignore - todo: find a better way to pass this param
-    const usertoken = window.googleToken
+    //const usertoken = window.googleToken
+
+    // const data = sessionStorage.getItem(`${AppConfig.sessionStorageContextKey}`) || "";
+    // let userFromStorage = JSON.parse(data);
+    // const usertoken = userFromStorage.token;
     
     try {
       const userData:any = jwt_decode(usertoken);
@@ -76,24 +80,24 @@ import { fullEventDetails } from "./helper";
     }
 }
 
-async function getLabels(){
-  console.log("check if admin")
-  if (await !isAdminUser()){
+async function getLabels(userToken:string){
+  console.log("getLabels check if admin")
+  if (await !isAdminUser(userToken)){
     return;
   }
-  // //@ts-ignore - todo: find a better way to pass this param
-  // const userEmail = window?.userObjectGoogle.email;
-  // //@ts-ignore - todo: find a better way to pass this param
-  // const token = window?.userObjectGoogle.token;
-  console.log("!!!!!")
-  //@ts-ignore - todo: find a better way to pass this param
-  const usertoken = window.googleToken
+  /*
+  const data = sessionStorage.getItem(`${AppConfig.sessionStorageContextKey}`) || "";
+  let userFromStorage = JSON.parse(data);
+  const usertoken = userFromStorage.token;
+  */
+
+
   const requestURL:string = `${AppConfig.server_url}/all_labels`;
   const response = await axios({
     method: "get",
     url: requestURL,
     headers: { "Content-Type": "application/json",
-               "Authorization": usertoken
+               "Authorization": userToken
               },
     });
   return response.data;

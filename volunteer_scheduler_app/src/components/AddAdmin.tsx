@@ -1,13 +1,14 @@
 import React from "react";
 import { Button, Box, InputAdornment } from "@mui/material";
 import TextField from "@mui/material/TextField";
-import { AccountCircle } from "@mui/icons-material";
+import { AccountCircle, JavascriptOutlined } from "@mui/icons-material";
 import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
 import Typography from "@mui/material/Typography";
 import { AdminsList } from "./AdminsList";
 import { addAdmin, getAdminsList } from "../utils/DataAccessLayer";
 import { UserObjectContext } from "../App";
 import { isValidEmail } from "../utils/helper";
+import { AppConfig } from "../AppConfig";
 
 
 
@@ -15,8 +16,21 @@ export const AddAdmin: React.FC = () => {
   const [adminEmail, setAdminEmail] = React.useState("");
   const [adminEmailValid, setAdminEmailValid] = React.useState(true);
   const [adminsList, setAdminsList] = React.useState([]);
-  
+
+  // ------------------------------------------------------ Persisted Auth after page refresh for admins Section -----------------------
+  //why doing like this?
+  //We can only use user object by the useContext hook which is allowed within a React Functional Component
+  //Using the setUser from the useState hook resutls in an endless loop so we tackle this by using a different variable with the correct value assigned
   const {user} = React.useContext(UserObjectContext) //using App's context
+  let userFromStorage:any;//option to default back to sessionStorage
+  if(JSON.stringify(user) === "{}"){
+    const data = sessionStorage.getItem(`${AppConfig.sessionStorageContextKey}`) || "";
+    userFromStorage = JSON.parse(data);
+  }
+  else
+    userFromStorage = user;
+  // -------------------------------------------------------------------- End of persisted auth ----------------------------------------------------
+    
   
 
 
@@ -31,9 +45,9 @@ export const AddAdmin: React.FC = () => {
 
   const handleAddAdmin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const response = await addAdmin(adminEmail, user.token).then(()=>{
+    const response = await addAdmin(adminEmail, userFromStorage.token).then(()=>{
       console.log("Admin added successfully");
-      return getAdminsList(user.token);      
+      return getAdminsList(userFromStorage.token);      
     }).catch((err) => {
       console.log('Error! Didn`t add admin');
       throw err;
@@ -41,6 +55,21 @@ export const AddAdmin: React.FC = () => {
      console.log(response); // todo: remove when done testing
      setAdminsList(response);
   };
+
+  React.useEffect(()=>{
+    const userToken = userFromStorage.token;
+    getAdminsList(userToken)
+      .then(data => {
+        console.log("Below are the admins") //todo: remove when done testing
+        console.log(data);
+        setAdminsList(data);
+      })
+  }, []);
+
+
+
+
+
 
   return (
     <Box

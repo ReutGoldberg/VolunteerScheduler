@@ -23,7 +23,6 @@ import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutli
 import MaximizeIcon from "@mui/icons-material/Maximize";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 import { start } from "repl";
-import {getLabels} from "../utils/DataAccessLayer";
 import {fullEventDetails, labelOptions} from "../utils/helper";
 
 export interface PopupEventProps {
