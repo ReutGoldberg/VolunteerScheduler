@@ -65,6 +65,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
 
   const [loading, setLoading] = React.useState(true);
 
+  const [isEnrolled, setIsEnrolled] = React.useState(false);
+
   React.useEffect(() => {
     async function callAsync() {
       try {
@@ -135,36 +137,36 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     setEventMinParticipants(event.target.value);
   };
 
+  const handleEnrollment = () => {
+    setIsEnrolled(!isEnrolled);
+    //and send to
+  };
+
   const handleEventStartTimeChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     var today = new Date();
     var newVal = event.target.value;
-    console.log(event.target.value);
     if (newVal) {
       var inputStartDate = new Date(newVal);
-      console.log(inputStartDate);
-      if (
-        !(inputStartDate >= today) ||
-        (endDate != null && inputStartDate > endDate)
-      ) {
-        setStartDateValid(false);
-        console.log("startDate not valid");
-      } else {
-        setStartDateValid(true);
-        console.log("startDate valid");
-      }
+      setStartDateValid(
+        !(
+          inputStartDate < today ||
+          (endDate != null && inputStartDate > endDate)
+        )
+      );
       setStartDate(inputStartDate);
       setAllDayChecked(false);
-      setIsAllDayDisable(true);
+      if (endDate != null) {
+        setIsAllDayDisable(true);
+      }
 
       if (!endDateValid) {
-        if (endDate != null && startDate != null && endDate > startDate) {
-          setEndDateValid(true);
-        }
+        setEndDateValid(endDate != null && endDate > inputStartDate);
       }
     } else {
       setIsAllDayDisable(false);
+      setStartDate(null);
     }
   };
 
@@ -173,27 +175,26 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   ) => {
     var today = new Date();
     var newVal = event.target.value;
-    console.log(newVal);
     if (newVal) {
       var inputEndDate = new Date(newVal);
-      if (
-        !(inputEndDate >= today) ||
-        (startDate != null && inputEndDate < startDate)
-      ) {
-        console.log("endDate not valid");
-        setEndDateValid(false);
-      } else {
-        console.log("endDate valid");
-        setEndDateValid(true);
-      }
+      setEndDateValid(
+        !(
+          inputEndDate < today ||
+          (startDate != null && inputEndDate < startDate)
+        )
+      );
       setEndDate(inputEndDate);
       setAllDayChecked(false);
+      if (startDate != null) {
+        setIsAllDayDisable(true);
+      }
 
       if (!startDateValid) {
-        if (endDate != null && startDate != null && endDate > startDate) {
-          setStartDateValid(true);
-        }
+        setStartDateValid(startDate != null && inputEndDate > startDate);
       }
+    } else {
+      setIsAllDayDisable(false);
+      setEndDate(null);
     }
   };
 
@@ -358,8 +359,20 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         textAlign={"center"}
         gutterBottom
         component="div"
+        hidden={toEditEventDetails ? true : false}
       >
-        {toEditEventDetails ? " Edit Event" : "Add New Event"}
+        "Add New Event"
+      </Typography>
+
+      <Typography
+        color="text.primary"
+        textAlign={"center"}
+        gutterBottom
+        component="div"
+      >
+        {toEditEventDetails
+          ? '* in order to edit the event use the "Edit Event" button bellow'
+          : ""}
       </Typography>
 
       <TextField
@@ -480,7 +493,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       >
         <TextField
           required
-          error={!setStartDateValid}
+          error={!startDateValid}
+          helperText={!startDateValid ? "Please enter a valid date " : ""}
           id="datetime-local"
           label="enter start date"
           type="datetime-local"
@@ -494,7 +508,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
 
         <TextField
           required
-          error={!setEndDateValid}
+          error={!endDateValid}
+          helperText={!endDateValid ? "Please enter a valid date " : ""}
           id="datetime-local"
           label="enter end date"
           type="datetime-local"
@@ -582,15 +597,23 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         </List>
       </Box>
 
-      {/*TODO: change "add event" to white */}
+      <Box />
+      <Box />
+
       <ButtonGroup
         size="large"
-        color="info"
         variant="text"
         aria-label="text button group"
         fullWidth={true}
         //hidden = {isAdmin} -todo: find solution, now returns a promise and therefore breaks
       >
+        {toEditEventDetails ? (
+          <Button id="enrollmentEvenBtn" onClick={handleEnrollment}>
+            {isEnrolled ? "" : "Not "} Enrolled to the event
+          </Button>
+        ) : (
+          <Box />
+        )}
         {toEditEventDetails ? (
           <Button
             id="deleteEventBtn"
@@ -602,7 +625,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         ) : (
           <Box />
         )}
-        <Button type="submit" form="registerForm" variant="contained">
+        <Button type="submit" form="registerForm">
           {toEditEventDetails ? "Edit Event" : "Add Event"}
         </Button>
       </ButtonGroup>
