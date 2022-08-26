@@ -21,7 +21,6 @@ export interface fullEventDetails{
   startAt: Date,
   endAt: Date,
   created_by: string,
-  is_fake: boolean,
   // color: string
 }
 
@@ -154,6 +153,10 @@ const get_events = async () =>{
   }
   else
     return []
+}
+
+export const isValidEmail = (email:string) =>{
+  return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
 }
 
 export const generateDemoEvents1 =  async(): Promise<eventDetails[] | null> => {

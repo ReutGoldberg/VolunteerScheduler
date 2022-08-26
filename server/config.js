@@ -2,11 +2,12 @@ const config = {
     server_app: {
       port: 5001, 
       name: 'myapp',
-      localhost: `'http://localhost`
+      localhost: `http://localhost`
     },
     client_app:{
       port: 3000, 
-      localhost: 'http://localhost:3000'
+      localhost: 'http://localhost:3000',
+      client_id: "83163129776-q90s185nilupint4nb1bp0gsi0fb61vs.apps.googleusercontent.com",
     },
     db: {
       host: 'ec2-34-247-172-149.eu-west-1.compute.amazonaws.com',

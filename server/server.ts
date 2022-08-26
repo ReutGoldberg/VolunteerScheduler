@@ -1,7 +1,8 @@
 import express, {Express, Request, Response} from "express";
 import jwt_decode from "jwt-decode";
-import { isValidEmail } from "./server_utils";
-import {getAllLabels, getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, addNewEvent, getAllAdminUsers} from "./db";
+import { isVerifiedUser } from "./server_utils";
+import {getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, addNewEvent, getAllAdminUsers} from "./db";
+
 
 const config = require('./config')
 
@@ -24,36 +25,67 @@ app.get('/', (req:Request, res:Response) => {
 
 
 app.get('/all_users', async (req:Request, res:Response) => {
-    const users = await getAllUsers();
-    res.json(users);
+    const token = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(await !isVerifiedUser(token)){
+            throw new Error("user is not certified");
+        }
+        const users = await getAllUsers();
+        res.json(users);   
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
 });
 
 app.get('/all_events', async (req:Request, res:Response) => {
-    const events = await getAllEvents();
-    res.json(events);
-    console.log(events)
+    const token = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(await !isVerifiedUser(token)){
+            throw new Error("user is not certified");
+        }
+        const events = await getAllEvents();
+        res.json(events);
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
 });
 
 app.get('/all_labels', async (req:Request, res:Response) => {
-    console.log("server get labels")
-    const labels = await getAllLabels();
-    console.log("server get labels2")
-    res.json(labels);
-    console.log(labels)
+    const token = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(await !isVerifiedUser(token)){
+            throw new Error("user is not certified");
+        }
+        const labels = await getAllLabels();
+        res.json(labels);
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+        throw err;
+    }
 });
 
 app.get('/event_details/:event_id', async (req:Request, res:Response) => {
-    console.log(req.params.event_id)
-    const id = Number(req.params.event_id)
-    const event_details = await getEvent(id);
+    const eventId = Number(req.params.event_id)
+    console.log(`This is the event id: ${eventId}`)//todo: remove when done testing
+    const token = req.headers.authorization ? req.headers.authorization : "";
     try{
+        if(await !isVerifiedUser(token)){
+            throw new Error("user is not certified");
+        }
+        const event_details = await getEvent(eventId);
         const full_event_details={
             id: event_details["id"],
             startAt: event_details["start_time"],
             endAt: event_details["end_time"],
             title: event_details["title"],
             details: event_details["details"],
-            color: 'blue',
+            color: 'blue', //todo: not hardcode the color
             allDay: false,
             labels: [],//TODO:change Danit labels backend+DB
             location: event_details["location"],
@@ -65,56 +97,90 @@ app.get('/event_details/:event_id', async (req:Request, res:Response) => {
         console.log(full_event_details)
         res.json(full_event_details);
     }
-    catch (error) {
-        console.log(error)
+    catch (error:any) {
+        console.error(error);
+        res.status(500);
     }
 });
 //Pushes data to the DB based on the request body
-/* Todo: Is this really needed? we have add_user & add_admin instead
-app.post('/users', async (req:Request, res:Response) => {
-    const {firstName, lastName,email,token} = req.body;
-    const user = await addNewUser(firstName,lastName);
-    res.json(user);
-});
-*/
 
 app.post('/add_user', async (req:Request, res:Response) => {
-    console.log('--------------- Creates new USER ---------------')
-    console.log(req.body)
-    const {firstName, lastName, email, token, is_fake} = req.body;
-    //@ts-ignore
-    const webTokenSub = !is_fake ? jwt_decode(token).sub : token;
-    //todo: remove print when done testing
-    console.log(`This is the logged sub: ${webTokenSub}`)
-    const user = await addNewUser(firstName, lastName, email, webTokenSub, is_fake);
-    res.json(user);
+    const {firstName, lastName, email} = req.body;
+   
+
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+
+    try{
+        //@ts-ignore
+        const webTokenSub = jwt_decode(token).sub;
+        if(await !isVerifiedUser(authToken)){
+            throw new Error("user is not certified");
+        }
+        else{
+            const user = await addNewUser(firstName, lastName, email, webTokenSub);
+            res.json(user);
+        }
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
 });
 
-
+//todo: verify logic bc I didn't write this, just modified this.
 app.post('/add_event', async (req:Request, res:Response) => {
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
     console.log('--------------- Creates new Events ---------------')
     console.log(req.body)
-    const result_event = await addNewEvent(req.body);
-    res.json(result_event);
+    try{
+        if(await !isVerifiedUser(authToken)){
+            throw new Error("user is not certified");
+        }
+        else{
+            const result_event = await addNewEvent(req.body);
+            res.json(result_event);
+        }
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
 });
 
 //put and not post bc it updates a specific user and doesnt create a new one
 app.put('/add_admin', async (req:Request, res:Response) => {
     const {email} = req.body;
-    const user = getUserByEmail(email)
-                    .then((dbUser) => {
-                        if(!dbUser.is_fake)
-                            return addNewAdmin(dbUser.email);
-                        else
-                            return Promise.reject("Trying to give a fake user admin privlege");
-                                    })
-    res.json(user);
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try {
+        if(await !isVerifiedUser(authToken)){
+            res.status(401);
+            throw new Error("User is not verified");
+        }
+        const webUser = jwt_decode(authToken);
+        //@ts-ignore
+        if(await !getUserByToken(webUser.sub).then((user) => user.is_admin)){
+            res.status(401);
+            throw new Error("User is not admin");
+        }
+
+        const userToUpdate = getUserByEmail(email)
+        .then((dbUser) => {addNewAdmin(dbUser.email);});
+
+        res.json(userToUpdate);   
+        res.status(200);
+    } catch (error:any) {
+        console.error(error.message);
+    }
 });
 
 //Updates existing records based on request body
 app.put('/users', async (req:Request, res:Response) => {
     const {userId, userName} = req.body;
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
     try {
+        if(await !isVerifiedUser(authToken)){
+            throw new Error("User is not verified");
+        }
         const updatedUser = await updateUser(userId,userName);    
         res.json(updatedUser);
         res.status(200);
@@ -128,88 +194,78 @@ app.put('/users', async (req:Request, res:Response) => {
 
 //delete specific user
 app.delete('/users:id', async (req:Request, res:Response) => {
-    const userId = req.params.id;
-    const deletedUser = await deleteUserById(Number(userId));    
-    res.json(deletedUser);
+    
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try {
+        if(await !isVerifiedUser(authToken)){
+            throw new Error("User is not verified");
+        }
+        const webUser = jwt_decode(authToken);
+        //@ts-ignore
+        if(await !getUserByToken(webUser.sub).then((user) => user.is_admin)){
+            throw new Error("User is not admin");
+        }
+        const userId = req.params.id;
+        const deletedUser = await deleteUserById(Number(userId));    
+        res.json(deletedUser);
+    } catch (error) {
+        console.log(error);
+        res.status(500);
+    }
 });
 
 //Retrevie data from DB section:
 
-app.get('/user/userEmail/:email/:token', async (req:Request, res:Response) => {
-    //const userEmailF = req.query.userEmail?.toString() ?? "";
-    const email = req.params.email;
-    if(!isValidEmail(email)){
-        res.send(`INVALID EMAIL PROVIDED: ${email}`);
-        return;
+app.get('/user/userEmail/', async (req:Request, res:Response) => {
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try {
+        if(await !isVerifiedUser(authToken)){
+            throw new Error("User is not verified");
+        } 
+        //@ts-ignore
+        const user = await getUserByToken(jwt_decode(authToken).sub);
+        res.json(user);
     }
-    //@ts-ignore
-    const webToken = jwt_decode(req.params.token).sub; //sub should remain the same
-    
-    const user = await getUserByEmail(email);
-    const dbToken = user.token;
+    catch(err:any){
+        console.log(err);
+        console.error(err.message);       
+    }
+ });
 
-    //authenticate user with his sub from DB
-    if(webToken !== dbToken){
-    res.send("GOT BAD TOKEN");
-    res.status(400);
-    throw "Invalid input";
+//only serves the login page for new users - doesn't suport query for all emails
+ app.get('/user/isNewUser/', async (req:Request, res:Response) => {
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try {
+        if(await !isVerifiedUser(authToken, true)){ //checks the auth token is ok and user's email is in a valid formation
+            throw new Error("User doesn't have a valid JWT");
+        }   
+        //@ts-ignore
+        const user = await getUserByToken(jwt_decode(authToken).sub);
+        if (user == null){
+            return res.json(false);
+        }
+        return res.json(true);
+
+
+    } catch (error:any) {
+        console.error(error.message);
+        res.status(500);
     }
-    res.json(user);
  });
 
 
- app.get('/user/isNewUser/:email/:token', async (req:Request, res:Response) => {
-    //const userEmailF = req.query.userEmail?.toString() ?? "";
-    const email = req.params.email;
-    if(!isValidEmail(email)){
-        res.send(`INVALID EMAIL PROVIDED: ${email}`);
-        res.status(400);
-        throw "Invalid input";
-    }
-
-    //@ts-ignore
-    const webToken = jwt_decode(req.params.token).sub; //sub should remain the same
-    
-    const user = await getUserByEmail(email);
-    
-    if (user == null){
-        return res.json(false);
+ app.get('/user/adminsUserEmail/', async (req:Request, res:Response) => {
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try {
+        if(await !isVerifiedUser(authToken)){ //checks the auth token is ok and user's email is in a valid formation
+            throw new Error("User is not verified");
+        }
+        getAllAdminUsers().then(adminUsers => res.json(adminUsers));
+    } catch (error:any) {
+        console.error(error.message);
+        res.status(500);
     }
     
-     const dbToken = user.token;
-
-     //authenticate user with his sub from DB
-     if(dbToken !== webToken){
-        res.send("GOT BAD TOKEN");
-        res.status(400);
-        throw "Invalid input";
-     }
-     return res.json(true);
- });
-
-//todo: change passing token to be picking it internally somehow
-//as this should be an internal API
- app.get('/user/adminsUserEmail/:email', async (req:Request, res:Response) => {
-    //const userEmailF = req.query.userEmail?.toString() ?? "";
-    //todo: should only be accessible to admin users - must be restricted on DAL level
-    //or before that
-
-    const email = req.params.email;
-
-    if(!isValidEmail(email)){
-        res.send(`Invalid user trying to access admins data: ${email}`);
-        return;
-    }
-    //verify email belongs to an admin
-    const isAdmin = getUserByEmail(email)
-                        .then((dbUser) => dbUser.is_admin);
-    
-    if(!isAdmin){
-        res.send(`Invalid user trying to access admins data: ${email}`);
-        return;
-    }
-    await getAllAdminUsers()
-            .then(adminUsers => res.json(adminUsers));
  });
 
 

@@ -2,6 +2,8 @@ import React from "react";
 import "../App.css";
 import { Button, Box } from "@mui/material";
 import ButtonGroup from "@mui/material/ButtonGroup";
+import { UserObjectContext } from "../App";
+import { AppConfig } from "../AppConfig";
 // import {removeUserSession} from "../Utils";
 
 export interface NavbarProps {
@@ -9,23 +11,8 @@ export interface NavbarProps {
   setUserAuth(user: any): void;
 }
 
-// Applying focus to tab buttons when pressesd
-// not working yet
-function getFocus(elementId: string) {
-  let button = document.getElementById(elementId);
-  button?.setAttribute("color", "primary");
-  button?.setAttribute("variant", "contained");
-}
-
-function loseFocus(elementId: string) {
-  let button = document.getElementById(elementId);
-  button?.setAttribute("color", "");
-  button?.setAttribute("variant", "");
-}
-//end of applying focus to tab buttons when pressesd
-
 export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
-  const [user, setUser] = React.useState<any>({});
+  const {user, setUser} = React.useContext(UserObjectContext)
 
   const handlePersonalEventsCalendar = () => {
     console.log("handlePersonalEventsCalendar");
@@ -58,6 +45,7 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
   ): void {
     setPageApp("Login");
     setUserAuth({});
+    sessionStorage.clear();
   }
 
   return (

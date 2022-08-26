@@ -15,7 +15,6 @@ model Users {
   email String @unique
   token String @unique
   is_admin Boolean
-  is_fake Boolean
   EventManagerMap EventManagerMap[]
   Requests PendingRequests[]
   EventVolunteerMap EventVolunteerMap[]
@@ -32,7 +31,6 @@ model Events {
   start_time DateTime
   end_time DateTime
   label String
-  is_fake Boolean
   EventManagerMap EventManagerMap[]
   EventLabelMap EventLabelMap[]
   Requests PendingRequests[]
@@ -42,7 +40,6 @@ model Events {
 model Labels{
   id Int @id @default(autoincrement())
   name String
-  is_fake Boolean
   EventLabelMap EventLabelMap[]
 }
 
@@ -67,7 +64,6 @@ model Logs{
   id Int @id @default(autoincrement())
   text String?
   time DateTime?
-  is_fake Boolean
 }
 
 model PendingRequests{

@@ -1,5 +1,4 @@
 import "../App.css";
-import axios from "axios";
 import jwt_decode from "jwt-decode";
 import {
   Button,
@@ -14,6 +13,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  SelectChangeEvent,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
@@ -26,6 +26,8 @@ import MinimizeIcon from "@mui/icons-material/Minimize";
 import { getLabels } from "../utils/DataAccessLayer";
 import { fullEventDetails, labelOptions } from "../utils/helper";
 import React from "react";
+import { UserObjectContext } from "../App";
+import axios from "axios";
 
 export interface AddOrEditProps {
   toEditEventDetails: fullEventDetails | null;
@@ -64,11 +66,16 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const [checkedLabels, setCheckedLabels] = React.useState<labelOptions[]>([]);
 
   const [loading, setLoading] = React.useState(true);
+  const [label, setlabel] = React.useState("");
+
+
+  const {user,setUser} = React.useContext(UserObjectContext) //importing the context - user object by google token
+  
 
   React.useEffect(() => {
     async function callAsync() {
       try {
-        const data: labelOptions[] = await getLabels();
+        const data: labelOptions[] = await getLabels(user.token);
         if (data) {
           setLoading(false);
           if (data.length === 0) {
@@ -212,7 +219,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       eventMinParticipantsValid &&
       eventMaxParticipantsValid
     ) {
-      // if (await isAdminUser()) {
+      // if (await isAdminUser(user.sub)) {
       if (true) {
         console.log("admin!");
         try {
@@ -227,17 +234,12 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             startAt: startDate,
             endAt: endDate,
             //@ts-ignore
-            created_by: `${jwt_decode(window.googleToken).email}.`,
-            is_fake: false,
+            created_by: `${user.email}`,
           };
-
-          const response = await axios({
-            method: "post",
-            url: `http://localhost:5001/add_event`,
-            data: JSON.stringify(event_details),
-            headers: { "Content-Type": "application/json" },
-          });
-          if (response.statusText === "OK") alert("Event added successfully");
+          //@ts-ignore 
+          const response = await addEventReq(event_details, window.googleToken);
+          if (response.statusText === "OK")
+            console.log("Event added successfully");
           else console.log("didnt add event");
 
           //todo: implement event addition based on the above data. and the
@@ -269,7 +271,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         console.log("admin!");
         try {
           var event_details: fullEventDetails = {
-            id: 0,
+            id: toEditEventDetails? toEditEventDetails.id : -1,
             title: eventName,
             details: eventInfo,
             labels: checkedLabels,
@@ -279,16 +281,11 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             startAt: startDate,
             endAt: endDate,
             //@ts-ignore
-            created_by: `${jwt_decode(window.googleToken).email}.`,
-            is_fake: false,
+            created_by: `${user.email}`,
           };
 
-          const response = await axios({
-            method: "post",
-            url: `http://localhost:5001/edit_event/${toEditEventDetails?.id}`,
-            data: JSON.stringify(event_details),
-            headers: { "Content-Type": "application/json" },
-          });
+          //@ts-ignore
+          const response = await editEventReq(event_details, window.googleToken)
           if (response.statusText === "OK")
             console.log("Event edited successfully");
           else console.log("didnt edit event");

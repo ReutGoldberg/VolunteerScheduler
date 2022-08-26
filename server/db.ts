@@ -7,7 +7,7 @@
 const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient()
 
-  async function addNewUser(firstName:String, lastName:String, email:string, token:string, is_fake:boolean){
+  async function addNewUser(firstName:String, lastName:String, email:string, token:string){
   const user = await prisma.Users.create({
     data: {
       first_name: firstName,
@@ -15,7 +15,6 @@ const prisma = new PrismaClient()
       email: email,
       token: token,
       is_admin: false,
-      is_fake: is_fake
     },
   });
   return user;
@@ -69,6 +68,17 @@ const prisma = new PrismaClient()
     });
     return user;
   }
+
+  //token should be the sub value
+  async function getUserByToken(sub: string){
+    const user = await prisma.Users.findUnique({
+      where:{
+        token: sub,
+      }
+    });
+    return user;
+  }
+
   //shuld be private function and only be used by db.ts and server.ts 
   async function getAllAdminUsers(){
     const users = await prisma.Users.findMany({
@@ -103,19 +113,18 @@ const prisma = new PrismaClient()
   }
 
   async function addNewEvent(event:any){
-    const {id, title, details, labels, location, min_volenteers, max_volenteers, startAt, endAt, created_by, is_fake} = event; 
+    const {id, title, details, label, location, min_volenteers, max_volenteers, startAt, endAt, created_by} = event; 
     const new_event = await prisma.Events.create({
       data: {
         title: title,
         details: details,
         location: location,
-        label: "",
+        label: label,
         min_volenteering: min_volenteers,
         max_volenteering: max_volenteers,
         start_time: startAt,
         end_time: endAt,
         created_by: created_by,
-        is_fake: is_fake
       },
     });
     return new_event;
@@ -126,23 +135,4 @@ const prisma = new PrismaClient()
       return labels;
     }
 
-
-/*Event properties to update: 
-        const full_event_details={
-            id: event_details["id"],
-            startAt: event_details["start_time"],
-            endAt: event_details["end_time"],
-            title: event_details["title"],
-            details: event_details["details"],
-            color: 'blue',
-            allDay: false,
-            label: event_details["label"],
-            location: event_details["location"],
-            created_by: event_details["created_by"],
-            min_volenteers: event_details["min_volenteering"],
-            max_volenteers: event_details["max_volenteering"],
-
-*/
-
-  
-  export {getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers};
+  export {getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers};
