@@ -26,17 +26,10 @@ const CalendComponent = (props: any) => {
   const [selectedEvent, setSelectedEvent] = useState<fullEventDetails | null>(
     null
   );
-
-  const [isEnrolled, setIsEnrolled] = useState(false);
-
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
 
-  const handleEnrollment = () => {
-    setIsEnrolled(!isEnrolled);
-    //and send to
-  };
   //Create and load demo events
   useEffect((): void => {
     generateDemoEvents1()
@@ -110,14 +103,7 @@ const CalendComponent = (props: any) => {
             <Typography gutterBottom>
               in charge of: {selectedEvent["created_by"]}
             </Typography>
-
             <AddOrEditEvent toEditEventDetails={selectedEvent} />
-
-            <Typography gutterBottom>
-              <Button id="enrollmentEvenBtn" onClick={handleEnrollment}>
-                {isEnrolled ? "" : "Not "} Enrolled to the event
-              </Button>
-            </Typography>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog}>close</Button>
