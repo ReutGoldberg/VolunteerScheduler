@@ -16,60 +16,53 @@ import { AddOrEditEvent } from "./components/AddOrEditEvent";
 import { AppConfig } from "./AppConfig";
 import { Footer } from "./components/Footer";
 
-
-
-
-export const UserObjectContext =  React.createContext<any>({
-  user: '',
+export const UserObjectContext = React.createContext<any>({
+  user: "",
   setUser: () => {},
 });
 
-  //todo: maybe make generic and pass a callback
-
+//todo: maybe make generic and pass a callback
 
 function App() {
-
   const [user, setUser] = React.useState<any>({});
   const [page, setPage] = React.useState<string>(getPage());
 
-  const userValue = React.useMemo(
-    ()=> ({user, setUser}), [user]
-  );
+  const userValue = React.useMemo(() => ({ user, setUser }), [user]);
 
   const setPageApp = (page: string) => {
-  setPage(page);
+    setPage(page);
   };
 
-  function isUserExists(){
-    const data:string = window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
-    if(data === "") 
-      return false;  
-    
+  function isUserExists() {
+    const data: string =
+      window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
+    if (data === "") return false;
+
     return true;
+  }
+
+  //This hook will set the value to the localStorage upon erasing the User on Refresh
+  React.useEffect(() => {
+    if (JSON.stringify(user) !== "{}") {
+      //making sure I'm not saving an erased context to the localstorage
+      console.log(`Setting Context!!! ${JSON.stringify(user)}`);
+      window.sessionStorage.setItem(
+        AppConfig.sessionStorageContextKey,
+        JSON.stringify(user)
+      );
     }
-  
+  }, [user]);
 
-    //This hook will set the value to the localStorage upon erasing the User on Refresh
-    React.useEffect(()=>{
+  //This hook will be fetching the data from the localstorage upon page refresh
+  React.useEffect(() => {
+    const data: string =
+      sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
 
-      if(JSON.stringify(user) !== "{}"){//making sure I'm not saving an erased context to the localstorage
-        console.log(`Setting Context!!! ${JSON.stringify(user)}`)
-        window.sessionStorage.setItem(AppConfig.sessionStorageContextKey, JSON.stringify(user));      
-      } 
-  
-    }, [user])
-  
-    //This hook will be fetching the data from the localstorage upon page refresh
-    React.useEffect(()=>{
-      const data:string = sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
-  
-      if(data !== "" && JSON.stringify(user) === "{}"){
-        console.log(`Fetching Context!!! ${data}`)
-        setUser(JSON.parse(data));            
-      } 
-      
-    }, [])
-
+    if (data !== "" && JSON.stringify(user) === "{}") {
+      console.log(`Fetching Context!!! ${data}`);
+      setUser(JSON.parse(data));
+    }
+  }, []);
 
   const pageToPresent = (page: string) => {
     // if(not auth) return <Login setPageApp={setPageApp} setUserAuth={setUserAuth}
@@ -94,8 +87,8 @@ function App() {
     }
   };
   return (
-    <UserObjectContext.Provider value={userValue} >
-      <UserObject/>
+    <UserObjectContext.Provider value={userValue}>
+      <UserObject />
       <ThemeProvider theme={lightTheme}>
         <div className={"root"}>
           <Box>
@@ -109,9 +102,8 @@ function App() {
               Volunteer Scheduler
             </Typography>
           </Box>
-          { console.log("------- Object.keys Printing ------")} 
           {isUserExists() && (
-            <Navbar setPageApp={setPageApp} setUserAuth={setUser}/>
+            <Navbar setPageApp={setPageApp} setUserAuth={setUser} />
           )}
           <Box
             sx={{
@@ -124,24 +116,17 @@ function App() {
           </Box>
           <Footer />
         </div>
-      </ThemeProvider>    
+      </ThemeProvider>
     </UserObjectContext.Provider>
   );
 }
-
 
 //this object is for the useMemo hook, evertyihng below it being memoized, so the app doesn't re-render the user object if it
 // didn't change
 function UserObject() {
   const { userObj, setUserObject } = React.useContext(UserObjectContext);
-  const changeHandler = (event:any) => setUserObject(event?.target?.value)
-  return (
-    <input
-      hidden={true}
-      value={userObj}
-      onChange={changeHandler}
-    />
-  );
+  const changeHandler = (event: any) => setUserObject(event?.target?.value);
+  return <input hidden={true} value={userObj} onChange={changeHandler} />;
 }
 
 export default App;
