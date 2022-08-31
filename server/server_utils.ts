@@ -27,16 +27,12 @@ const isValidEmail = (email:string):boolean => {
 export async function isVerifiedUser(token:string, isNewUser = false){
   let decResult;
   try {
-    console.log("before jwt")
     //@ts-ignore
     decResult = jwt_decode(token);
-    console.log("after jwt")
-    console.log(decResult)
     if(isNewUser === false){
       
       //@ts-ignore
       const isExist = await getUserByToken(decResult.sub);
-      console.log(isExist)
       //@ts-ignore
       return decResult && isValidEmail(decResult.email) && isExist;  
     }

@@ -79,6 +79,10 @@ app.get('/event_details/:event_id', async (req:Request, res:Response) => {
             throw new Error("user is not certified");
         }
         const event_details = await getEvent(eventId);
+        var labels=[]
+        for (var label of event_details["EventLabelMap"]){
+            labels.push(label["Labels"])
+        }
         const full_event_details={
             id: event_details["id"],
             startAt: event_details["start_time"],
@@ -87,7 +91,7 @@ app.get('/event_details/:event_id', async (req:Request, res:Response) => {
             details: event_details["details"],
             color: 'blue', //todo: not hardcode the color
             allDay: false,
-            labels: [],//TODO:change Danit labels backend+DB
+            labels: labels,
             location: event_details["location"],
             created_by: event_details["created_by"],
             min_volenteers: event_details["min_volenteering"],

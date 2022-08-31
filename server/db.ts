@@ -107,8 +107,19 @@ const prisma = new PrismaClient()
     const event_details = await prisma.Events.findFirst({
       where:{
         id: event_id,
+      },
+      include: {
+        EventLabelMap:{
+        select:{
+          Labels: true
+        }
       }
+      },
     });
+
+    console.log(event_details)
+    console.log(event_details["EventLabelMap"])
+    console.log(event_details["EventLabelMap"][0])
     return event_details;
   }
 
