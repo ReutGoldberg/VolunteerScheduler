@@ -176,4 +176,21 @@ export async function addEventReq(event_details:fullEventDetails, token:string){
   }
 }
 
+export async function deleteEventReq(id:number, token:string){
+  try{
+    const response =  await axios({
+        method: "delete",
+        url: `${AppConfig.server_url}/delete_event`,
+        data: JSON.stringify(id),
+        headers: { "Content-Type": "application/json",
+                    "authorization": token },
+      });
+    return response;
+  }
+  catch(err:any){
+    console.error(err);
+    throw err;
+  }
+}
+
 export {isNewUser, createUser, isAdminUser, getAdminsList , createFakeUser, getLabels}
