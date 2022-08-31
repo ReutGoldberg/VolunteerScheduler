@@ -116,17 +116,12 @@ const prisma = new PrismaClient()
       }
       },
     });
-
-    console.log(event_details)
-    console.log(event_details["EventLabelMap"])
-    console.log(event_details["EventLabelMap"][0])
     return event_details;
   }
 
   async function addNewEvent(event:any){
     console.log('adding event')
     const {id, title, details, labels, location, min_volenteers, max_volenteers, startAt, endAt, created_by} = event; 
-    console.log(labels)
     var label_event_list=[]
     for (var label of labels){
       label_event_list.push({Labels: {connect: {id: label.id}}});
