@@ -112,7 +112,7 @@ app.post('/add_user', async (req:Request, res:Response) => {
 
     try{
         //@ts-ignore
-        const webTokenSub = jwt_decode(token).sub;
+        const webTokenSub = jwt_decode(authToken).sub;
         if(await !isVerifiedUser(authToken)){
             throw new Error("user is not certified");
         }

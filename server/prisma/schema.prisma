@@ -30,7 +30,6 @@ model Events {
   max_volenteering Int?
   start_time DateTime
   end_time DateTime
-  label String
   EventManagerMap EventManagerMap[]
   EventLabelMap EventLabelMap[]
   Requests PendingRequests[]

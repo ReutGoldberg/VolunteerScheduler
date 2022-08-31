@@ -113,22 +113,33 @@ const prisma = new PrismaClient()
   }
 
   async function addNewEvent(event:any){
-    const {id, title, details, label, location, min_volenteers, max_volenteers, startAt, endAt, created_by} = event; 
+    console.log('adding event')
+    const {id, title, details, labels, location, min_volenteers, max_volenteers, startAt, endAt, created_by} = event; 
+    console.log(labels)
+    var label_event_list=[]
+    for (var label of labels){
+      label_event_list.push({Labels: {connect: {id: label.id}}});
+    }
+    console.log(label_event_list)
     const new_event = await prisma.Events.create({
       data: {
         title: title,
         details: details,
         location: location,
-        label: label,
         min_volenteering: min_volenteers,
         max_volenteering: max_volenteers,
         start_time: startAt,
         end_time: endAt,
         created_by: created_by,
+        EventLabelMap: {
+          create: label_event_list,
+        },
       },
     });
+    console.log('add event!')
+    console.log(new_event)
     return new_event;
-    }
+  }
 
     async function getAllLabels() {
       const labels = await prisma.Labels.findMany();

@@ -23,7 +23,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import MaximizeIcon from "@mui/icons-material/Maximize";
 import MinimizeIcon from "@mui/icons-material/Minimize";
-import { getLabels } from "../utils/DataAccessLayer";
+import { getLabels, addEventReq} from "../utils/DataAccessLayer";
 import { fullEventDetails, labelOptions } from "../utils/helper";
 import React from "react";
 import { UserObjectContext } from "../App";
@@ -206,6 +206,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   };
 
   const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
+    console.log("add event!");
     event.preventDefault();
     if (startDate == null) {
       setStartDateValid(false);
@@ -237,6 +238,9 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             //@ts-ignore
             created_by: `${user.email}`,
           };
+
+        
+          console.log(event_details);
           //@ts-ignore 
           const response = await addEventReq(event_details, window.googleToken);
           if (response.statusText === "OK")
