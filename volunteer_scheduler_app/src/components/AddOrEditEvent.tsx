@@ -28,6 +28,7 @@ import { fullEventDetails, labelOptions } from "../utils/helper";
 import React from "react";
 import { UserObjectContext } from "../App";
 import axios from "axios";
+import { AppConfig } from "../AppConfig";
 
 export interface AddOrEditProps {
   toEditEventDetails: fullEventDetails | null;
@@ -68,9 +69,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const [loading, setLoading] = React.useState(true);
   const [label, setlabel] = React.useState("");
 
-
-  const {user,setUser} = React.useContext(UserObjectContext) //importing the context - user object by google token
-  
+  const { user, setUser } = React.useContext(UserObjectContext); //importing the context - user object by google token
 
   const [isEnrolled, setIsEnrolled] = React.useState(false);
 
@@ -237,7 +236,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             //@ts-ignore
             created_by: `${user.email}`,
           };
-          //@ts-ignore 
+          //@ts-ignore
           const response = await addEventReq(event_details, window.googleToken);
           if (response.statusText === "OK")
             console.log("Event added successfully");
@@ -272,7 +271,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         console.log("admin!");
         try {
           var event_details: fullEventDetails = {
-            id: toEditEventDetails? toEditEventDetails.id : -1,
+            id: toEditEventDetails ? toEditEventDetails.id : -1,
             title: eventName,
             details: eventInfo,
             labels: checkedLabels,
@@ -286,7 +285,11 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           };
 
           //@ts-ignore
-          const response = await editEventReq(event_details, window.googleToken)
+          const response = await editEventReq(
+            event_details,
+            window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
+              ""
+          );
           if (response.statusText === "OK")
             console.log("Event edited successfully");
           else console.log("didnt edit event");
@@ -309,9 +312,20 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     }
   };
 
-  const handleDeleteEvent = () => {
-    //setIsEnrolled(!isEnrolled);
-    //and send to
+  const handleDeleteEvent = async () => {
+    try {
+      var eventId = toEditEventDetails?.id;
+      //@ts-ignore
+      const response = await deleteEventReq(
+        eventId,
+        window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || ""
+      );
+      if (response.statusText === "OK")
+        console.log("Event deleted successfully");
+      else console.log("didnt delete event");
+    } catch {
+    } finally {
+    }
   };
 
   const handleToggle = (value: labelOptions) => () => {
