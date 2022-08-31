@@ -93,3 +93,28 @@ a {
   }
 }
 
+
+.content-container {
+  padding: 10%;
+  height: 100vh;
+  width: 100vh;
+}
+.left-panel {
+  flex: 60vh;
+}
+.right-panel {
+  flex: 60vh;
+}
+.middle-panel {
+  flex: 0.1vh;
+}
+.box {
+  background-color: white;
+  border: 1px solid white;
+  border-radius: 20px;
+}
+.row {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
