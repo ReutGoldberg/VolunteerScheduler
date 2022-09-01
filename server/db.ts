@@ -146,10 +146,41 @@ const prisma = new PrismaClient()
     console.log(new_event)
     return new_event;
   }
-
-    async function getAllLabels() {
-      const labels = await prisma.Labels.findMany();
-      return labels;
+  
+  async function editEvent(event:any){
+    console.log('edit event')
+    const {id, title, details, labels, location, min_volenteers, max_volenteers, startAt, endAt, created_by} = event; 
+    var label_event_list=[]
+    for (var label of labels){
+      label_event_list.push({Labels: {connect: {id: label.id}}});
     }
+    console.log(label_event_list)
+    const new_event = await prisma.Events.update({
+      where:{
+        id: id
+      },
+      data: {
+        title: title,
+        details: details,
+        location: location,
+        min_volenteering: min_volenteers,
+        max_volenteering: max_volenteers,
+        start_time: startAt,
+        end_time: endAt,
+        created_by: created_by,
+        EventLabelMap: {
+          create: label_event_list,
+        },
+      },
+    });
+    console.log('add event!')
+    console.log(new_event)
+    return new_event;
+  }
 
-  export {getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers};
+  async function getAllLabels() {
+    const labels = await prisma.Labels.findMany();
+    return labels;
+  }
+
+  export {editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers};

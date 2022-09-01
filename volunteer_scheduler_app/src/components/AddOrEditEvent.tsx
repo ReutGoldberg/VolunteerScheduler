@@ -23,7 +23,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import MaximizeIcon from "@mui/icons-material/Maximize";
 import MinimizeIcon from "@mui/icons-material/Minimize";
-import { getLabels, addEventReq } from "../utils/DataAccessLayer";
+import { getLabels, addEventReq, editEventReq } from "../utils/DataAccessLayer";
 import { fullEventDetails, labelOptions } from "../utils/helper";
 import React from "react";
 import { UserObjectContext } from "../App";

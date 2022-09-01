@@ -145,7 +145,7 @@ export async function editEventReq(event_details:fullEventDetails, token:string)
   try{
   const response =  await axios({
       method: "post",
-      url: `${AppConfig.server_url}/edit_event/${event_details.id}`,
+      url: `${AppConfig.server_url}/edit_event`,
       data: JSON.stringify(event_details),
       headers: { "Content-Type": "application/json",
                   "authorization": token
