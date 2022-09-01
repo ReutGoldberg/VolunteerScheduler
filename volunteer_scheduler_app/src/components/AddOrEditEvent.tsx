@@ -237,9 +237,11 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             //@ts-ignore
             created_by: `${user.email}`,
           };
+          const data = window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
+          const userFromStorage = JSON.parse(data) 
           const response = await addEventReq(
             event_details,
-            window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
+            userFromStorage.token||
               ""
           );
           if (response.statusText === "OK")

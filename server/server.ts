@@ -137,7 +137,7 @@ app.post('/add_event', async (req:Request, res:Response) => {
     console.log('--------------- Creates new Events ---------------')
     console.log(req.body)
     try{
-        if(await !isVerifiedUser(authToken)){
+        if(!(await isVerifiedUser(authToken))){
             throw new Error("user is not certified");
         }
         else{
