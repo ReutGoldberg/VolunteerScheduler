@@ -12,7 +12,7 @@ export interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
-  const {user, setUser} = React.useContext(UserObjectContext)
+  const { user, setUser } = React.useContext(UserObjectContext);
 
   const handlePersonalEventsCalendar = () => {
     console.log("handlePersonalEventsCalendar");
@@ -89,9 +89,6 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
           </Button>
           <Button id="AddAdminBtn" onClick={handleAddAdmin}>
             Add Admin
-          </Button>
-          <Button id="AdminsListBtn" onClick={handleAdminsList}>
-            Current Admins List
           </Button>
           <Button id="ProfileBtn" onClick={handleProfile}>
             Profile

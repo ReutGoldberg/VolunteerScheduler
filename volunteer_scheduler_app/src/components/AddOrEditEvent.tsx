@@ -284,6 +284,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             location: eventLocation,
             min_volenteers: Number(eventMinParticipants),
             max_volenteers: Number(eventMaxParticipants),
+            // TODO:check deafult in edit
             startAt: startDate,
             endAt: endDate,
             //@ts-ignore
