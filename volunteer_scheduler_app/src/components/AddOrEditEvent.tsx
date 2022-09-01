@@ -35,9 +35,9 @@ export interface AddOrEditProps {
 
 const dateToString = (date: Date) => {
   return (
-    ("00" + (date.getMonth() + 1)).slice(-2) +
+    ("00" + (date.getDate() + 1)).slice(-2) +
     "/" +
-    ("00" + date.getDate()).slice(-2) +
+    ("00" + date.getMonth()).slice(-2) +
     "/" +
     date.getFullYear() +
     " " +
@@ -530,7 +530,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         }}
       >
         <TextField
-          required
+          required={toEditEventDetails ? false : true}
           error={!startDateValid}
           helperText={!startDateValid ? "Please enter a valid date " : ""}
           id="datetime-local"
@@ -545,7 +545,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         />
 
         <TextField
-          required
+          required={toEditEventDetails ? false : true}
           error={!endDateValid}
           helperText={!endDateValid ? "Please enter a valid date " : ""}
           id="datetime-local"
