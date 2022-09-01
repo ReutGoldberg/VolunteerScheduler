@@ -80,7 +80,7 @@ const CalendComponent = (props: any) => {
         events={demoEvents}
         initialDate={new Date().toISOString()}
         hourHeight={60}
-        timezone={"Europe/Berlin"}
+        timezone={"Asia/Jerusalem"}
         onStateChange={props.onStateChange}
         selectedView={props.selectedView}
         showTimeLine={true}

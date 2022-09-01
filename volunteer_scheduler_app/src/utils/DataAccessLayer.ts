@@ -161,6 +161,8 @@ export async function editEventReq(event_details:fullEventDetails, token:string)
 
 export async function addEventReq(event_details:fullEventDetails, token:string){
   try{
+    console.log("addEventReq-start");
+    console.log(AppConfig.server_url);
     const response =  await axios({
         method: "post",
         url: `${AppConfig.server_url}/add_event`,

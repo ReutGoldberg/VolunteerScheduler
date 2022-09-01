@@ -27,12 +27,25 @@ import { getLabels, addEventReq, editEventReq } from "../utils/DataAccessLayer";
 import { fullEventDetails, labelOptions } from "../utils/helper";
 import React from "react";
 import { UserObjectContext } from "../App";
-import axios from "axios";
 import { AppConfig } from "../AppConfig";
 
 export interface AddOrEditProps {
   toEditEventDetails: fullEventDetails | null;
 }
+
+const dateToString = (date: Date) => {
+  return (
+    ("00" + (date.getMonth() + 1)).slice(-2) +
+    "/" +
+    ("00" + date.getDate()).slice(-2) +
+    "/" +
+    date.getFullYear() +
+    " " +
+    ("00" + date.getHours()).slice(-2) +
+    ":" +
+    ("00" + date.getMinutes()).slice(-2)
+  );
+};
 
 export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   toEditEventDetails,
@@ -54,17 +67,23 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const [eventMinParticipantsValid, setEventMinParticipantsValid] =
     React.useState(true);
 
-  const [startDate, setStartDate] = React.useState<Date | null>(null);
+  const [startDate, setStartDate] = React.useState<Date | null>(
+    toEditEventDetails ? new Date(toEditEventDetails.startAt) : null
+  );
   const [startDateValid, setStartDateValid] = React.useState(true);
 
-  const [endDate, setEndDate] = React.useState<Date | null>(null);
+  const [endDate, setEndDate] = React.useState<Date | null>(
+    toEditEventDetails ? new Date(toEditEventDetails.endAt) : null
+  );
   const [endDateValid, setEndDateValid] = React.useState(true);
 
   const [allDayChecked, setAllDayChecked] = React.useState(false);
   const [isAllDayDisable, setIsAllDayDisable] = React.useState(false);
 
   const [labelOptions, setlabelOptions] = React.useState<labelOptions[]>([]);
-  const [checkedLabels, setCheckedLabels] = React.useState<labelOptions[]>([]);
+  const [checkedLabels, setCheckedLabels] = React.useState<labelOptions[]>(
+    toEditEventDetails ? toEditEventDetails.labels : []
+  );
 
   const [loading, setLoading] = React.useState(true);
   const [label, setlabel] = React.useState("");
@@ -237,12 +256,13 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             //@ts-ignore
             created_by: `${user.email}`,
           };
-          const data = window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
-          const userFromStorage = JSON.parse(data) 
+          const data =
+            window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
+            "";
+          const userFromStorage = JSON.parse(data);
           const response = await addEventReq(
             event_details,
-            userFromStorage.token||
-              ""
+            userFromStorage.token || ""
           );
           if (response.statusText === "OK")
             console.log("Event added successfully");
@@ -379,7 +399,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         component="div"
         hidden={toEditEventDetails ? true : false}
       >
-        "Add New Event"
+        Add New Event
       </Typography>
 
       <Typography
@@ -539,6 +559,37 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           onChange={handleEventEndTimeChange}
         />
       </Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 4.7,
+        }}
+      >
+        <Box sx={{ flexDirection: "column" }}>
+          {" "}
+          <Typography sx={{ textDecoration: "underline" }}>
+            {toEditEventDetails ? "current start date: " : ""}
+          </Typography>
+          <Typography>
+            {toEditEventDetails
+              ? dateToString(new Date(toEditEventDetails.startAt))
+              : ""}
+          </Typography>
+        </Box>
+        <Box sx={{ flexDirection: "column" }}>
+          {" "}
+          <Typography sx={{ textDecoration: "underline" }}>
+            {toEditEventDetails ? "current end date: " : ""}
+          </Typography>
+          <Typography>
+            {toEditEventDetails
+              ? dateToString(new Date(toEditEventDetails.endAt))
+              : ""}
+          </Typography>
+        </Box>
+      </Box>
 
       <Box sx={{ maxWidth: "20%" }}>
         <FormGroup>
@@ -589,16 +640,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
                     <Checkbox
                       edge="start"
                       checked={
-                        toEditEventDetails
-                          ? toEditEventDetails.labels
-                              .map((cl) => cl.id)
-                              .indexOf(value.id) !== -1 ||
-                            checkedLabels
-                              .map((cl) => cl.id)
-                              .indexOf(value.id) !== -1
-                          : checkedLabels
-                              .map((cl) => cl.id)
-                              .indexOf(value.id) !== -1
+                        checkedLabels.map((cl) => cl.id).indexOf(value.id) !==
+                        -1
                       }
                       tabIndex={-1}
                       disableRipple
