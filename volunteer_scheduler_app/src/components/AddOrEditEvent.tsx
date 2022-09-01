@@ -81,7 +81,9 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const [isAllDayDisable, setIsAllDayDisable] = React.useState(false);
 
   const [labelOptions, setlabelOptions] = React.useState<labelOptions[]>([]);
-  const [checkedLabels, setCheckedLabels] = React.useState<labelOptions[]>([]);
+  const [checkedLabels, setCheckedLabels] = React.useState<labelOptions[]>(
+    toEditEventDetails ? toEditEventDetails.labels : []
+  );
 
   const [loading, setLoading] = React.useState(true);
   const [label, setlabel] = React.useState("");
@@ -638,16 +640,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
                     <Checkbox
                       edge="start"
                       checked={
-                        toEditEventDetails
-                          ? toEditEventDetails.labels
-                              .map((cl) => cl.id)
-                              .indexOf(value.id) !== -1 ||
-                            checkedLabels
-                              .map((cl) => cl.id)
-                              .indexOf(value.id) !== -1
-                          : checkedLabels
-                              .map((cl) => cl.id)
-                              .indexOf(value.id) !== -1
+                        checkedLabels.map((cl) => cl.id).indexOf(value.id) !==
+                        -1
                       }
                       tabIndex={-1}
                       disableRipple
