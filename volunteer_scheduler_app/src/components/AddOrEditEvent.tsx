@@ -33,6 +33,20 @@ export interface AddOrEditProps {
   toEditEventDetails: fullEventDetails | null;
 }
 
+const dateToString = (date: Date) => {
+  return (
+    ("00" + (date.getMonth() + 1)).slice(-2) +
+    "/" +
+    ("00" + date.getDate()).slice(-2) +
+    "/" +
+    date.getFullYear() +
+    " " +
+    ("00" + date.getHours()).slice(-2) +
+    ":" +
+    ("00" + date.getMinutes()).slice(-2)
+  );
+};
+
 export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   toEditEventDetails,
 }) => {
@@ -53,10 +67,14 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const [eventMinParticipantsValid, setEventMinParticipantsValid] =
     React.useState(true);
 
-  const [startDate, setStartDate] = React.useState<Date | null>(null);
+  const [startDate, setStartDate] = React.useState<Date | null>(
+    toEditEventDetails ? new Date(toEditEventDetails.startAt) : null
+  );
   const [startDateValid, setStartDateValid] = React.useState(true);
 
-  const [endDate, setEndDate] = React.useState<Date | null>(null);
+  const [endDate, setEndDate] = React.useState<Date | null>(
+    toEditEventDetails ? new Date(toEditEventDetails.endAt) : null
+  );
   const [endDateValid, setEndDateValid] = React.useState(true);
 
   const [allDayChecked, setAllDayChecked] = React.useState(false);
@@ -538,6 +556,37 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           }}
           onChange={handleEventEndTimeChange}
         />
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 4.7,
+        }}
+      >
+        <Box sx={{ flexDirection: "column" }}>
+          {" "}
+          <Typography sx={{ textDecoration: "underline" }}>
+            {toEditEventDetails ? "current start date: " : ""}
+          </Typography>
+          <Typography>
+            {toEditEventDetails
+              ? dateToString(new Date(toEditEventDetails.startAt))
+              : ""}
+          </Typography>
+        </Box>
+        <Box sx={{ flexDirection: "column" }}>
+          {" "}
+          <Typography sx={{ textDecoration: "underline" }}>
+            {toEditEventDetails ? "current end date: " : ""}
+          </Typography>
+          <Typography>
+            {toEditEventDetails
+              ? dateToString(new Date(toEditEventDetails.endAt))
+              : ""}
+          </Typography>
+        </Box>
       </Box>
 
       <Box sx={{ maxWidth: "20%" }}>
