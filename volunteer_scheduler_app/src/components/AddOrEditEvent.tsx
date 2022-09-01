@@ -27,7 +27,6 @@ import { getLabels, addEventReq } from "../utils/DataAccessLayer";
 import { fullEventDetails, labelOptions } from "../utils/helper";
 import React from "react";
 import { UserObjectContext } from "../App";
-import axios from "axios";
 import { AppConfig } from "../AppConfig";
 
 export interface AddOrEditProps {
@@ -237,12 +236,13 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             //@ts-ignore
             created_by: `${user.email}`,
           };
-          const data = window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
-          const userFromStorage = JSON.parse(data) 
+          const data =
+            window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
+            "";
+          const userFromStorage = JSON.parse(data);
           const response = await addEventReq(
             event_details,
-            userFromStorage.token||
-              ""
+            userFromStorage.token || ""
           );
           if (response.statusText === "OK")
             console.log("Event added successfully");
@@ -379,7 +379,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         component="div"
         hidden={toEditEventDetails ? true : false}
       >
-        "Add New Event"
+        Add New Event
       </Typography>
 
       <Typography
