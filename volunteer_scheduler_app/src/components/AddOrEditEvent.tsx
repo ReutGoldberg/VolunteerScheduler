@@ -50,20 +50,20 @@ const dateToString = (date: Date) => {
 export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   toEditEventDetails,
 }) => {
-  const [eventName, setEventName] = React.useState("");
+  const [eventName, setEventName] = React.useState(toEditEventDetails ? toEditEventDetails.title : "");
   const [eventNameValid, setEventNameValid] = React.useState(true);
 
-  const [eventInfo, setEventInfo] = React.useState("");
+  const [eventInfo, setEventInfo] = React.useState(toEditEventDetails ? toEditEventDetails.details : "");
   const [eventInfoValid, setEventInfoValid] = React.useState(true);
 
-  const [eventLocation, setEventLocation] = React.useState("");
+  const [eventLocation, setEventLocation] = React.useState(toEditEventDetails ? toEditEventDetails.location : "");
   const [eventLocationValid, setEventLocationValid] = React.useState(true);
-
-  const [eventMaxParticipants, setEventMaxParticipants] = React.useState("");
+  
+  const [eventMaxParticipants, setEventMaxParticipants] = React.useState(toEditEventDetails ? toEditEventDetails.max_volenteers : "");
   const [eventMaxParticipantsValid, setEventMaxParticipantsValid] =
     React.useState(true);
 
-  const [eventMinParticipants, setEventMinParticipants] = React.useState("");
+  const [eventMinParticipants, setEventMinParticipants] = React.useState(toEditEventDetails ? toEditEventDetails.min_volenteers : "");
   const [eventMinParticipantsValid, setEventMinParticipantsValid] =
     React.useState(true);
 
@@ -312,13 +312,19 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           };
 
           //@ts-ignore
+          const data =
+            window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
+            "";
+          const userFromStorage = JSON.parse(data);
           const response = await editEventReq(
             event_details,
-            window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
-              ""
+            userFromStorage.token || ""
           );
-          if (response.statusText === "OK")
+          if (response.statusText === "OK"){
             console.log("Event edited successfully");
+            alert("Event edited successfully");
+            window.location.reload();
+          }
           else console.log("didnt edit event");
         } catch {
         } finally {

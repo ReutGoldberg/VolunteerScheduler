@@ -169,11 +169,12 @@ const prisma = new PrismaClient()
         end_time: endAt,
         created_by: created_by,
         EventLabelMap: {
+          deleteMany: {},
           create: label_event_list,
         },
       },
     });
-    console.log('add event!')
+    console.log('edit event!')
     console.log(new_event)
     return new_event;
   }
