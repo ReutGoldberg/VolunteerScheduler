@@ -143,9 +143,19 @@ const prisma = new PrismaClient()
         },
       },
     });
-    console.log('add event!')
-    console.log(new_event)
+    // console.log('add event!')
+    // console.log(new_event)
     return new_event;
+  }
+
+  async function enrollToEvent(enroll_details:any){
+    console.log('enroll to event')
+    const {event_id, user_id} = enroll_details; 
+    const new_enroll = prisma.EventVolunteerMap.create({data:{
+      event_id:event_id,
+      user_id:user_id,
+    },});
+    return new_enroll;
   }
   
   async function editEvent(event:any){
@@ -185,4 +195,4 @@ const prisma = new PrismaClient()
     return labels;
   }
 
-  export {editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers};
+  export {enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers};

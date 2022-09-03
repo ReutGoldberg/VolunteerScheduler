@@ -1,7 +1,7 @@
 import express, {Express, Request, Response} from "express";
 import jwt_decode from "jwt-decode";
 import { isVerifiedUser } from "./server_utils";
-import {editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, deleteEventById, addNewAdmin, addNewEvent, getAllAdminUsers} from "./db";
+import {editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, deleteEventById, addNewAdmin, addNewEvent, enrollToEvent, getAllAdminUsers} from "./db";
 
 
 const config = require('./config')
@@ -137,7 +137,6 @@ app.post('/add_user', async (req:Request, res:Response) => {
     }
 });
 
-//todo: verify logic bc I didn't write this, just modified this.
 app.post('/add_event', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     console.log('--------------- Creates new Events ---------------')
@@ -147,6 +146,24 @@ app.post('/add_event', async (req:Request, res:Response) => {
         }
         else{
             const result_event = await addNewEvent(req.body);
+            res.json(result_event);
+        }
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
+});
+
+app.post('/enroll_to_event', async (req:Request, res:Response) => {
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    console.log('--------------- enroll to Event ---------------')
+    try{
+        if(!(await isVerifiedUser(authToken))){
+            throw new Error("user is not certified");
+        }
+        else{
+            const result_event = await enrollToEvent(req.body);
             res.json(result_event);
         }
     }
@@ -318,6 +335,5 @@ app.get('/user/userEmail/', async (req:Request, res:Response) => {
     }
     
  });
-
 
 

@@ -29,8 +29,13 @@ import {
   addEventReq,
   editEventReq,
   deleteEventReq,
+  addEnrollReq,
 } from "../utils/DataAccessLayer";
-import { fullEventDetails, labelOptions } from "../utils/helper";
+import {
+  enrollement_details,
+  fullEventDetails,
+  labelOptions,
+} from "../utils/helper";
 import React from "react";
 import { UserObjectContext } from "../App";
 import { AppConfig } from "../AppConfig";
@@ -184,9 +189,36 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     setEventMinParticipants(event.target.value);
   };
 
-  const handleEnrollment = () => {
-    setIsEnrolled(!isEnrolled);
-    //and send to
+  const handleEnrollment = async () => {
+    try {
+      if (toEditEventDetails) {
+        if (isEnrolled) {
+          console.log("isEnrolled");
+          //enroll
+          const data =
+            window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
+            "";
+          const userFromStorage = JSON.parse(data);
+          var enroll_details: enrollement_details = {
+            event_id: toEditEventDetails.id,
+            user_id: userFromStorage.id,
+          };
+          const response = await addEnrollReq(
+            enroll_details,
+            userFromStorage.token || ""
+          );
+          if (response.statusText === "OK")
+            console.log("enrolled successfully");
+          else console.log("didnt enrolled");
+        } else {
+          //cancel enrollement
+          console.log("isNotEnrolled");
+        }
+        setIsEnrolled(!isEnrolled);
+      }
+    } catch {
+    } finally {
+    }
   };
 
   const handleEventStartTimeChange = (
@@ -261,7 +293,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       eventMaxParticipantsValid
     ) {
       // if (await isAdminUser(user.sub)) {
-      if (true) {
+      if (isAdmin) {
+        //?
         console.log("admin!");
         try {
           var event_details: fullEventDetails = {
@@ -314,7 +347,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       eventMaxParticipantsValid
     ) {
       // if (await isAdminUser()) {
-      if (true) {
+      if (isAdmin) {
+        //?
         console.log("admin!");
         try {
           var event_details: fullEventDetails = {
@@ -388,6 +422,10 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     } catch {
     } finally {
     }
+  };
+
+  const handelIsEnrollChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsEnrolled(event.target.checked);
   };
 
   const handleToggle = (value: labelOptions) => () => {
@@ -706,7 +744,21 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
 
       <Box />
       <Box />
-
+      {toEditEventDetails && (
+        <Box sx={{ maxWidth: "20%" }}>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isEnrolled}
+                  onChange={handelIsEnrollChange}
+                />
+              }
+              label="enrollement"
+            />
+          </FormGroup>
+        </Box>
+      )}
       <ButtonGroup
         size="large"
         variant="text"
@@ -714,9 +766,16 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         fullWidth={true}
         //hidden = {isAdmin} -todo: find solution, now returns a promise and therefore breaks
       >
-        {toEditEventDetails ? (
+        {/* {toEditEventDetails ? (
           <Button id="enrollmentEvenBtn" onClick={handleEnrollment}>
             {isEnrolled ? "" : "Not "} Enrolled to the event
+          </Button>
+        ) : (
+          <Box />
+        )} */}
+        {toEditEventDetails ? (
+          <Button id="enrollmentEvenBtn" onClick={handleEnrollment}>
+            submit enrollement{" "}
           </Button>
         ) : (
           <Box />

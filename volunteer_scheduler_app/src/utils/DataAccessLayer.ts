@@ -1,7 +1,7 @@
 import jwt_decode from "jwt-decode";
 import axios from 'axios';
 import { AppConfig } from "../AppConfig";
-import { fullEventDetails } from "./helper";
+import { enrollement_details, fullEventDetails } from "./helper";
 
 
 //todo: change this to a class - DAL and have a private field of token.
@@ -134,7 +134,23 @@ export async function addAdmin(email:string, usertoken:string) {
   });
 }
 
-
+export async function addEnrollReq(enroll_details:enrollement_details, token:string){
+  try{
+    console.log("addEnrollReq");
+    const response =  await axios({
+        method: "post",
+        url: `${AppConfig.server_url}/enroll_to_event`,
+        data: JSON.stringify(enroll_details),
+        headers: { "Content-Type": "application/json",
+                    "authorization": token },
+      });
+    return response;
+  }
+  catch(err:any){
+    console.error(err);
+    throw err;
+  }
+}
 
 export async function editEventReq(event_details:fullEventDetails, token:string){
   try{

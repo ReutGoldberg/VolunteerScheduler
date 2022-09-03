@@ -8,7 +8,10 @@ export interface labelOptions{
   id: number,
   name: string
 }
-
+export interface enrollement_details{
+  event_id: number,
+  user_id: number
+}
 export interface fullEventDetails{
   id: number,
   title: string,
