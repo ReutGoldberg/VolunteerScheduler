@@ -53,27 +53,22 @@ import { fullEventDetails } from "./helper";
   }
 
 //make this a private function for the class DAL
- async function isAdminUser(usertoken:string){
+ async function isAdminUser(userToken:string){
     console.log("todo: check if admin")
-    //@ts-ignore - todo: find a better way to pass this param
-    //const usertoken = window.googleToken
-
-    // const data = sessionStorage.getItem(`${AppConfig.sessionStorageContextKey}`) || "";
-    // let userFromStorage = JSON.parse(data);
-    // const usertoken = userFromStorage.token;
-    
+    //@ts-ignore - todo: find a better way to pass this param    
     try {
-      const userData:any = jwt_decode(usertoken);
-    
+      // const userData:any = jwt_decode(usertoken);
+      // console.log("userToken>: "+userToken);
       const requestURL:string = `${AppConfig.server_url}/user/userEmail/`;
       const response = await axios({
         method: "get",
         url: requestURL,
         headers: { "Content-Type": "application/json",
-                   "authorization": usertoken
+                   "authorization": userToken
                   },
         });
-      return response.data;
+        // console.log("ddd" + response.data.isAdmin);
+      return response.data.is_admin;
     } catch (error:any) {
       console.error(error);
       throw error;

@@ -15,6 +15,7 @@ import { getPage } from "./utils/helper";
 import { AddOrEditEvent } from "./components/AddOrEditEvent";
 import { AppConfig } from "./AppConfig";
 import { Footer } from "./components/Footer";
+import { isAdminUser } from "./utils/DataAccessLayer";
 
 export const UserObjectContext = React.createContext<any>({
   user: "",
@@ -26,6 +27,7 @@ export const UserObjectContext = React.createContext<any>({
 function App() {
   const [user, setUser] = React.useState<any>({});
   const [page, setPage] = React.useState<string>(getPage());
+  const [isAdmin, setIsAdmin] = React.useState(false);
 
   const userValue = React.useMemo(() => ({ user, setUser }), [user]);
 
@@ -64,18 +66,32 @@ function App() {
     }
   }, []);
 
+  React.useEffect(() => {
+    const genIsAdmin = async () => {
+      const data =
+        window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
+      const userFromStorage = JSON.parse(data);
+      setIsAdmin(await isAdminUser(userFromStorage.token || ""));
+    };
+    // console.log("isAdmin: " + isAdmin);
+    genIsAdmin();
+  }, []);
+
   const pageToPresent = (page: string) => {
-    // if(not auth) return <Login setPageApp={setPageApp} setUserAuth={setUserAuth}
     sessionStorage.setItem("page", page);
     switch (page) {
       case "PersonalEventsCalendar":
         return <PersonalEventsCalendar />;
       case "GeneralEventsCalendar":
         return <GeneralEventsCalendar />;
-      // case "AdminsList": //todo: remove this as this is united with AddAdmin now :)
-      //   return <AdminsList curAdminList={[]}/>;
       case "AddOrEditEvent":
-        return <AddOrEditEvent toEditEventDetails={null} />;
+        return (
+          <AddOrEditEvent
+            toEditEventDetails={null}
+            isAdmin={isAdmin}
+            currentPage={"AddOrEditEvent"}
+          />
+        );
       case "AddAdmin":
         return <AddAdmin />;
       case "Profile":
@@ -103,7 +119,11 @@ function App() {
             </Typography>
           </Box>
           {isUserExists() && (
-            <Navbar setPageApp={setPageApp} setUserAuth={setUser} />
+            <Navbar
+              setPageApp={setPageApp}
+              setUserAuth={setUser}
+              isAdmin={isAdmin}
+            />
           )}
           <Box
             sx={{

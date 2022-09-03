@@ -52,6 +52,7 @@ export const AddAdmin: React.FC = () => {
   };
 
   React.useEffect(() => {
+    console.log("we are here!!!!");
     const userToken = userFromStorage.token;
     getAdminsList(userToken).then((data) => {
       console.log("Below are the admins"); //todo: remove when done testing

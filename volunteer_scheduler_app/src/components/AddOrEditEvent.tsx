@@ -37,6 +37,8 @@ import { AppConfig } from "../AppConfig";
 
 export interface AddOrEditProps {
   toEditEventDetails: fullEventDetails | null;
+  isAdmin: boolean;
+  currentPage: string;
 }
 
 const dateToString = (date: Date) => {
@@ -55,6 +57,8 @@ const dateToString = (date: Date) => {
 
 export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   toEditEventDetails,
+  isAdmin,
+  currentPage,
 }) => {
   const [eventName, setEventName] = React.useState(
     toEditEventDetails ? toEditEventDetails.title : ""
@@ -138,6 +142,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    console.log("isAdmin: " + isAdmin);
+    console.log("page: " + currentPage);
     if (!event.target.value.match(/^[a-z0-9]+/i)) setEventNameValid(false);
     else setEventNameValid(true);
     setEventName(event.target.value);
@@ -443,6 +449,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       </Typography>
 
       <TextField
+        disabled={currentPage != "AddOrEditEvent" && !isAdmin}
         required
         error={!eventNameValid}
         id="outlined-basic"
@@ -461,6 +468,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       />
 
       <TextField
+        disabled={currentPage != "AddOrEditEvent" && !isAdmin}
         required
         error={!eventInfoValid}
         id="outlined-basic"
@@ -479,6 +487,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       />
 
       <TextField
+        disabled={currentPage != "AddOrEditEvent" && !isAdmin}
         required
         error={!eventLocationValid}
         id="outlined-basic"
@@ -497,6 +506,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       />
 
       <TextField
+        disabled={currentPage != "AddOrEditEvent" && !isAdmin}
         error={!eventMinParticipantsValid}
         id="outlined-basic"
         label="Minimum number of participants"
@@ -524,6 +534,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       />
 
       <TextField
+        disabled={currentPage != "AddOrEditEvent" && !isAdmin}
         error={!eventMaxParticipantsValid}
         id="outlined-basic"
         label="Maximum number of participants"
@@ -559,6 +570,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         }}
       >
         <TextField
+          disabled={currentPage != "AddOrEditEvent" && !isAdmin}
           required={toEditEventDetails ? false : true}
           error={!startDateValid}
           helperText={!startDateValid ? "Please enter a valid date " : ""}
@@ -574,6 +586,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         />
 
         <TextField
+          disabled={currentPage != "AddOrEditEvent" && !isAdmin}
           required={toEditEventDetails ? false : true}
           error={!endDateValid}
           helperText={!endDateValid ? "Please enter a valid date " : ""}
@@ -630,7 +643,9 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
               />
             }
             label="All Day"
-            disabled={!isAllDayDisable}
+            disabled={
+              !isAllDayDisable || (currentPage != "AddOrEditEvent" && !isAdmin)
+            }
           />
         </FormGroup>
       </Box>
@@ -661,12 +676,14 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             return (
               <ListItem key={value.id} disablePadding>
                 <ListItemButton
+                  disabled={currentPage != "AddOrEditEvent" && !isAdmin}
                   role={undefined}
                   onClick={handleToggle(value)}
                   dense
                 >
                   <ListItemIcon>
                     <Checkbox
+                      disabled={currentPage != "AddOrEditEvent" && !isAdmin}
                       edge="start"
                       checked={
                         checkedLabels.map((cl) => cl.id).indexOf(value.id) !==
@@ -704,7 +721,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         ) : (
           <Box />
         )}
-        {toEditEventDetails ? (
+        {toEditEventDetails && isAdmin ? (
           <Button
             id="deleteEventBtn"
             hidden={toEditEventDetails ? false : true}
@@ -715,9 +732,13 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         ) : (
           <Box />
         )}
-        <Button type="submit" form="registerForm">
-          {toEditEventDetails ? "Edit Event" : "Add Event"}
-        </Button>
+        {currentPage == "AddOrEditEvent" || isAdmin ? (
+          <Button type="submit" form="registerForm">
+            {toEditEventDetails ? "Edit Event" : "Add Event"}
+          </Button>
+        ) : (
+          <Box />
+        )}
       </ButtonGroup>
     </Box>
   );

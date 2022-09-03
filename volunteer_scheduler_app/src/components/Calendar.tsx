@@ -19,7 +19,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import Typography from "@mui/material/Typography";
 import { isAdminUser } from "../utils/DataAccessLayer";
 import { AddOrEditEvent } from "./AddOrEditEvent";
-import setPageApp from "../App";
+import { AppConfig } from "../AppConfig";
 
 const CalendComponent = (props: any) => {
   const [demoEvents, setDemoEvents] = useState<eventDetails[] | null>(null);
@@ -27,9 +27,26 @@ const CalendComponent = (props: any) => {
   const [selectedEvent, setSelectedEvent] = useState<fullEventDetails | null>(
     null
   );
+  const [isAdmin, setIsAdmin] = React.useState(false);
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
+
+  React.useEffect(() => {
+    const genIsAdmin = async () => {
+      const data =
+        window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
+      const userFromStorage = JSON.parse(data);
+      // console.log("check if admin!!!!!!! token:");
+      // console.log(userFromStorage.token);
+      var isAdminTemp = await isAdminUser(userFromStorage.token || "");
+      setIsAdmin(isAdminTemp);
+      console.log("isAdminTemp " + isAdminTemp);
+    };
+
+    genIsAdmin();
+  }, []);
 
   //Create and load demo events
   useEffect((): void => {
@@ -104,7 +121,11 @@ const CalendComponent = (props: any) => {
             <Typography gutterBottom>
               in charge of: {selectedEvent["created_by"]}
             </Typography>
-            <AddOrEditEvent toEditEventDetails={selectedEvent} />
+            <AddOrEditEvent
+              toEditEventDetails={selectedEvent}
+              isAdmin={isAdmin}
+              currentPage="fromCalender"
+            />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog}>close</Button>

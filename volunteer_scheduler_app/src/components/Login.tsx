@@ -24,7 +24,7 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
 
   async function handleCallbackResponse(response: any) {
     const googleUserToken: string = String(response.credential);
-    console.log("Encoded JWT ID Token " + googleUserToken); //todo: remove when done testing
+    // console.log("Encoded JWT ID Token " + googleUserToken); //todo: remove when done testing
     const token = { token: googleUserToken };
     const userObject: any = { ...jwt_decode(googleUserToken), ...token };
     setUser(userObject); //sets the App's context
@@ -41,6 +41,7 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
       AppConfig.sessionStorageContextKey,
       JSON.stringify(userObject)
     );
+    window.location.reload();
   }
 
   //todo remove when done testing or move to a better position.
@@ -89,10 +90,10 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
   /* End google login part*/
   function onSignIn(googleUser: any) {
     var profile = googleUser.getBasicProfile();
-    console.log("ID: " + profile.getId()); // Do not send to your backend! Use an ID token instead.
-    console.log("Name: " + profile.getName());
-    console.log("Image URL: " + profile.getImageUrl());
-    console.log("Email: " + profile.getEmail()); // This is null if the 'email' scope is not present.
+    // console.log("ID: " + profile.getId()); // Do not send to your backend! Use an ID token instead.
+    // console.log("Name: " + profile.getName());
+    // console.log("Image URL: " + profile.getImageUrl());
+    // console.log("Email: " + profile.getEmail()); // This is null if the 'email' scope is not present.
   }
 
   return (

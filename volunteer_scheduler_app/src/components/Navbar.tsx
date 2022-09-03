@@ -9,9 +9,14 @@ import { AppConfig } from "../AppConfig";
 export interface NavbarProps {
   setPageApp(page: string): void;
   setUserAuth(user: any): void;
+  isAdmin: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  setPageApp,
+  setUserAuth,
+  isAdmin,
+}) => {
   const { user, setUser } = React.useContext(UserObjectContext);
 
   const handlePersonalEventsCalendar = () => {
@@ -87,9 +92,11 @@ export const Navbar: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
           <Button id="AddEventBtn" onClick={handleAddEvent}>
             Add Event
           </Button>
-          <Button id="AddAdminBtn" onClick={handleAddAdmin}>
-            Add Admin
-          </Button>
+          {isAdmin && (
+            <Button id="AddAdminBtn" onClick={handleAddAdmin}>
+              Add Admin
+            </Button>
+          )}
           <Button id="ProfileBtn" onClick={handleProfile}>
             Profile
           </Button>
