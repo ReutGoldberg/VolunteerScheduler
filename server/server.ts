@@ -27,7 +27,7 @@ app.get('/', (req:Request, res:Response) => {
 app.get('/all_users', async (req:Request, res:Response) => {
     const token = req.headers.authorization ? req.headers.authorization : "";
     try{
-        if(await !isVerifiedUser(token)){
+        if(!(await isVerifiedUser(token))){
             throw new Error("user is not certified");
         }
         const users = await getAllUsers();
@@ -40,12 +40,15 @@ app.get('/all_users', async (req:Request, res:Response) => {
 });
 
 app.get('/all_events', async (req:Request, res:Response) => {
+    console.log("get all event before ")
     const token = req.headers.authorization ? req.headers.authorization : "";
+    console.log("get all event after")
     try{
-        if(await !isVerifiedUser(token)){
+        if(!(await isVerifiedUser(token))){
             throw new Error("user is not certified");
         }
         const events = await getAllEvents();
+        console.log(events)
         res.json(events);
     }
     catch(err:any){
@@ -57,7 +60,7 @@ app.get('/all_events', async (req:Request, res:Response) => {
 app.get('/all_labels', async (req:Request, res:Response) => {
     const token = req.headers.authorization ? req.headers.authorization : "";
     try{
-        if(await !isVerifiedUser(token)){
+        if(!(await isVerifiedUser(token))){
             throw new Error("user is not certified");
         }
         const labels = await getAllLabels();
@@ -74,10 +77,13 @@ app.get('/event_details/:event_id', async (req:Request, res:Response) => {
     const eventId = Number(req.params.event_id)
     console.log(`This is the event id: ${eventId}`)//todo: remove when done testing
     const token = req.headers.authorization ? req.headers.authorization : "";
+    console.log(token)
+    console.log(req.headers.authorization)
     try{
-        if(await !isVerifiedUser(token)){
+        if(!(await isVerifiedUser(token))){
             throw new Error("user is not certified");
         }
+        console.log("good")
         const event_details = await getEvent(eventId);
         var labels=[]
         for (var label of event_details["EventLabelMap"]){
@@ -117,7 +123,7 @@ app.post('/add_user', async (req:Request, res:Response) => {
     try{
         //@ts-ignore
         const webTokenSub = jwt_decode(authToken).sub;
-        if(await !isVerifiedUser(authToken)){
+        if(!(await isVerifiedUser(authToken))){
             throw new Error("user is not certified");
         }
         else{
@@ -173,12 +179,12 @@ app.delete('/delete_event/:event_id', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     console.log('--------------- Delete Event By Id ---------------')
     try{
-        if(await !isVerifiedUser(authToken)){
+        if(!(await isVerifiedUser(authToken))){
             throw new Error("user is not certified");
         }
         const webUser = jwt_decode(authToken);
         //@ts-ignore
-        if(await !getUserByToken(webUser.sub).then((user) => user.is_admin)){
+        if(!(await getUserByToken(webUser.sub).then((user) => user.is_admin))){
             throw new Error("User is not admin");
         }
         else{
@@ -197,13 +203,13 @@ app.put('/add_admin', async (req:Request, res:Response) => {
     const {email} = req.body;
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     try {
-        if(await !isVerifiedUser(authToken)){
+        if(!(await isVerifiedUser(authToken))){
             res.status(401);
             throw new Error("User is not verified");
         }
         const webUser = jwt_decode(authToken);
         //@ts-ignore
-        if(await !getUserByToken(webUser.sub).then((user) => user.is_admin)){
+        if(!(await getUserByToken(webUser.sub).then((user) => user.is_admin))){
             res.status(401);
             throw new Error("User is not admin");
         }
@@ -223,7 +229,7 @@ app.put('/users', async (req:Request, res:Response) => {
     const {userId, userName} = req.body;
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     try {
-        if(await !isVerifiedUser(authToken)){
+        if(!(await isVerifiedUser(authToken))){
             throw new Error("User is not verified");
         }
         const updatedUser = await updateUser(userId,userName);    
@@ -242,12 +248,12 @@ app.delete('/users:id', async (req:Request, res:Response) => {
     
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     try {
-        if(await !isVerifiedUser(authToken)){
+        if(!(await isVerifiedUser(authToken))){
             throw new Error("User is not verified");
         }
         const webUser = jwt_decode(authToken);
         //@ts-ignore
-        if(await !getUserByToken(webUser.sub).then((user) => user.is_admin)){
+        if(!(await getUserByToken(webUser.sub).then((user) => user.is_admin))){
             throw new Error("User is not admin");
         }
         const userId = req.params.id;
@@ -264,7 +270,7 @@ app.delete('/users:id', async (req:Request, res:Response) => {
 app.get('/user/userEmail/', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     try {
-        if(await !isVerifiedUser(authToken)){
+        if(!(await isVerifiedUser(authToken))){
             throw new Error("User is not verified");
         } 
         //@ts-ignore
@@ -281,7 +287,7 @@ app.get('/user/userEmail/', async (req:Request, res:Response) => {
  app.get('/user/isNewUser/', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     try {
-        if(await !isVerifiedUser(authToken, true)){ //checks the auth token is ok and user's email is in a valid formation
+        if(!(await isVerifiedUser(authToken, true))){ //checks the auth token is ok and user's email is in a valid formation
             throw new Error("User doesn't have a valid JWT");
         }   
         //@ts-ignore
@@ -302,7 +308,7 @@ app.get('/user/userEmail/', async (req:Request, res:Response) => {
  app.get('/user/adminsUserEmail/', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     try {
-        if(await !isVerifiedUser(authToken)){ //checks the auth token is ok and user's email is in a valid formation
+        if(!(await isVerifiedUser(authToken))){ //checks the auth token is ok and user's email is in a valid formation
             throw new Error("User is not verified");
         }
         getAllAdminUsers().then(adminUsers => res.json(adminUsers));

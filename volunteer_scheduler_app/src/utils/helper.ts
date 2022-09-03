@@ -159,13 +159,13 @@ export const isValidEmail = (email:string) =>{
   return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
 }
 
-export const generateDemoEvents1 =  async(): Promise<eventDetails[] | null> => {
+export const generateDemoEvents1 =  async(token:string): Promise<eventDetails[] | null> => {
   const all_events: eventDetails[] = [];
   try{
     const response = await axios({
       method: "get",
       url: `http://localhost:5001/all_events`,
-      headers: {  "Content-Type": "application/json"},
+      headers: {  "Content-Type": "application/json", "authorization": token},
     });
     if(response.statusText === 'OK'){
       console.log("got events")

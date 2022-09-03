@@ -189,4 +189,20 @@ export async function deleteEventReq(event_id:number, token:string){
   }
 }
 
+export async function getEventDetails(event_id:number, token:string){
+  try{
+    const response = await axios({
+      method: "get",
+      url: `http://localhost:5001/event_details/${event_id}`,
+      // data: JSON.stringify(request_data),
+      headers: { "Content-Type": "application/json", "authorization": token },
+    });
+    return response;
+  }
+  catch(err:any){
+    console.error(err);
+    throw err;
+  }
+}
+
 export {isNewUser, createUser, isAdminUser, getAdminsList , createFakeUser, getLabels}

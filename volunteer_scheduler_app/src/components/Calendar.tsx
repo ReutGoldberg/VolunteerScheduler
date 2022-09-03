@@ -17,7 +17,7 @@ import Box from "@mui/material/Box";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import Typography from "@mui/material/Typography";
-import { isAdminUser } from "../utils/DataAccessLayer";
+import { isAdminUser, getEventDetails } from "../utils/DataAccessLayer";
 import { AddOrEditEvent } from "./AddOrEditEvent";
 import { AppConfig } from "../AppConfig";
 
@@ -50,7 +50,9 @@ const CalendComponent = (props: any) => {
 
   //Create and load demo events
   useEffect((): void => {
-    generateDemoEvents1()
+    const data = window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
+    const userFromStorage = JSON.parse(data);
+    generateDemoEvents1(userFromStorage.token)
       .then((res) => {
         setDemoEvents(res!!);
       })
@@ -74,13 +76,10 @@ const CalendComponent = (props: any) => {
       data
     )}`;
     console.log(msg);
-    const request_data = data["id"];
-    const response = await axios({
-      method: "get",
-      url: `http://localhost:5001/event_details/${request_data}`,
-      // data: JSON.stringify(request_data),
-      headers: { "Content-Type": "application/json" },
-    });
+    const event_id = data["id"];
+    const token_data = window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
+    const userFromStorage = JSON.parse(token_data);
+    const response = await getEventDetails(event_id, userFromStorage.token || "");
     if (response.statusText === "OK") {
       setSelectedEvent(response.data);
       setOpenDialog(true);
