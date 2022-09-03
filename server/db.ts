@@ -94,10 +94,11 @@ const prisma = new PrismaClient()
     return events;
   }
 
-  async function deleteEventById(eventId:Number) {
+  async function deleteEventById(event_id: Number) {
+    console.log("deleteEventById");
     const deletedEvent = await prisma.Events.delete({
       where: {
-        id: eventId,
+        id: event_id,
       }
     });
     return deletedEvent;

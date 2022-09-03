@@ -23,7 +23,12 @@ import InfoIcon from "@mui/icons-material/Info";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import MaximizeIcon from "@mui/icons-material/Maximize";
 import MinimizeIcon from "@mui/icons-material/Minimize";
-import { getLabels, addEventReq, editEventReq } from "../utils/DataAccessLayer";
+
+import {
+  getLabels,
+  addEventReq,
+  deleteEventReq,
+} from "../utils/DataAccessLayer";
 import { fullEventDetails, labelOptions } from "../utils/helper";
 import React from "react";
 import { UserObjectContext } from "../App";
@@ -50,20 +55,30 @@ const dateToString = (date: Date) => {
 export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   toEditEventDetails,
 }) => {
-  const [eventName, setEventName] = React.useState(toEditEventDetails ? toEditEventDetails.title : "");
+  const [eventName, setEventName] = React.useState(
+    toEditEventDetails ? toEditEventDetails.title : ""
+  );
   const [eventNameValid, setEventNameValid] = React.useState(true);
 
-  const [eventInfo, setEventInfo] = React.useState(toEditEventDetails ? toEditEventDetails.details : "");
+  const [eventInfo, setEventInfo] = React.useState(
+    toEditEventDetails ? toEditEventDetails.details : ""
+  );
   const [eventInfoValid, setEventInfoValid] = React.useState(true);
 
-  const [eventLocation, setEventLocation] = React.useState(toEditEventDetails ? toEditEventDetails.location : "");
+  const [eventLocation, setEventLocation] = React.useState(
+    toEditEventDetails ? toEditEventDetails.location : ""
+  );
   const [eventLocationValid, setEventLocationValid] = React.useState(true);
-  
-  const [eventMaxParticipants, setEventMaxParticipants] = React.useState(toEditEventDetails ? toEditEventDetails.max_volenteers : "");
+
+  const [eventMaxParticipants, setEventMaxParticipants] = React.useState(
+    toEditEventDetails ? toEditEventDetails.max_volenteers : ""
+  );
   const [eventMaxParticipantsValid, setEventMaxParticipantsValid] =
     React.useState(true);
 
-  const [eventMinParticipants, setEventMinParticipants] = React.useState(toEditEventDetails ? toEditEventDetails.min_volenteers : "");
+  const [eventMinParticipants, setEventMinParticipants] = React.useState(
+    toEditEventDetails ? toEditEventDetails.min_volenteers : ""
+  );
   const [eventMinParticipantsValid, setEventMinParticipantsValid] =
     React.useState(true);
 
@@ -224,7 +239,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   };
 
   const handleAddEvent = async (event: React.FormEvent<HTMLFormElement>) => {
-    console.log("add event!");
     event.preventDefault();
     if (startDate == null) {
       setStartDateValid(false);
@@ -320,12 +334,11 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             event_details,
             userFromStorage.token || ""
           );
-          if (response.statusText === "OK"){
+          if (response.statusText === "OK") {
             console.log("Event edited successfully");
             alert("Event edited successfully");
             window.location.reload();
-          }
-          else console.log("didnt edit event");
+          } else console.log("didnt edit event");
         } catch {
         } finally {
         }
@@ -347,15 +360,24 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
 
   const handleDeleteEvent = async () => {
     try {
-      var eventId = toEditEventDetails?.id;
-      //@ts-ignore
-      const response = await deleteEventReq(
-        eventId,
-        window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || ""
-      );
-      if (response.statusText === "OK")
-        console.log("Event deleted successfully");
-      else console.log("didnt delete event");
+      console.log("handleDeleteEvent");
+      if (toEditEventDetails != null) {
+        var eventId = toEditEventDetails?.id;
+        const data =
+          window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
+          "";
+        const userFromStorage = JSON.parse(data);
+        //@ts-ignore
+        const response = await deleteEventReq(
+          eventId,
+          userFromStorage.token || ""
+        );
+        if (response.statusText === "OK") {
+          console.log("Event deleted successfully");
+          alert("Event deleted successfully");
+          window.location.reload();
+        } else console.log("didnt delete event");
+      }
     } catch {
     } finally {
     }
