@@ -27,6 +27,7 @@ import MinimizeIcon from "@mui/icons-material/Minimize";
 import {
   getLabels,
   addEventReq,
+  editEventReq,
   deleteEventReq,
 } from "../utils/DataAccessLayer";
 import { fullEventDetails, labelOptions } from "../utils/helper";
