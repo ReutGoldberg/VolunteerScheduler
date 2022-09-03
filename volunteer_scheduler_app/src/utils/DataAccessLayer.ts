@@ -161,8 +161,6 @@ export async function editEventReq(event_details:fullEventDetails, token:string)
 
 export async function addEventReq(event_details:fullEventDetails, token:string){
   try{
-    console.log("addEventReq-start");
-    console.log(AppConfig.server_url);
     const response =  await axios({
         method: "post",
         url: `${AppConfig.server_url}/add_event`,
@@ -178,15 +176,16 @@ export async function addEventReq(event_details:fullEventDetails, token:string){
   }
 }
 
-export async function deleteEventReq(id:number, token:string){
+export async function deleteEventReq(event_id:number, token:string){
   try{
+    console.log("deleteEventReq1");
     const response =  await axios({
         method: "delete",
-        url: `${AppConfig.server_url}/delete_event`,
-        data: JSON.stringify(id),
+        url: `${AppConfig.server_url}/delete_event/${event_id}`,
         headers: { "Content-Type": "application/json",
                     "authorization": token },
       });
+    console.log("deleteEventReq2");
     return response;
   }
   catch(err:any){

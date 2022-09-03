@@ -19,6 +19,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import Typography from "@mui/material/Typography";
 import { isAdminUser } from "../utils/DataAccessLayer";
 import { AddOrEditEvent } from "./AddOrEditEvent";
+import setPageApp from "../App";
 
 const CalendComponent = (props: any) => {
   const [demoEvents, setDemoEvents] = useState<eventDetails[] | null>(null);

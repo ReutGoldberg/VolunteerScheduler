@@ -135,7 +135,6 @@ app.post('/add_user', async (req:Request, res:Response) => {
 app.post('/add_event', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     console.log('--------------- Creates new Events ---------------')
-    console.log(req.body)
     try{
         if(!(await isVerifiedUser(authToken))){
             throw new Error("user is not certified");
@@ -151,8 +150,9 @@ app.post('/add_event', async (req:Request, res:Response) => {
     }
 });
 
-app.delete('/delete_event', async (req:Request, res:Response) => {
+app.delete('/delete_event/:event_id', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
+    console.log('--------------- Delete Event By Id ---------------')
     try{
         if(await !isVerifiedUser(authToken)){
             throw new Error("user is not certified");
@@ -163,7 +163,7 @@ app.delete('/delete_event', async (req:Request, res:Response) => {
             throw new Error("User is not admin");
         }
         else{
-            const deletedEvent = await deleteEventById(Number(req.params.id));
+            const deletedEvent = await deleteEventById(Number(req.params.event_id));
             res.json(deletedEvent);
         }
     }
