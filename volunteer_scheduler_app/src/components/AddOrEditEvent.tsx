@@ -192,19 +192,20 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const handleEnrollment = async () => {
     try {
       if (toEditEventDetails) {
-        if (isEnrolled) {
+        if (!isEnrolled) {
           console.log("isEnrolled");
           //enroll
           const data =
             window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
             "";
           const userFromStorage = JSON.parse(data);
-          var enroll_details: enrollement_details = {
-            event_id: toEditEventDetails.id,
-            user_id: userFromStorage.id,
-          };
+          console.log(userFromStorage)
+          // var enroll_details: enrollement_details = {
+          //   event_id: toEditEventDetails.id,
+          //   user_token: userFromStorage.token,
+          // };
           const response = await addEnrollReq(
-            enroll_details,
+            toEditEventDetails.id,
             userFromStorage.token || ""
           );
           if (response.statusText === "OK")

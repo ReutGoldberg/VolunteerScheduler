@@ -10,7 +10,7 @@ export interface labelOptions{
 
 export interface enrollement_details{
   event_id: number,
-  user_id: number
+  user_id: string
 }
 
 export interface fullEventDetails{

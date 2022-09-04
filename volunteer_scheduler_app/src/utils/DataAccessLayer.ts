@@ -134,13 +134,14 @@ export async function addAdmin(email:string, usertoken:string) {
   });
 }
 
-export async function addEnrollReq(enroll_details:enrollement_details, token:string){
+export async function addEnrollReq(event_id:number, token:string){
   try{
     console.log("addEnrollReq");
+    console.log(event_id)
     const response =  await axios({
         method: "post",
         url: `${AppConfig.server_url}/enroll_to_event`,
-        data: JSON.stringify(enroll_details),
+        data: {event_id:event_id},
         headers: { "Content-Type": "application/json",
                     "authorization": token },
       });

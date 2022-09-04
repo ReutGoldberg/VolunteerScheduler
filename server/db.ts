@@ -148,14 +148,29 @@ const prisma = new PrismaClient()
     return new_event;
   }
 
-  async function enrollToEvent(enroll_details:any){
+  async function enrollToEvent(event_id:number, user_token:string){
     console.log('enroll to event')
-    const {event_id, user_id} = enroll_details; 
-    const new_enroll = prisma.EventVolunteerMap.create({data:{
-      event_id:event_id,
-      user_id:user_id,
-    },});
-    return new_enroll;
+    console.log(event_id) 
+      try{
+      const new_user_enrolled = await prisma.Users.update({
+        where:{
+          token: user_token
+        },
+        data: {
+          EventVolunteerMap: {
+            create: [{Events: {connect: {id: event_id}}}],
+          },
+        },
+      });
+      return true;
+    }
+    catch(error: any){
+      console.log(error.message)
+      if (error.code == 'P2002'){  // already exsist
+        return true
+      }
+      return false
+    }
   }
   
   async function editEvent(event:any){

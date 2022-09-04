@@ -156,13 +156,17 @@ app.post('/add_event', async (req:Request, res:Response) => {
 
 app.post('/enroll_to_event', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
+    const {event_id} = req.body;
     console.log('--------------- enroll to Event ---------------')
     try{
         if(!(await isVerifiedUser(authToken))){
             throw new Error("user is not certified");
         }
         else{
-            const result_event = await enrollToEvent(req.body);
+            //@ts-ignore
+            const sub_token = jwt_decode(authToken).sub
+            console.log(sub_token)
+            const result_event = await enrollToEvent(event_id, sub_token);
             res.json(result_event);
         }
     }
