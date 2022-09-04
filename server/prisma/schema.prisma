@@ -75,9 +75,9 @@ model PendingRequests{
 
 model EventVolunteerMap{
   event_id Int
-  Events Events? @relation(fields: [event_id], references: [id])
+  Events Events? @relation(fields: [event_id], references: [id], onDelete: Cascade)
   user_id Int
-  Users Users? @relation(fields: [user_id], references: [id])
+  Users Users? @relation(fields: [user_id], references: [id], onDelete: Cascade)
   @@id([event_id, user_id])
 }
 

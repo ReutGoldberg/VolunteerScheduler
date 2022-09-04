@@ -221,4 +221,19 @@ export async function getEventDetails(event_id:number, token:string){
   }
 }
 
+export async function getAllEvents(token:string){
+  try{
+    const response = await axios({
+      method: "get",
+      url: `http://localhost:5001/all_events`,
+      headers: {  "Content-Type": "application/json", "authorization": token},
+    });
+    return response;
+  }
+  catch(err:any){
+    console.error(err);
+    throw err;
+  }
+}
+
 export {isNewUser, createUser, isAdminUser, getAdminsList , createFakeUser, getLabels}

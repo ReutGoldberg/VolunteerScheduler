@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import {
   eventDetails,
   fullEventDetails,
-  generateDemoEvents1,
+  parseGetAllEvents,
 } from "../utils/helper";
-import { getAllEvents } from "../utils/helper";
 import axios from "axios";
 import { DateTime } from "luxon";
 import Kalend, { CalendarView, OnEventDragFinish } from "kalend";
@@ -52,7 +51,7 @@ const CalendComponent = (props: any) => {
   useEffect((): void => {
     const data = window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
     const userFromStorage = JSON.parse(data);
-    generateDemoEvents1(userFromStorage.token)
+    parseGetAllEvents(userFromStorage.token)
       .then((res) => {
         setDemoEvents(res!!);
       })

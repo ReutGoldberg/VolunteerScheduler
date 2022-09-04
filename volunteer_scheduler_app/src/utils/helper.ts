@@ -1,17 +1,18 @@
 import { DateTime } from 'luxon';
-import * as faker from '@faker-js/faker'
-import { v4 } from 'uuid';
 import axios from 'axios';
+import {getAllEvents} from "./DataAccessLayer";
 
 
 export interface labelOptions{
   id: number,
   name: string
 }
+
 export interface enrollement_details{
   event_id: number,
   user_id: number
 }
+
 export interface fullEventDetails{
   id: number,
   title: string,
@@ -52,124 +53,18 @@ const colors: string[] = [
   'salmon',
 ];
 
-export const getAllEvents = async () => {
-  const events: any = [];
-  const response = await axios({
-      method: "get",
-      url: `http://localhost:5001/all_events`,
-      headers: {  "Content-Type": "application/json"},
-  });
-  if(response.statusText === 'OK'){
-      // console.log('got events')
-      // console.log(response.data)
-      const event1= response.data[0]
-      // console.log(event1)
-      // console.log(event1["id"])
-      const new_event: any={
-        id: v4(),
-        startAt: event1["start_time"],
-        endAt: event1["end_time"],
-        summary: event1["details"],
-        color: 'blue',
-        allDay: false,
-        label: event1["label"],
-      }
-      // console.log(new_event)
-      // const event: any = {
-      //   id: v4(),
-      //   startAt: startDate.toUTC().toString(),
-      //   endAt: endDate.toUTC().toString(),
-      //   summary: faker.faker.commerce.department(),
-      //   color: colors[Math.floor(Math.random() * colors.length - 1) + 1],
-      //   allDay: endDate.day !== startDate.day,
-      //   label: "hello",
-      // };
-      events.push(new_event);
-    }
-  else
-    console.log('didnt get events')
-  console.log("events: ")
-  console.log(events)
-  return events;
-};
-
 export const getPage = () => {
   return sessionStorage.getItem("page") || "main";
 };
-
-export const generateDemoEvents = (
-  date: DateTime = DateTime.now(),
-  count = 190
-) => {
-  const events: any = [];
-
-  const monthStart: any = date
-    .set({ day: 1 })
-    .minus({ days: 14 })
-    .toFormat('yyyy-MM-dd');
-  const monthEnd: any = date
-    .set({ day: 28 })
-    .plus({ days: 14 })
-    .toFormat('yyyy-MM-dd');
-
-  for (let i = 1; i < count; i += 1) {
-    const dateStart: any = faker.faker.date.between(monthStart, monthEnd);
-
-    const hour: number = Math.floor(Math.random() * 23) + 1;
-    const minute: number = Math.floor(Math.random() * 40) + 1;
-    const minuteDuration: number = Math.floor(Math.random() * 120) + 30;
-
-    const startDate: DateTime = DateTime.fromJSDate(dateStart).set({
-      hour: hour,
-      minute: minute,
-    });
-    const endDate: DateTime = startDate.plus({ minute: minuteDuration });
-
-    const event: any = {
-      id: v4(),
-      startAt: startDate.toUTC().toString(),
-      endAt: endDate.toUTC().toString(),
-      summary: faker.faker.commerce.department(),
-      color: colors[Math.floor(Math.random() * colors.length - 1) + 1],
-      allDay: endDate.day !== startDate.day,
-      label: "hello",
-    };
-    console.log(event)
-
-    events.push(event);
-  }
-  console.log("events: ")
-  console.log(events)
-  return events;
-};
-
-const get_events = async () =>{
-  const response = await axios({
-    method: "get",
-    url: `http://localhost:5001/all_events`,
-    headers: {  "Content-Type": "application/json"},
-  });
-  if(response.statusText === 'OK'){
-    console.log("got events")
-    console.log(response.data)
-    return response.data
-  }
-  else
-    return []
-}
 
 export const isValidEmail = (email:string) =>{
   return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
 }
 
-export const generateDemoEvents1 =  async(token:string): Promise<eventDetails[] | null> => {
+export const parseGetAllEvents =  async(token:string): Promise<eventDetails[] | null> => {
   const all_events: eventDetails[] = [];
   try{
-    const response = await axios({
-      method: "get",
-      url: `http://localhost:5001/all_events`,
-      headers: {  "Content-Type": "application/json", "authorization": token},
-    });
+    const response = await getAllEvents(token);
     if(response.statusText === 'OK'){
       console.log("got events")
       console.log(response.data.length)

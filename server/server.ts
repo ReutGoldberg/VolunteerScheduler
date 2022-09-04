@@ -48,7 +48,6 @@ app.get('/all_events', async (req:Request, res:Response) => {
             throw new Error("user is not certified");
         }
         const events = await getAllEvents();
-        console.log(events)
         res.json(events);
     }
     catch(err:any){
