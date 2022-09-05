@@ -66,16 +66,49 @@ function App() {
     }
   }, []);
 
-  React.useEffect(() => {
-    const genIsAdmin = async () => {
-      const data =
-        window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
-      const userFromStorage = JSON.parse(data);
-      setIsAdmin(await isAdminUser(userFromStorage.token || ""));
-    };
-    // console.log("isAdmin: " + isAdmin);
-    genIsAdmin();
-  }, []);
+  // todo: remove when done testing or fix below
+  // React.useEffect(() => {
+  //   const genIsAdmin = async () => {
+  //     const data =
+  //       window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
+  //     const userFromStorage = JSON.parse(data);
+  //     setIsAdmin(await isAdminUser(userFromStorage.token || ""));
+  //   };
+  //   // console.log("isAdmin: " + isAdmin);
+  //   genIsAdmin();
+  // }, []);
+
+
+//changing isAdmin Verification to an IIFE + .then method and fixing the null issue, introduced above.
+React.useEffect(() => {
+  (async function () { // async function expression used as an IIFE
+    const data: string|null = window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || null;
+    const userFromStorage = data === null ? null : JSON.parse(data);
+    isAdminUser(userFromStorage?.token || "")
+    .then((result) => setIsAdmin(result));
+  })();  
+}, []);
+
+
+/*
+
+
+(async function (x) { // async function expression used as an IIFE
+  const p1 = resolveAfter2Seconds(20);
+  const p2 = resolveAfter2Seconds(30);
+  return x + await p1 + await p2;
+})(10).then((v) => {
+  console.log(v);  // prints 60 after 2 seconds.
+});
+
+
+*/
+
+
+
+
+
+
 
   const pageToPresent = (page: string) => {
     sessionStorage.setItem("page", page);

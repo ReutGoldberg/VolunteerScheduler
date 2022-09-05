@@ -55,10 +55,10 @@ import { enrollement_details, fullEventDetails } from "./helper";
 //make this a private function for the class DAL
  async function isAdminUser(userToken:string){
     console.log("todo: check if admin")
-    //@ts-ignore - todo: find a better way to pass this param    
     try {
-      // const userData:any = jwt_decode(usertoken);
-      // console.log("userToken>: "+userToken);
+      if(userToken == null || userToken == "")
+        return false;
+
       const requestURL:string = `${AppConfig.server_url}/user/userEmail/`;
       const response = await axios({
         method: "get",
@@ -67,7 +67,7 @@ import { enrollement_details, fullEventDetails } from "./helper";
                    "authorization": userToken
                   },
         });
-        // console.log("ddd" + response.data.isAdmin);
+
       return response.data.is_admin;
     } catch (error:any) {
       console.error(error);
@@ -77,15 +77,11 @@ import { enrollement_details, fullEventDetails } from "./helper";
 
 async function getLabels(userToken:string){
   console.log("getLabels check if admin")
-  if (await !isAdminUser(userToken)){
-    return;
+  const isAdmin = await isAdminUser(userToken);
+  if (!isAdmin){
+    console.log("From getLabels - userDoesn't have admin rights");
+    return undefined;
   }
-  /*
-  const data = sessionStorage.getItem(`${AppConfig.sessionStorageContextKey}`) || "";
-  let userFromStorage = JSON.parse(data);
-  const usertoken = userFromStorage.token;
-  */
-
 
   const requestURL:string = `${AppConfig.server_url}/all_labels`;
   const response = await axios({

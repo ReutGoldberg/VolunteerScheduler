@@ -1,6 +1,6 @@
 import express, {Express, Request, Response} from "express";
 import jwt_decode from "jwt-decode";
-import { isVerifiedUser } from "./server_utils";
+import { isVerifiedUser, isValidEmail } from "./server_utils";
 import {editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, deleteEventById, addNewAdmin, addNewEvent, enrollToEvent, getAllAdminUsers} from "./db";
 
 
@@ -121,9 +121,13 @@ app.post('/add_user', async (req:Request, res:Response) => {
 
     try{
         //@ts-ignore
-        const webTokenSub = jwt_decode(authToken).sub;
-        if(!(await isVerifiedUser(authToken))){
-            throw new Error("user is not certified");
+        //checking that the token is valid
+        //will throw errors if the decode is not going as expected. 
+        const webTokenSub = jwt_decode(authToken).sub; 
+        
+        if(!isValidEmail(email)){
+            const msg = " ------- In POST add_user, got invalid user email -------"
+            throw new Error(msg);
         }
         else{
             const user = await addNewUser(firstName, lastName, email, webTokenSub);

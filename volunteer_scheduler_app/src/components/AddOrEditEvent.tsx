@@ -126,8 +126,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           if (data.length === 0) {
             return;
           }
-          console.log("im here");
-          console.log(data);
+          console.log("Got lables from DB");  //todo: remove
+          console.log(data); //todo: remove
           setlabelOptions(
             data.map((labelOption) => {
               return { id: labelOption.id, name: labelOption.name };
