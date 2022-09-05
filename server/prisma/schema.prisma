@@ -2,17 +2,17 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
 // IN ORDER TO GENERATE FAKE DATA: 
 // UNCOMMENT THIS AND COMMENT OUT THE ABOVE TO USE THE FAKE DB INSTEAD OF PROD
-datasource db {
-  provider = "postgresql"
-  url      = env("FAKE_DATABASE_URL")
-}
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("FAKE_DATABASE_URL")
+// }
 
 
 
