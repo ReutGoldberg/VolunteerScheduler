@@ -235,18 +235,26 @@ export async function getAllEvents(token:string){
       },
     });
   }
-  /* still in the works
+  /* still in the works */
   async function createFakeEvent(data:any){
-    const response = await axios({
+    try {
+      const response = await axios({
         method: "post",
         url: `${AppConfig.server_url}/add_fake_event`,
         data: JSON.stringify(data),
         headers: { "Content-Type": "application/json",
-        "Authorization": `fake_data_token-${data.token}`
+        "Authorization": "fake_event"
       },
     });
+    return response;
+    }
+    catch(err:any){
+      console.error(err);
+      throw err;
+    }
+
   } 
-  */
+  
 
 
   async function createFakeLabel(data:any){
@@ -269,4 +277,4 @@ export async function getAllEvents(token:string){
   }
 
 
-export {isNewUser, createUser, isAdminUser, getAdminsList , createFakeUser, getLabels, createFakeLabel, createFakeLog}
+export {isNewUser, createUser, isAdminUser, getAdminsList , createFakeUser, getLabels, createFakeLabel, createFakeLog, createFakeEvent}

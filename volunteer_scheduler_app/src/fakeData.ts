@@ -23,7 +23,7 @@ function generateFakeUser(){
 function generateFakeEvent(){
 
     const title = faker.company.bsNoun();
-    const label = faker.company.bsNoun();
+    const labels = faker.lorem.words();
     const details = faker.company.catchPhrase();
     const created_by = faker.name.findName(); //returns full name
     const location = faker.address.city();
@@ -37,6 +37,7 @@ function generateFakeEvent(){
     return {
       "title": title,
       "details": details,
+      "labels": labels,
       "created_by": created_by,
       "location": location,
       "min_volenteering": min_volenteering,

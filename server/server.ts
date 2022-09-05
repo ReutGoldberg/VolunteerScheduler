@@ -415,4 +415,24 @@ app.post('/add_fake_log', async (req:Request, res:Response) => {
 });
 
 
+app.post('/add_fake_event', async (req:Request, res:Response) => {
+    const eventData = req.body;
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(authToken !== "fake_event"){ //verifing that the fake auth token starts with the expected prefix
+            const msg = `Event's auth token has issues \n Got: ${authToken}`
+            throw new Error(msg);
+        }
+        else{
+            const event = await addNewEvent(eventData);            
+            res.json(event);
+        }
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
+});
+
+
 

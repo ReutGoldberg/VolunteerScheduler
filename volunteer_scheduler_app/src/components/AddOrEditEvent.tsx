@@ -299,7 +299,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         console.log("admin!");
         try {
           var event_details: fullEventDetails = {
-            id: 0,
+            id: 0,//todo: why is the ID hardcoded?!?! DANITTT???
             title: eventName,
             details: eventInfo,
             labels: checkedLabels,
