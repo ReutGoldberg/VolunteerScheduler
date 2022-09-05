@@ -14,3 +14,16 @@ By running: 'npx prisma migrate dev --name init'
 This takes the db's configuration in the schema file and overrides the local db to have the same configuration and table structure.
 Note - this will remove all the previous tables and structure to match the current one defined in your project. 
 (This way we can make sure we're all working on the same schema structure) 
+
+
+### `Fake Data Generation DB:`   
+* The Fake Data mechanisem is completely isolated from the Production DB.
+So any changes applied won't affect the production DB.
+To switch to the fake data part do the following:
+
+  1. In schema.prisma commnet-out the `datasource db` part for `DATABASE_URL`
+  and uncomment the `datasource db` part for `FAKE_DATABASE_URL`.
+  2. Run the migrations comment to make sure the FAKE DB alligned with the scehme of the project.
+  3. Go to the AppConfig file and set the `IS_SHOW_FAKE` flag to `true`.
+  4. Run the app and the server.
+  5. Create fake data. 

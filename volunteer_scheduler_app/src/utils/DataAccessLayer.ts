@@ -40,17 +40,7 @@ import { enrollement_details, fullEventDetails } from "./helper";
 
   }
 
-  async function createFakeUser(userObject:any, userToken:string){
-    const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email,token:userToken, is_fake: true};
-    const response = await axios({
-        method: "post",
-        url: `${AppConfig.server_url}/add_user`,
-        data: JSON.stringify(data),
-        headers: { "Content-Type": "application/json",
-        "Authorization": userToken
-      },
-    });
-  }
+
 
 //make this a private function for the class DAL
  async function isAdminUser(userToken:string){
@@ -233,4 +223,50 @@ export async function getAllEvents(token:string){
   }
 }
 
-export {isNewUser, createUser, isAdminUser, getAdminsList , createFakeUser, getLabels}
+/* FAKE */ 
+  async function createFakeUser(userObject:any){
+    const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email, token: userObject.token};
+    const response = await axios({
+        method: "post",
+        url: `${AppConfig.server_url}/add_fake_user`,
+        data: JSON.stringify(data),
+        headers: { "Content-Type": "application/json",
+        "Authorization": `fake_data_token-${data.token}`
+      },
+    });
+  }
+  /* still in the works
+  async function createFakeEvent(data:any){
+    const response = await axios({
+        method: "post",
+        url: `${AppConfig.server_url}/add_fake_event`,
+        data: JSON.stringify(data),
+        headers: { "Content-Type": "application/json",
+        "Authorization": `fake_data_token-${data.token}`
+      },
+    });
+  } 
+  */
+
+
+  async function createFakeLabel(data:any){
+    const response = await axios({
+        method: "post",
+        url: `${AppConfig.server_url}/add_fake_label`,
+        data: JSON.stringify(data),
+        headers: { "Content-Type": "application/json", "Authorization": "fake_label"},
+    });
+  }
+
+
+  async function createFakeLog(data:any){
+    const response = await axios({
+        method: "post",
+        url: `${AppConfig.server_url}/add_fake_log`,
+        data: JSON.stringify(data),
+        headers: { "Content-Type": "application/json", "Authorization": "fake_log"},
+    });
+  }
+
+
+export {isNewUser, createUser, isAdminUser, getAdminsList , createFakeUser, getLabels, createFakeLabel, createFakeLog}

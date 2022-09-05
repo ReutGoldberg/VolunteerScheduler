@@ -14,7 +14,7 @@ function generateFakeUser(){
     "first_name": firstName,
     "last_name": lastName,
     "email":email,
-    "token":token,
+    "token":token, 
     "is_admin":isAdmin
   }
 }
@@ -36,7 +36,6 @@ function generateFakeEvent(){
     
     return {
       "title": title,
-      "label": label,
       "details": details,
       "created_by": created_by,
       "location": location,

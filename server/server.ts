@@ -1,7 +1,7 @@
 import express, {Express, Request, Response} from "express";
 import jwt_decode from "jwt-decode";
 import { isVerifiedUser, isValidEmail } from "./server_utils";
-import {editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, deleteEventById, addNewAdmin, addNewEvent, enrollToEvent, getAllAdminUsers} from "./db";
+import {editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, deleteEventById, addNewAdmin, addNewEvent, enrollToEvent, getAllAdminUsers, addNewLabel,addNewLog} from "./db";
 
 
 const config = require('./config')
@@ -124,7 +124,6 @@ app.post('/add_user', async (req:Request, res:Response) => {
         //checking that the token is valid
         //will throw errors if the decode is not going as expected. 
         const webTokenSub = jwt_decode(authToken).sub; 
-        
         if(!isValidEmail(email)){
             const msg = " ------- In POST add_user, got invalid user email -------"
             throw new Error(msg);
@@ -342,5 +341,78 @@ app.get('/user/userEmail/', async (req:Request, res:Response) => {
     }
     
  });
+
+
+
+ /* FAKE */ 
+
+app.post('/add_fake_user', async (req:Request, res:Response) => {
+    const {firstName, lastName, email} = req.body;
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(!authToken.startsWith(config.FakeDB.preToken)){ //verifing that the fake auth token starts with the expected prefix
+            const msg = `In add_fake_user \n  fake data token is wrong. \n Got: ${authToken}`
+            console.log(msg);
+            throw new Error(msg);
+
+        }
+        if(!isValidEmail(email)){
+            const msg = "In POST add_fake_user, got invalid user email"
+            console.log(msg);
+            throw new Error(msg);
+        }
+        else{
+            //authToken = "fake_data"
+            const user = await addNewUser(firstName, lastName, email, authToken);            
+            res.json(user);
+        }
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
+});
+
+
+app.post('/add_fake_label', async (req:Request, res:Response) => {
+    const {name} = req.body;
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(authToken !== "fake_label"){ //verifing that the fake auth token starts with the expected prefix
+            const msg = `label's auth token has issues \n Got: ${authToken}`
+            throw new Error(msg);
+        }
+        else{
+            const label = await addNewLabel(name);            
+            res.json(label);
+        }
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
+});
+
+
+
+app.post('/add_fake_log', async (req:Request, res:Response) => {
+    const {text, time} = req.body;
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(authToken !== "fake_log"){ //verifing that the fake auth token starts with the expected prefix
+            const msg = `Log's auth token has issues \n Got: ${authToken}`
+            throw new Error(msg);
+        }
+        else{
+            const label = await addNewLog(text,time);            
+            res.json(label);
+        }
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
+});
+
 
 

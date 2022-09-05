@@ -2,11 +2,13 @@ import React from "react";
 import { Button, Box, TextField } from "@mui/material";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
-import { generateFakeUser } from "../fakeData";
+import { generateFakeUser, generateFakeEvent, generateFakeLabel, generateFakeLog } from "../fakeData";
 import {
   isNewUser,
   createUser,
   createFakeUser,
+  createFakeLog,
+  createFakeLabel
 } from "../utils/DataAccessLayer";
 import { AppConfig } from "../AppConfig";
 import { UserObjectContext } from "../App";
@@ -59,10 +61,18 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
         given_name: fakeUser.first_name,
         family_name: fakeUser.last_name,
         email: fakeUser.email,
-        token: fakeUser.token,
+        token: fakeUser.token
       };
-      createFakeUser(data, data.token);
+      createFakeUser(data);
+
+      const fakeLog = generateFakeLog();
+      createFakeLog(fakeLog);
+
+      const fakeLabel = generateFakeLabel();
+      createFakeLabel(fakeLabel);
+
     }
+    alert(`${num_data} fakes added successfully`);
   }
 
   React.useEffect(() => {
@@ -115,16 +125,27 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
         }}
         id="signInDiv"
       ></Box>
-      <TextField
-        id="fakeDataAmount"
-        type="number"
-        helperText="Set the amount of fake data to generate"
-        label="Amount"
-      ></TextField>
-      <Button onClick={(event) => handleGenerateFakeData(event)}>
-        {" "}
-        Generate Fake Data
-      </Button>
+      {AppConfig.IS_SHOW_FAKE && 
+      (
+      <Box id="genFakeContainer"        
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}>
+        <TextField
+          id="fakeDataAmount"
+          type="number"
+          helperText="Set the amount of fake data to generate"
+          label="Amount"
+        ></TextField>
+        <Button onClick={(event) => handleGenerateFakeData(event)}>
+          {" "}
+          Generate Fake Data
+        </Button>
+      </Box>
+      )
+      }
     </Box>
   );
 };
