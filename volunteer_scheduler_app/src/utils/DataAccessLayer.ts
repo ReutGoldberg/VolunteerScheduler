@@ -44,9 +44,8 @@ import { enrollement_details, fullEventDetails } from "./helper";
 
 //make this a private function for the class DAL
  async function isAdminUser(userToken:string){
-    console.log("todo: check if admin")
     try {
-      if(userToken == null || userToken == "")
+      if(userToken == null || userToken === "")
         return false;
 
       const requestURL:string = `${AppConfig.server_url}/user/userEmail/`;
@@ -57,7 +56,7 @@ import { enrollement_details, fullEventDetails } from "./helper";
                    "authorization": userToken
                   },
         });
-
+      console.log(`Is Admin result: ${response.data.is_admin}`)
       return response.data.is_admin;
     } catch (error:any) {
       console.error(error);

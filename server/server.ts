@@ -298,6 +298,11 @@ app.get('/user/userEmail/', async (req:Request, res:Response) => {
         } 
         //@ts-ignore
         const user = await getUserByToken(jwt_decode(authToken).sub);
+        //todo: remove when done: prints
+        // console.log("-----------------------------------------------------")
+        // console.log("User OBject from isADmin")
+        // console.log(JSON.stringify(user));
+        // console.log("-----------------------------------------------------")
         res.json(user);
     }
     catch(err:any){

@@ -85,7 +85,11 @@ React.useEffect(() => {
     const data: string|null = window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || null;
     const userFromStorage = data === null ? null : JSON.parse(data);
     isAdminUser(userFromStorage?.token || "")
-    .then((result) => setIsAdmin(result));
+    .then((result) => {
+      console.log("------------------------------------------")
+      console.log("IS_ADMIN REUSLT:" + result);
+      console.log("------------------------------------------")
+      setIsAdmin(result)});
   })();  
 }, []);
 
