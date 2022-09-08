@@ -16,7 +16,7 @@ interface AdminListProps {
 }
 
 export const AdminsList: React.FC<AdminListProps> = ({ curAdminList }) => {
-  console.log(`This is the prop: ${curAdminList}`);
+  console.log(`This is the prop: ${JSON.stringify(curAdminList)}`);
 
   const [admins, setAdmins] = React.useState(curAdminList);
 
@@ -51,7 +51,8 @@ export const AdminsList: React.FC<AdminListProps> = ({ curAdminList }) => {
       <List
         id="adminsList"
         ref={listRef}
-        style={{ maxHeight: 200, overflow: "auto" }}
+        //style={{ maxHeight: 200, overflow: "auto" }} - to show more admins on the page w/o scroll
+        style={{overflow: "auto" }}
       >
         {isPending && <CircularProgress color="primary" size={100} />}
         {admins &&

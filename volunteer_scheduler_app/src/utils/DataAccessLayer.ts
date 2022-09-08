@@ -26,7 +26,7 @@ import { enrollement_details, fullEventDetails } from "./helper";
       const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email};
       const response = await axios({
           method: "post",
-          url: `${AppConfig.server_url}/add_user`,
+          url: `${AppConfig.server_url}/user/add_user`,
           data: JSON.stringify(data),
           headers: { "Content-Type": "application/json",
                      "Authorization": userToken
@@ -112,7 +112,7 @@ async function getAdminsList(usertoken:string){
 export async function addAdmin(email:string, usertoken:string) {
   return await axios({
     method: "put",
-    url: `${AppConfig.server_url}/add_admin`,
+    url: `${AppConfig.server_url}/user/add_admin`,
     data: {email:email},
     headers: { "Content-Type": "application/json; charset=utf-8",
     "authorization": usertoken }, 
@@ -227,7 +227,7 @@ export async function getAllEvents(token:string){
     const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email, token: userObject.token};
     const response = await axios({
         method: "post",
-        url: `${AppConfig.server_url}/add_fake_user`,
+        url: `${AppConfig.server_url}/add_fake/user`,
         data: JSON.stringify(data),
         headers: { "Content-Type": "application/json",
         "Authorization": `fake_data_token-${data.token}`
@@ -239,7 +239,7 @@ export async function getAllEvents(token:string){
     try {
       const response = await axios({
         method: "post",
-        url: `${AppConfig.server_url}/add_fake_event`,
+        url: `${AppConfig.server_url}/add_fake/event`,
         data: JSON.stringify(data),
         headers: { "Content-Type": "application/json",
         "Authorization": "fake_event"
@@ -259,7 +259,7 @@ export async function getAllEvents(token:string){
   async function createFakeLabel(data:any){
     const response = await axios({
         method: "post",
-        url: `${AppConfig.server_url}/add_fake_label`,
+        url: `${AppConfig.server_url}/add_fake/label`,
         data: JSON.stringify(data),
         headers: { "Content-Type": "application/json", "Authorization": "fake_label"},
     });
@@ -269,7 +269,7 @@ export async function getAllEvents(token:string){
   async function createFakeLog(data:any){
     const response = await axios({
         method: "post",
-        url: `${AppConfig.server_url}/add_fake_log`,
+        url: `${AppConfig.server_url}/add_fake/log`,
         data: JSON.stringify(data),
         headers: { "Content-Type": "application/json", "Authorization": "fake_log"},
     });
