@@ -22,8 +22,6 @@ export const UserObjectContext = React.createContext<any>({
   setUser: () => {},
 });
 
-//todo: maybe make generic and pass a callback
-
 function App() {
   const [user, setUser] = React.useState<any>({});
   const [page, setPage] = React.useState<string>(getPage());
@@ -45,13 +43,16 @@ function App() {
 
   //This hook will set the value to the localStorage upon erasing the User on Refresh
   React.useEffect(() => {
-    if (JSON.stringify(user) !== "{}") {
+    const userStr:string = JSON.stringify(user);
+    if (userStr !== "{}") {
       //making sure I'm not saving an erased context to the localstorage
-      console.log(`Setting Context!!! ${JSON.stringify(user)}`);
+      console.log(`Setting Context!!! ${userStr}`);
       window.sessionStorage.setItem(
         AppConfig.sessionStorageContextKey,
-        JSON.stringify(user)
+        userStr
       );
+      //updating adminUser as well - fixed refresh admin issues
+      isAdminUser(user.token).then((res) => setIsAdmin(res));
     }
   }, [user]);
 
@@ -59,24 +60,14 @@ function App() {
   React.useEffect(() => {
     const data: string =
       sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
-
+    
+    
+    //Not for initial login - when there's already data in the storage
     if (data !== "" && JSON.stringify(user) === "{}") {
       console.log(`Fetching Context!!! ${data}`);
       setUser(JSON.parse(data));
     }
   }, []);
-
-  // todo: remove when done testing or fix below
-  // React.useEffect(() => {
-  //   const genIsAdmin = async () => {
-  //     const data =
-  //       window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
-  //     const userFromStorage = JSON.parse(data);
-  //     setIsAdmin(await isAdminUser(userFromStorage.token || ""));
-  //   };
-  //   // console.log("isAdmin: " + isAdmin);
-  //   genIsAdmin();
-  // }, []);
 
 
 //changing isAdmin Verification to an IIFE + .then method and fixing the null issue, introduced above.
@@ -89,7 +80,10 @@ React.useEffect(() => {
       console.log("------------------------------------------")
       console.log("IS_ADMIN REUSLT:" + result);
       console.log("------------------------------------------")
-      setIsAdmin(result)});
+      setIsAdmin(result)})
+    .catch((err:any) => {
+      console.log(`Got Error when tried fetchnig user on Load: ${err}` )
+    });
   })();  
 }, []);
 

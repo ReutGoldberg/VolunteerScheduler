@@ -9,20 +9,7 @@ const config = require('./config')
 export const isValidEmail = (email:string):boolean => {
     return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
   }
-// todo : remove when done testing
-// async function isAuthenticUser(userToken:string){
-//   let res = false;
-//   const ticket = await config.client_app.verifyIdToken({
-//       idToken: userToken,
-//       audience: config.client_app.client_id,
-//   })
-//   .then(() => res = true)
-//   .catch(() => {
-//     console.error("Error with Token auth");
-//     res = false;  
-//   })
-//   .finally(() => res);
-// }
+
 
 
 // real version

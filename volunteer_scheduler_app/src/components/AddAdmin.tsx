@@ -103,6 +103,7 @@ export const AddAdmin: React.FC = () => {
     setAdminsList(response);
     //@ts-ignore
     document.getElementById("adminEmailToRemoveTxt").value = ""; //clear the feild for better UX
+    alert(`${removeAdminEmail} removed successfully`);  
   };
 
   const handleAddAdmin = async () => {
@@ -126,6 +127,7 @@ export const AddAdmin: React.FC = () => {
     setAdminsList(response);
     //@ts-ignore
     document.getElementById("adminEmailToAddTxt").value = ""; //clear the feild for better UX
+    alert(`${addAdminEmail} added successfully`); 
   };
 
 
