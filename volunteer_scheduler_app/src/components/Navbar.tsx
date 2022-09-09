@@ -89,9 +89,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             General Events Calendar
           </Button>
-          <Button id="AddEventBtn" onClick={handleAddEvent}>
+          {isAdmin && <Button id="AddEventBtn" onClick={handleAddEvent}>
             Add Event
           </Button>
+          }
           {isAdmin && (
             <Button id="AddAdminBtn" onClick={handleAddAdmin}>
               Add Admin

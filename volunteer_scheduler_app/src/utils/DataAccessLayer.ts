@@ -40,25 +40,14 @@ import { enrollement_details, fullEventDetails } from "./helper";
 
   }
 
-  async function createFakeUser(userObject:any, userToken:string){
-    const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email,token:userToken, is_fake: true};
-    const response = await axios({
-        method: "post",
-        url: `${AppConfig.server_url}/add_user`,
-        data: JSON.stringify(data),
-        headers: { "Content-Type": "application/json",
-        "Authorization": userToken
-      },
-    });
-  }
+
 
 //make this a private function for the class DAL
  async function isAdminUser(userToken:string){
-    console.log("todo: check if admin")
-    //@ts-ignore - todo: find a better way to pass this param    
     try {
-      // const userData:any = jwt_decode(usertoken);
-      // console.log("userToken>: "+userToken);
+      if(userToken == null || userToken === "")
+        return false;
+
       const requestURL:string = `${AppConfig.server_url}/user/userEmail/`;
       const response = await axios({
         method: "get",
@@ -67,7 +56,7 @@ import { enrollement_details, fullEventDetails } from "./helper";
                    "authorization": userToken
                   },
         });
-        // console.log("ddd" + response.data.isAdmin);
+      console.log(`Is Admin result: ${response.data.is_admin}`)
       return response.data.is_admin;
     } catch (error:any) {
       console.error(error);
@@ -77,15 +66,11 @@ import { enrollement_details, fullEventDetails } from "./helper";
 
 async function getLabels(userToken:string){
   console.log("getLabels check if admin")
-  if (await !isAdminUser(userToken)){
-    return;
+  const isAdmin = await isAdminUser(userToken);
+  if (!isAdmin){
+    console.log("From getLabels - userDoesn't have admin rights");
+    return undefined;
   }
-  /*
-  const data = sessionStorage.getItem(`${AppConfig.sessionStorageContextKey}`) || "";
-  let userFromStorage = JSON.parse(data);
-  const usertoken = userFromStorage.token;
-  */
-
 
   const requestURL:string = `${AppConfig.server_url}/all_labels`;
   const response = await axios({
@@ -271,8 +256,58 @@ export async function getpersonalEvents(token:string){
   }
 }
 
+/* FAKE */ 
+  async function createFakeUser(userObject:any){
+    const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email, token: userObject.token};
+    const response = await axios({
+        method: "post",
+        url: `${AppConfig.server_url}/add_fake_user`,
+        data: JSON.stringify(data),
+        headers: { "Content-Type": "application/json",
+        "Authorization": `fake_data_token-${data.token}`
+      },
+    });
+  }
+  /* still in the works */
+  async function createFakeEvent(data:any){
+    try {
+      const response = await axios({
+        method: "post",
+        url: `${AppConfig.server_url}/add_fake_event`,
+        data: JSON.stringify(data),
+        headers: { "Content-Type": "application/json",
+        "Authorization": "fake_event"
+      },
+    });
+    return response;
+    }
+    catch(err:any){
+      console.error(err);
+      throw err;
+    }
+
+  } 
+  
 
 
+  async function createFakeLabel(data:any){
+    const response = await axios({
+        method: "post",
+        url: `${AppConfig.server_url}/add_fake_label`,
+        data: JSON.stringify(data),
+        headers: { "Content-Type": "application/json", "Authorization": "fake_label"},
+    });
+  }
 
 
-export {isNewUser, createUser, isAdminUser, getAdminsList , createFakeUser, getLabels}
+  async function createFakeLog(data:any){
+    const response = await axios({
+        method: "post",
+        url: `${AppConfig.server_url}/add_fake_log`,
+        data: JSON.stringify(data),
+        headers: { "Content-Type": "application/json", "Authorization": "fake_log"},
+    });
+  }
+
+
+export {isNewUser, createUser, isAdminUser, getAdminsList , createFakeUser, getLabels, createFakeLabel, createFakeLog, createFakeEvent}

@@ -1,7 +1,7 @@
 import express, {Express, Request, Response} from "express";
 import jwt_decode from "jwt-decode";
-import { isVerifiedUser } from "./server_utils";
-import {getPersonalEvents, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, deleteEventById, addNewAdmin, addNewEvent, enrollToEvent, unenrollToEvent, getAllAdminUsers} from "./db";
+import { isVerifiedUser, isValidEmail } from "./server_utils";
+import {editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, deleteEventById, addNewAdmin, addNewEvent, enrollToEvent, getAllAdminUsers, addNewLabel,addNewLog, getPersonalEvents, unenrollToEvent} from "./db";
 
 
 const config = require('./config')
@@ -139,9 +139,12 @@ app.post('/add_user', async (req:Request, res:Response) => {
 
     try{
         //@ts-ignore
-        const webTokenSub = jwt_decode(authToken).sub;
-        if(!(await isVerifiedUser(authToken))){
-            throw new Error("user is not certified");
+        //checking that the token is valid
+        //will throw errors if the decode is not going as expected. 
+        const webTokenSub = jwt_decode(authToken).sub; 
+        if(!isValidEmail(email)){
+            const msg = " ------- In POST add_user, got invalid user email -------"
+            throw new Error(msg);
         }
         else{
             const user = await addNewUser(firstName, lastName, email, webTokenSub);
@@ -337,6 +340,11 @@ app.get('/user/userEmail/', async (req:Request, res:Response) => {
         } 
         //@ts-ignore
         const user = await getUserByToken(jwt_decode(authToken).sub);
+        //todo: remove when done: prints
+        // console.log("-----------------------------------------------------")
+        // console.log("User OBject from isADmin")
+        // console.log(JSON.stringify(user));
+        // console.log("-----------------------------------------------------")
         res.json(user);
     }
     catch(err:any){
@@ -380,5 +388,98 @@ app.get('/user/userEmail/', async (req:Request, res:Response) => {
     }
     
  });
+
+
+
+ /* FAKE */ 
+
+app.post('/add_fake_user', async (req:Request, res:Response) => {
+    const {firstName, lastName, email} = req.body;
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(!authToken.startsWith(config.FakeDB.preToken)){ //verifing that the fake auth token starts with the expected prefix
+            const msg = `In add_fake_user \n  fake data token is wrong. \n Got: ${authToken}`
+            console.log(msg);
+            throw new Error(msg);
+
+        }
+        if(!isValidEmail(email)){
+            const msg = "In POST add_fake_user, got invalid user email"
+            console.log(msg);
+            throw new Error(msg);
+        }
+        else{
+            //authToken = "fake_data"
+            const user = await addNewUser(firstName, lastName, email, authToken);            
+            res.json(user);
+        }
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
+});
+
+
+app.post('/add_fake_label', async (req:Request, res:Response) => {
+    const {name} = req.body;
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(authToken !== "fake_label"){ //verifing that the fake auth token starts with the expected prefix
+            const msg = `label's auth token has issues \n Got: ${authToken}`
+            throw new Error(msg);
+        }
+        else{
+            const label = await addNewLabel(name);            
+            res.json(label);
+        }
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
+});
+
+
+
+app.post('/add_fake_log', async (req:Request, res:Response) => {
+    const {text, time} = req.body;
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(authToken !== "fake_log"){ //verifing that the fake auth token starts with the expected prefix
+            const msg = `Log's auth token has issues \n Got: ${authToken}`
+            throw new Error(msg);
+        }
+        else{
+            const label = await addNewLog(text,time);            
+            res.json(label);
+        }
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
+});
+
+
+app.post('/add_fake_event', async (req:Request, res:Response) => {
+    const eventData = req.body;
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(authToken !== "fake_event"){ //verifing that the fake auth token starts with the expected prefix
+            const msg = `Event's auth token has issues \n Got: ${authToken}`
+            throw new Error(msg);
+        }
+        else{
+            const event = await addNewEvent(eventData);            
+            res.json(event);
+        }
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
+});
+
 
 

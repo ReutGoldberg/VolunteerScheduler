@@ -118,6 +118,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
 
   const [isEnrolled, setIsEnrolled] = React.useState(false);
 
+  
+
   React.useEffect(() => {
     async function callAsync() {
       try {
@@ -127,8 +129,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           if (data.length === 0) {
             return;
           }
-          console.log("im here");
-          console.log(data);
+          console.log("Got lables from DB");  //todo: remove
+          console.log(data); //todo: remove
           setlabelOptions(
             data.map((labelOption) => {
               return { id: labelOption.id, name: labelOption.name };
@@ -305,7 +307,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         console.log("admin!");
         try {
           var event_details: fullEventDetails = {
-            id: 0,
+            id: 0,//todo: why is the ID hardcoded?!?! DANITTT???
             title: eventName,
             details: eventInfo,
             labels: checkedLabels,
@@ -614,13 +616,14 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           gap: 4.7,
         }}
       >
+        {isAdmin && (
         <TextField
-          disabled={currentPage != "AddOrEditEvent" && !isAdmin}
+          // disabled = {(currentPage != "AddOrEditEvent")}
           required={toEditEventDetails ? false : true}
           error={!startDateValid}
           helperText={!startDateValid ? "Please enter a valid date " : ""}
           id="datetime-local"
-          label="enter start date"
+          label="Enter start date"
           type="datetime-local"
           defaultValue={toEditEventDetails ? toEditEventDetails.startAt : null}
           sx={{ width: 250 }}
@@ -629,14 +632,15 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           }}
           onChange={handleEventStartTimeChange}
         />
-
+        )}
+        {isAdmin && ( 
         <TextField
-          disabled={currentPage != "AddOrEditEvent" && !isAdmin}
+          // disabled = {(currentPage != "AddOrEditEvent")}
           required={toEditEventDetails ? false : true}
           error={!endDateValid}
           helperText={!endDateValid ? "Please enter a valid date " : ""}
           id="datetime-local"
-          label="enter end date"
+          label="Enter end date"
           type="datetime-local"
           defaultValue={toEditEventDetails ? toEditEventDetails.endAt : null}
           sx={{ width: 250 }}
@@ -644,7 +648,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             shrink: true,
           }}
           onChange={handleEventEndTimeChange}
-        />
+        />)}
       </Box>
       <Box
         sx={{
@@ -657,7 +661,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         <Box sx={{ flexDirection: "column" }}>
           {" "}
           <Typography sx={{ textDecoration: "underline" }}>
-            {toEditEventDetails ? "current start date: " : ""}
+            {toEditEventDetails ? "Begins at: " : ""}
           </Typography>
           <Typography>
             {toEditEventDetails
@@ -668,7 +672,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         <Box sx={{ flexDirection: "column" }}>
           {" "}
           <Typography sx={{ textDecoration: "underline" }}>
-            {toEditEventDetails ? "current end date: " : ""}
+            {toEditEventDetails ? "Ends at: " : ""}
           </Typography>
           <Typography>
             {toEditEventDetails

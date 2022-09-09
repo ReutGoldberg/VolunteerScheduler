@@ -252,4 +252,41 @@ const prisma = new PrismaClient()
     return labels;
   }
 
-  export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers};
+  async function addNewLabel(labelName:string) {
+    const label = await prisma.Labels.create({
+      data: {
+        name: labelName,
+      },
+    });
+    return label;
+  }
+
+  async function addNewLog(logTxt:string, logTime:Date) {
+    const log = await prisma.Logs.create({
+      data: {
+        text: logTxt,
+        time: logTime,
+      },
+    });
+    return log;
+  }
+
+
+
+
+  /*
+  async function addNewUser(firstName:String, lastName:String, email:string, token:string){
+  const user = await prisma.Users.create({
+    data: {
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      token: token,
+      is_admin: false,
+    },
+  });
+  return user;
+  }
+  */
+
+  export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog};

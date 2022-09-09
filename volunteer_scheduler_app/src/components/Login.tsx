@@ -2,11 +2,14 @@ import React from "react";
 import { Button, Box, TextField } from "@mui/material";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
-import { generateFakeUser } from "../fakeData";
+import { generateFakeUser, generateFakeEvent, generateFakeLabel, generateFakeLog } from "../fakeData";
 import {
   isNewUser,
   createUser,
   createFakeUser,
+  createFakeLog,
+  createFakeLabel,
+  createFakeEvent
 } from "../utils/DataAccessLayer";
 import { AppConfig } from "../AppConfig";
 import { UserObjectContext } from "../App";
@@ -49,20 +52,47 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
   //In order for it to work, the function needs access both to the fakeData API and the server API (this is why it's located here)
   async function handleGenerateFakeData(event: any) {
     //@ts-ignore
-    const amount = document.getElementById("fakeDataAmount")?.value;
+    const userAmount = document.getElementById("fakeUserAmount")?.value;
+    const num_users = parseInt(userAmount);
 
-    const num_data = parseInt(amount);
-
-    for (let index = 0; index < num_data; index++) {
+    for (let index = 0; index < num_users; index++) {
       const fakeUser = generateFakeUser();
       const data = {
         given_name: fakeUser.first_name,
         family_name: fakeUser.last_name,
         email: fakeUser.email,
-        token: fakeUser.token,
+        token: fakeUser.token
       };
-      createFakeUser(data, data.token);
+      createFakeUser(data);
     }
+
+    //@ts-ignore
+    const EventAmount = document.getElementById("fakeEventAmount")?.value;
+    const num_events = parseInt(EventAmount);
+    for (let index = 0; index < num_events; index++) {
+      const fakeEvent = generateFakeEvent()
+      createFakeEvent(fakeEvent);
+    }
+
+    //@ts-ignore
+    const LogAmount = document.getElementById("fakeLogsAmount")?.value;
+    const num_logs = parseInt(LogAmount);
+    for (let index = 0; index < num_logs; index++) {
+      const fakeLog = generateFakeLog();
+      createFakeLog(fakeLog);
+    }
+
+    //@ts-ignore
+    const LabelAmount = document.getElementById("fakeLabelsAmount")?.value;
+    const num_labels = parseInt(LabelAmount);
+    for (let index = 0; index < num_labels; index++) {
+      const fakeLabel = generateFakeLabel();
+      createFakeLabel(fakeLabel);
+    }
+
+    console.log(`Added ${num_users} users, ${num_events} events, ${num_logs} logs, ${num_labels} labels to the fake DB`)
+    alert(`fakes added successfully`);
+    
   }
 
   React.useEffect(() => {
@@ -115,16 +145,45 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
         }}
         id="signInDiv"
       ></Box>
-      <TextField
-        id="fakeDataAmount"
-        type="number"
-        helperText="Set the amount of fake data to generate"
-        label="Amount"
-      ></TextField>
-      <Button onClick={(event) => handleGenerateFakeData(event)}>
-        {" "}
-        Generate Fake Data
-      </Button>
+      {AppConfig.IS_SHOW_FAKE && 
+      (
+      <Box id="genFakeContainer"        
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}>
+          <TextField
+            id="fakeUserAmount"
+            type="number"
+            helperText="Set the amount of fake users to generate"
+            label="Num users"
+          ></TextField>
+           <TextField
+            id="fakeEventAmount"
+            type="number"
+            helperText="Set the amount of fake events to generate"
+            label="Num events"
+          ></TextField>
+            <TextField
+            id="fakeLabelsAmount"
+            type="number"
+            helperText="Set the amount of fake labels to generate"
+            label="Num labels"
+          ></TextField>
+            <TextField
+            id="fakeLogsAmount"
+            type="number"
+            helperText="Set the amount of fake logs to generate"
+            label="Num logs"
+          ></TextField>
+        <Button onClick={(event) => handleGenerateFakeData(event)}>
+          {" "}
+          Generate Fake Data
+        </Button>
+      </Box>
+      )
+      }
     </Box>
   );
 };
