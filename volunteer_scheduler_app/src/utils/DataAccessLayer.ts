@@ -153,6 +153,25 @@ export async function addEnrollReq(event_id:number, token:string){
   }
 }
 
+export async function unenrollReq(event_id:number, token:string){
+  try{
+    console.log("addEnrollReq");
+    console.log(event_id)
+    const response =  await axios({
+        method: "post",
+        url: `${AppConfig.server_url}/unenroll_to_event`,
+        data: {event_id:event_id},
+        headers: { "Content-Type": "application/json",
+                    "authorization": token },
+      });
+    return response;
+  }
+  catch(err:any){
+    console.error(err);
+    throw err;
+  }
+}
+
 export async function editEventReq(event_details:fullEventDetails, token:string){
   try{
   const response =  await axios({
@@ -236,5 +255,24 @@ export async function getAllEvents(token:string){
     throw err;
   }
 }
+
+export async function getpersonalEvents(token:string){
+  try{
+    const response = await axios({
+      method: "get",
+      url: `http://localhost:5001/personal_events`,
+      headers: {  "Content-Type": "application/json", "authorization": token},
+    });
+    return response;
+  }
+  catch(err:any){
+    console.error(err);
+    throw err;
+  }
+}
+
+
+
+
 
 export {isNewUser, createUser, isAdminUser, getAdminsList , createFakeUser, getLabels}

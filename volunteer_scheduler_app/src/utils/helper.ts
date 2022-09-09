@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import axios from 'axios';
-import {getAllEvents} from "./DataAccessLayer";
+import {getAllEvents, getpersonalEvents} from "./DataAccessLayer";
 
 
 export interface labelOptions{

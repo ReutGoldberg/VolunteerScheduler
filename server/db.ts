@@ -94,6 +94,22 @@ const prisma = new PrismaClient()
     return events;
   }
 
+  async function getPersonalEvents(user_token: string){
+    const events = await prisma.Events.findMany({
+      where:{
+        EventVolunteerMap:{
+          some:{
+            Users:{
+              token: user_token
+            }
+          }
+        }
+      }
+    });
+    console.log(events);
+    return events;
+  }
+
   async function deleteEventById(event_id: Number) {
     console.log("deleteEventById");
     const deletedEvent = await prisma.Events.delete({
@@ -166,12 +182,38 @@ const prisma = new PrismaClient()
     }
     catch(error: any){
       console.log(error.message)
-      if (error.code == 'P2002'){  // already exsist
+      if (error.code === 'P2002'){  // already exsist
         return true
       }
       return false
     }
   }
+
+  async function unenrollToEvent(event_id:number, user_token:string){
+    console.log('unenroll to event')
+    console.log(event_id) 
+    const user = await getUserByToken(user_token)
+    const user_id = user.id
+    console.log(user_id) 
+    const new_user_enrolled = await prisma.EventVolunteerMap.delete({
+      where:{
+        event_id_user_id: {
+          event_id: event_id,
+          user_id: user_id,
+        },
+      },
+  });
+    return true;
+  // }
+  //   catch(error: any){
+  //     console.log(error.message)
+  //     if (error.code == 'P2002'){  // already exsist
+  //       return true
+  //     }
+  //     return false
+  //   }
+  }
+  
   
   async function editEvent(event:any){
     console.log('edit event')
@@ -210,4 +252,4 @@ const prisma = new PrismaClient()
     return labels;
   }
 
-  export {enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers};
+  export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers};

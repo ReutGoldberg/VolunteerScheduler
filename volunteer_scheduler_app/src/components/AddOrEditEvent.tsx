@@ -30,6 +30,7 @@ import {
   editEventReq,
   deleteEventReq,
   addEnrollReq,
+  unenrollReq,
 } from "../utils/DataAccessLayer";
 import {
   enrollement_details,
@@ -192,14 +193,12 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const handleEnrollment = async () => {
     try {
       if (toEditEventDetails) {
-        if (!isEnrolled) {
-          console.log("isEnrolled");
-          //enroll
-          const data =
+        const data =
             window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
             "";
           const userFromStorage = JSON.parse(data);
-          console.log(userFromStorage)
+        if (!isEnrolled) {
+          console.log("isEnrolled");
           // var enroll_details: enrollement_details = {
           //   event_id: toEditEventDetails.id,
           //   user_token: userFromStorage.token,
@@ -212,8 +211,15 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             console.log("enrolled successfully");
           else console.log("didnt enrolled");
         } else {
-          //cancel enrollement
           console.log("isNotEnrolled");
+          const response = await unenrollReq(
+            toEditEventDetails.id,
+            userFromStorage.token || ""
+          );
+          if (response.statusText === "OK")
+            console.log("unenrolled successfully");
+          else console.log("didnt unenrolled");
+          //cancel enrollement
         }
         setIsEnrolled(!isEnrolled);
       }
