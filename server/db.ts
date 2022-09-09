@@ -21,13 +21,26 @@ const prisma = new PrismaClient()
   }
 
   //grants admin prevlege to provided user-email
-  async function addNewAdmin(email:string){
+  //todo: remove - was united into setAdmin
+  // async function addNewAdmin(email:string){
+  //   const user = await prisma.Users.update({
+  //     where:{
+  //       email: email,
+  //       },
+  //       data:{
+  //         is_admin: true,
+  //       },
+  //     });
+  //   return user;
+  // }
+
+  async function setAdmin(email:string, isAdmin:boolean){
     const user = await prisma.Users.update({
       where:{
         email: email,
         },
         data:{
-          is_admin: true,
+          is_admin: isAdmin,
         },
       });
     return user;
@@ -247,4 +260,4 @@ const prisma = new PrismaClient()
   }
   */
 
-  export {enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog};
+  export {enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, setAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog};

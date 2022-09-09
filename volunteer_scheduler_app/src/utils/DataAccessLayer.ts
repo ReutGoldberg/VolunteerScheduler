@@ -113,7 +113,17 @@ export async function addAdmin(email:string, usertoken:string) {
   return await axios({
     method: "put",
     url: `${AppConfig.server_url}/user/add_admin`,
-    data: {email:email},
+    data: {email:email, isAdminFlag:true},
+    headers: { "Content-Type": "application/json; charset=utf-8",
+    "authorization": usertoken }, 
+  });
+}
+
+export async function removeAdmin(email:string, usertoken:string) {
+  return await axios({
+    method: "put",
+    url: `${AppConfig.server_url}/user/remove_admin`,
+    data: {email:email, isAdminFlag:false},
     headers: { "Content-Type": "application/json; charset=utf-8",
     "authorization": usertoken }, 
   });

@@ -1,5 +1,5 @@
 import express, {Request, Response} from "express";
-import { addNewAdmin, addNewUser, deleteUserById, getAllAdminUsers, getUserByEmail, updateUser,getUserByToken } from "../db";
+import { addNewUser, deleteUserById, getAllAdminUsers, getUserByEmail, updateUser,getUserByToken, setAdmin } from "../db";
 import { isValidEmail, isVerifiedUser } from "../server_utils";
 import jwt_decode from "jwt-decode";
 
@@ -133,7 +133,7 @@ router.get('/userEmail/', async (req:Request, res:Response) => {
 
  //put and not post bc it updates a specific user and doesnt create a new one
 router.put('/add_admin', async (req:Request, res:Response) => {
-    const {email} = req.body;
+    const {email, isAdminFlag} = req.body;
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     try {
         if(!(await isVerifiedUser(authToken))){
@@ -148,7 +148,7 @@ router.put('/add_admin', async (req:Request, res:Response) => {
         }
 
         const userToUpdate = getUserByEmail(email)
-        .then((dbUser) => {addNewAdmin(dbUser.email);});
+        .then((dbUser) => {setAdmin(dbUser.email, isAdminFlag);});
 
         res.json(userToUpdate);   
         res.status(200);
@@ -157,6 +157,31 @@ router.put('/add_admin', async (req:Request, res:Response) => {
     }
 });
 
+ //put and not post bc it updates a specific user and doesnt create a new one
+ router.put('/remove_admin', async (req:Request, res:Response) => {
+    const {email, isAdminFlag} = req.body;
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try {
+        if(!(await isVerifiedUser(authToken))){
+            res.status(401);
+            throw new Error("User is not verified");
+        }
+        const webUser = jwt_decode(authToken);
+        //@ts-ignore
+        if(!(await getUserByToken(webUser.sub).then((user) => user.is_admin))){
+            res.status(401);
+            throw new Error("Master User is not admin");
+        }
+
+        const userToUpdate = getUserByEmail(email)
+        .then((dbUser) => {setAdmin(dbUser.email, isAdminFlag);});
+
+        res.json(userToUpdate);   
+        res.status(200);
+    } catch (error:any) {
+        console.error(error.message);
+    }
+});
 
 
 

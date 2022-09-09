@@ -1,7 +1,7 @@
 import express, {Express, Request, Response} from "express";
 import jwt_decode from "jwt-decode";
-import { isVerifiedUser, isValidEmail } from "./server_utils";
-import {editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllEvents, getAllUsers,addNewUser,updateUser,deleteUserById, deleteEventById, addNewAdmin, addNewEvent, enrollToEvent, getAllAdminUsers, addNewLabel,addNewLog} from "./db";
+import { isVerifiedUser } from "./server_utils";
+import {editEvent, getUserByToken,getAllLabels,getEvent, getAllEvents, getAllUsers, deleteEventById, addNewEvent, enrollToEvent} from "./db";
 
 
 const config = require('./config')
