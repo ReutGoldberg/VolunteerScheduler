@@ -35,11 +35,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     console.log("handleAddAdmin");
     setPageApp("AddAdmin");
   };
-  const handleAdminsList = () => {
-    console.log("handleAdminsList");
-    //todo: check if the user has admin preveleges
-    setPageApp("AdminsList");
-  };
   const handleProfile = () => {
     console.log("handleProfile");
     setPageApp("Profile");

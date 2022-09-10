@@ -21,13 +21,26 @@ const prisma = new PrismaClient()
   }
 
   //grants admin prevlege to provided user-email
-  async function addNewAdmin(email:string){
+  //todo: remove - was united into setAdmin
+  // async function addNewAdmin(email:string){
+  //   const user = await prisma.Users.update({
+  //     where:{
+  //       email: email,
+  //       },
+  //       data:{
+  //         is_admin: true,
+  //       },
+  //     });
+  //   return user;
+  // }
+
+  async function setAdmin(email:string, isAdmin:boolean){
     const user = await prisma.Users.update({
       where:{
         email: email,
         },
         data:{
-          is_admin: true,
+          is_admin: isAdmin,
         },
       });
     return user;
@@ -215,6 +228,32 @@ const prisma = new PrismaClient()
   }
   
   
+  async function unenrollToEvent(event_id:number, user_token:string){
+    console.log('unenroll to event')
+    console.log(event_id) 
+    const user = await getUserByToken(user_token)
+    const user_id = user.id
+    console.log(user_id) 
+    const new_user_enrolled = await prisma.EventVolunteerMap.delete({
+      where:{
+        event_id_user_id: {
+          event_id: event_id,
+          user_id: user_id,
+        },
+      },
+  });
+    return true;
+  // }
+  //   catch(error: any){
+  //     console.log(error.message)
+  //     if (error.code == 'P2002'){  // already exsist
+  //       return true
+  //     }
+  //     return false
+  //   }
+  }
+  
+  
   async function editEvent(event:any){
     console.log('edit event')
     const {id, title, details, labels, location, min_volenteers, max_volenteers, startAt, endAt, created_by} = event; 
@@ -289,4 +328,4 @@ const prisma = new PrismaClient()
   }
   */
 
-  export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, addNewAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog};
+  export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, setAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog};

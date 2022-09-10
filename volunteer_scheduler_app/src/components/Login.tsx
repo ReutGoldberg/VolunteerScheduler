@@ -13,12 +13,12 @@ import {
 } from "../utils/DataAccessLayer";
 import { AppConfig } from "../AppConfig";
 import { UserObjectContext } from "../App";
-export interface NavbarProps {
+export interface LoginProps {
   setPageApp(page: string): void;
   setUserAuth(user: any): void;
 }
 
-export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
+export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
   const CLIENT_ID = process.env.CLIENT_ID;
   const CLIENT_CONTENT = `${CLIENT_ID}.apps.googleusercontent.com`;
   const clientId: string = AppConfig.client_id;
@@ -27,8 +27,8 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
 
   async function handleCallbackResponse(response: any) {
     const googleUserToken: string = String(response.credential);
-    // console.log("Encoded JWT ID Token " + googleUserToken); //todo: remove when done testing
     const token = { token: googleUserToken };
+    //adding the whole token as part of the userObject
     const userObject: any = { ...jwt_decode(googleUserToken), ...token };
     setUser(userObject); //sets the App's context
 
@@ -36,15 +36,18 @@ export const Login: React.FC<NavbarProps> = ({ setPageApp, setUserAuth }) => {
     if (isNewUserResult) {
       createUser(token.token);
     }
+
     document.getElementById("signInDiv")!.hidden = true;
     setUserAuth(userObject);
-    setPageApp("GeneralEventsCalendar");
-
     window.sessionStorage.setItem(
       AppConfig.sessionStorageContextKey,
       JSON.stringify(userObject)
     );
-    window.location.reload();
+    
+    setPageApp("GeneralEventsCalendar");
+
+
+    //window.location.reload();
   }
 
   //todo remove when done testing or move to a better position.
