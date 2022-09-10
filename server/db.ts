@@ -201,33 +201,7 @@ const prisma = new PrismaClient()
       return false
     }
   }
-
-  async function unenrollToEvent(event_id:number, user_token:string){
-    console.log('unenroll to event')
-    console.log(event_id) 
-    const user = await getUserByToken(user_token)
-    const user_id = user.id
-    console.log(user_id) 
-    const new_user_enrolled = await prisma.EventVolunteerMap.delete({
-      where:{
-        event_id_user_id: {
-          event_id: event_id,
-          user_id: user_id,
-        },
-      },
-  });
-    return true;
-  // }
-  //   catch(error: any){
-  //     console.log(error.message)
-  //     if (error.code == 'P2002'){  // already exsist
-  //       return true
-  //     }
-  //     return false
-  //   }
-  }
-  
-  
+    
   async function unenrollToEvent(event_id:number, user_token:string){
     console.log('unenroll to event')
     console.log(event_id) 
