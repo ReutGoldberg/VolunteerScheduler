@@ -8,6 +8,13 @@ export interface labelOptions{
   name: string
 }
 
+export interface volenteer{
+  id: number,
+  first_name: string,
+  last_name: string,
+  email: string
+}
+
 export interface enrollement_details{
   event_id: number,
   user_id: string
@@ -25,6 +32,8 @@ export interface fullEventDetails{
   startAt: Date,
   endAt: Date,
   created_by: string,
+  volenteers: volenteer[],
+  count_colenteers: number,
   // color: string
 }
 

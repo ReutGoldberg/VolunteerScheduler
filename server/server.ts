@@ -117,6 +117,11 @@ app.get('/event_details/:event_id', async (req:Request, res:Response) => {
         for (var label of event_details["EventLabelMap"]){
             labels.push(label["Labels"])
         }
+        var volenteers=[]
+        for (var volenteer of event_details["EventVolunteerMap"]){
+            volenteers.push(volenteer["Users"])
+        }
+        const count_volenteers = volenteers.length;
         const full_event_details={
             id: event_details["id"],
             startAt: event_details["start_time"],
@@ -130,6 +135,8 @@ app.get('/event_details/:event_id', async (req:Request, res:Response) => {
             created_by: event_details["created_by"],
             min_volenteers: event_details["min_volenteering"],
             max_volenteers: event_details["max_volenteering"],
+            count_volenteers: count_volenteers,
+            volenteers: volenteers,
         }
         console.log("event details after parsing:")
         console.log(full_event_details)
