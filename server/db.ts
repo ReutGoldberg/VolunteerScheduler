@@ -130,9 +130,25 @@ const prisma = new PrismaClient()
         select:{
           Labels: true
         }
-      }
+      },
+      EventVolunteerMap:{
+        select:{
+          Users: {
+            select:{
+              id: true,
+              first_name: true,
+              last_name: true,
+              email: true
+            }
+          }
+        }
+      },
+      // _count: {
+      //   select: { EventVolunteerMap: true },
+      // },
       },
     });
+    console.log(event_details);
     return event_details;
   }
 

@@ -318,6 +318,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             endAt: endDate,
             //@ts-ignore
             created_by: `${user.email}`,
+            volenteers: [],
+            count_colenteers: 0,
           };
           const data =
             window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
@@ -373,6 +375,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             endAt: endDate,
             //@ts-ignore
             created_by: `${user.email}`,
+            volenteers: [],
+            count_colenteers: -1,
           };
 
           //@ts-ignore
@@ -752,7 +756,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           })}
         </List>
       </Box>
-
+      
       <Box />
       <Box />
       {toEditEventDetails && (
