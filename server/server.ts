@@ -1,7 +1,7 @@
 import express, {Express, Request, Response} from "express";
 import jwt_decode from "jwt-decode";
 import { isVerifiedUser } from "./server_utils";
-import {editEvent, getUserByToken,getAllLabels,getEvent, getAllEvents, getAllUsers, deleteEventById, addNewEvent, enrollToEvent, getPersonalEvents, unenrollToEvent} from "./db";
+import {editEvent, getUserByToken,getAllLabels,getEvent, getAllEvents, getAllUsers, deleteEventById, addNewEvent, enrollToEvent, getPersonalEvents, unenrollToEvent, getIsUserEnrolledToEvent} from "./db";
 
 
 const config = require('./config')
@@ -262,6 +262,22 @@ app.delete('/delete_event/:event_id', async (req:Request, res:Response) => {
 
 
 
+app.get('/events/:event_id', async (req:Request, res:Response) => {
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(!(await isVerifiedUser(authToken))){
+            throw new Error("user is not certified");
+        }
+        //@ts-ignore
+        const webUserSub:string = String(jwt_decode(authToken).sub);
+        const userEvent = await getIsUserEnrolledToEvent(Number(req.params.event_id), webUserSub);
+        res.json(userEvent);  
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
+});
 
 
 

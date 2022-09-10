@@ -224,7 +224,7 @@ export async function getEventDetails(event_id:number, token:string){
   try{
     const response = await axios({
       method: "get",
-      url: `http://localhost:5001/event_details/${event_id}`,
+      url: `${AppConfig.server_url}/event_details/${event_id}`,
       // data: JSON.stringify(request_data),
       headers: { "Content-Type": "application/json", "authorization": token },
     });
@@ -240,7 +240,7 @@ export async function getAllEvents(token:string){
   try{
     const response = await axios({
       method: "get",
-      url: `http://localhost:5001/all_events`,
+      url: `${AppConfig.server_url}/all_events`,
       headers: {  "Content-Type": "application/json", "authorization": token},
     });
     return response;
@@ -255,7 +255,7 @@ export async function getpersonalEvents(token:string){
   try{
     const response = await axios({
       method: "get",
-      url: `http://localhost:5001/personal_events`,
+      url: `${AppConfig.server_url}/personal_events`,
       headers: {  "Content-Type": "application/json", "authorization": token},
     });
     return response;
@@ -265,6 +265,29 @@ export async function getpersonalEvents(token:string){
     throw err;
   }
 }
+//returns whether the current user, with the current token, is enrolled to the specific event
+// this used for desplaying the personal events for the user.
+export async function getIsUserEnrolled(event_id:number, token:string){
+  try{
+    const response = await axios({
+      method: "get",
+      url: `${AppConfig.server_url}/events/${event_id}`,
+      // data: JSON.stringify(request_data),
+      headers: { "Content-Type": "application/json", "authorization": token },
+    });
+    return response;
+  }
+  catch(err:any){
+    console.error(err);
+    throw err;
+  }
+}
+
+
+
+
+
+
 
 /* FAKE */ 
   async function createFakeUser(userObject:any){

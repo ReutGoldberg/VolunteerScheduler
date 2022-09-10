@@ -276,6 +276,35 @@ const prisma = new PrismaClient()
     return new_event;
   }
 
+
+  export async function getIsUserEnrolledToEvent(event_id:number, user_token:string){
+    console.log('getIsUserEnrolledToEvent to event')
+    console.log(event_id) 
+    try
+    {
+      const user = await getUserByToken(user_token)
+      const user_id = user.id
+      console.log(user_id) 
+      const new_user_enrolled = await prisma.EventVolunteerMap.findFirst({
+        where:{
+          event_id: event_id,
+          user_id: user_id,
+          },
+        },
+   );
+      return new_user_enrolled;
+  }
+  catch(error: any){
+    console.error(error.message)
+    throw error;
+  }
+}
+
+
+
+
+
+
   async function getAllLabels() {
     const labels = await prisma.Labels.findMany();
     return labels;

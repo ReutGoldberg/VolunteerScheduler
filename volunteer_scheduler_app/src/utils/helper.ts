@@ -33,7 +33,7 @@ export interface fullEventDetails{
   endAt: Date,
   created_by: string,
   volenteers: volenteer[],
-  count_colenteers: number,
+  count_volunteers: number,
   // color: string
 }
 

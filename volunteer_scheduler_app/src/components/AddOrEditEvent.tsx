@@ -31,11 +31,13 @@ import {
   deleteEventReq,
   addEnrollReq,
   unenrollReq,
+  getIsUserEnrolled,
 } from "../utils/DataAccessLayer";
 import {
   enrollement_details,
   fullEventDetails,
   labelOptions,
+  volenteer
 } from "../utils/helper";
 import React from "react";
 import { UserObjectContext } from "../App";
@@ -146,6 +148,20 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
 
     callAsync();
   }, []);
+
+
+  React.useEffect(() => {
+    (async function () { //IIFE to load is_enrolled:
+      const event_id = toEditEventDetails?.id ? toEditEventDetails.id : -1;
+      const result = await getIsUserEnrolled(event_id, user.token);
+      if(result != null)
+        setIsEnrolled(true);
+      else
+        setIsEnrolled(false);
+    })();  
+  }, []);
+
+
 
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -319,7 +335,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             //@ts-ignore
             created_by: `${user.email}`,
             volenteers: [],
-            count_colenteers: 0,
+            count_volunteers: 0,
           };
           const data =
             window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
@@ -376,7 +392,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             //@ts-ignore
             created_by: `${user.email}`,
             volenteers: [],
-            count_colenteers: -1,
+            count_volunteers: 0,
           };
 
           //@ts-ignore
@@ -760,7 +776,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       <Box />
       <Box />
       {toEditEventDetails && (
-        <Box sx={{ maxWidth: "20%" }}>
+        <Box sx={{ maxWidth: "40%" }}>
           <FormGroup>
             <FormControlLabel
               control={
@@ -769,7 +785,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
                   onChange={handelIsEnrollChange}
                 />
               }
-              label="enrollement"
+              label="Is Enrolled?"
             />
           </FormGroup>
         </Box>
