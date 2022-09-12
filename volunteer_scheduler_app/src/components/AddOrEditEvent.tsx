@@ -154,7 +154,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     (async function () { //IIFE to load is_enrolled:
       const event_id = toEditEventDetails?.id ? toEditEventDetails.id : -1;
       const result = await getIsUserEnrolled(event_id, user.token);
-      if(result != null)
+      if(result.data != null)
         setIsEnrolled(true);
       else
         setIsEnrolled(false);
