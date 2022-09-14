@@ -161,6 +161,13 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     })();
   }, []);
 
+
+  const isBlockSubmit = () => {
+    if(toEditEventDetails)
+      return toEditEventDetails.max_volunteers <= toEditEventDetails.count_volunteers && isEnrolled
+    return false;
+  }
+  
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -787,12 +794,13 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           <Box />
         )} */}
         {toEditEventDetails ? (
-          <Button id="enrollmentEvenBtn" onClick={handleEnrollment}>
-            submit enrollement{" "}
-          </Button>
-        ) : (
-          <Box />
-        )}
+          <Button id="enrollmentEvenBtn" onClick={handleEnrollment} disabled= {isBlockSubmit()}>
+            submit enrollement
+          </Button> 
+          ) : (
+            <Box />
+          )}
+        
         {toEditEventDetails && isAdmin ? (
           <Button
             id="deleteEventBtn"
@@ -812,6 +820,17 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           <Box />
         )}
       </ButtonGroup>
+      {toEditEventDetails && isBlockSubmit()? (
+        <Typography
+        sx={{
+          color:"red"
+        }}
+          >
+          Can't enroll - event is full</Typography>
+          ): (
+            <Box />
+          )
+      }
     </Box>
   );
 };
