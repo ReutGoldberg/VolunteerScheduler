@@ -50,7 +50,7 @@ const CalendComponent = (props: any, isGeneral: boolean) => {
     const data =
       window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
     const userFromStorage = JSON.parse(data);
-    parseGetEvents(userFromStorage.token, isGeneral)
+    parseGetEvents(userFromStorage.token, props.isGeneral)
       .then((res) => {
         setDemoEvents(res!!);
       })

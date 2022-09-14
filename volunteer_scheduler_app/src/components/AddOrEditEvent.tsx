@@ -37,7 +37,7 @@ import {
   enrollement_details,
   fullEventDetails,
   labelOptions,
-  volenteer
+  volenteer,
 } from "../utils/helper";
 import React from "react";
 import { UserObjectContext } from "../App";
@@ -120,8 +120,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
 
   const [isEnrolled, setIsEnrolled] = React.useState(false);
 
-  
-
   React.useEffect(() => {
     async function callAsync() {
       try {
@@ -131,7 +129,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           if (data.length === 0) {
             return;
           }
-          console.log("Got lables from DB");  //todo: remove
+          console.log("Got lables from DB"); //todo: remove
           console.log(data); //todo: remove
           setlabelOptions(
             data.map((labelOption) => {
@@ -149,23 +147,19 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     callAsync();
   }, []);
 
-
   React.useEffect(() => {
-    (async function () { //IIFE to load is_enrolled:
-      //Enroll part is only relevant when editing event details, not creating them 
+    (async function () {
+      //IIFE to load is_enrolled:
+      //Enroll part is only relevant when editing event details, not creating them
       //if this field is false/null then it means we're on Edit Events page and this shouldn't do anything
-      if(toEditEventDetails){ 
+      if (toEditEventDetails) {
         const event_id = toEditEventDetails.id;
         const result = await getIsUserEnrolled(event_id, user.token);
-        if(result.data != null)
-          setIsEnrolled(true);
-        else
-          setIsEnrolled(false);
+        if (result.data != null) setIsEnrolled(true);
+        else setIsEnrolled(false);
       }
-    })();  
+    })();
   }, []);
-
-
 
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -213,26 +207,24 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   };
 
   const handleEnrollment = async () => {
-    let response:any;
+    let response: any;
     try {
-      if(toEditEventDetails != null){ // for some reason this can be null and needs to be checked, todo - better change to empty obj: {} if time allows        
+      if (toEditEventDetails != null) {
+        // for some reason this can be null and needs to be checked, todo - better change to empty obj: {} if time allows
         console.log(`isEnrolled value: ${isEnrolled}`);
-        if(isEnrolled)            
+        if (isEnrolled)
           response = await addEnrollReq(toEditEventDetails.id, user.token);
-                    
-        else{            
-          response = await unEnrollReq(toEditEventDetails.id,user.token);
+        else {
+          response = await unEnrollReq(toEditEventDetails.id, user.token);
         }
-                              
-      }      
-    } catch(err:any) {
+      }
+    } catch (err: any) {
       console.error(`From handleEnrollement: ${err.message}`);
       throw err;
     } finally {
       if (response.statusText === "OK")
         console.log("Enrollment proccess completed successfully");
-      else 
-        console.error("Enrollment process ended with errors");
+      else console.error("Enrollment process ended with errors");
     }
   };
 
@@ -313,7 +305,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         console.log("admin!");
         try {
           var event_details: fullEventDetails = {
-            id: 0,//todo: why is the ID hardcoded?!?! DANITTT???
+            id: 0, //todo: why is the ID hardcoded?!?! DANITTT???
             title: eventName,
             details: eventInfo,
             labels: checkedLabels,
@@ -335,12 +327,10 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             event_details,
             userFromStorage.token || ""
           );
-          if (response.statusText === "OK")
+          if (response.statusText === "OK") {
             console.log("Event added successfully");
-          else console.log("didnt add event");
-
-          //todo: implement event addition based on the above data. and the
-          // data in the server & db classes.
+            alert("Event addeds successfully");
+          } else console.log("didnt add event");
         } catch {
         } finally {
         }
@@ -397,7 +387,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           if (response.statusText === "OK") {
             console.log("Event edited successfully");
             alert("Event edited successfully");
-            window.location.reload();
+            // window.location.reload();
           } else console.log("didnt edit event");
         } catch {
         } finally {
@@ -627,38 +617,41 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         }}
       >
         {isAdmin && (
-        <TextField
-          // disabled = {(currentPage != "AddOrEditEvent")}
-          required={toEditEventDetails ? false : true}
-          error={!startDateValid}
-          helperText={!startDateValid ? "Please enter a valid date " : ""}
-          id="datetime-local"
-          label="Enter start date"
-          type="datetime-local"
-          defaultValue={toEditEventDetails ? toEditEventDetails.startAt : null}
-          sx={{ width: 250 }}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          onChange={handleEventStartTimeChange}
-        />
+          <TextField
+            // disabled = {(currentPage != "AddOrEditEvent")}
+            required={toEditEventDetails ? false : true}
+            error={!startDateValid}
+            helperText={!startDateValid ? "Please enter a valid date " : ""}
+            id="datetime-local"
+            label="Enter start date"
+            type="datetime-local"
+            defaultValue={
+              toEditEventDetails ? toEditEventDetails.startAt : null
+            }
+            sx={{ width: 250 }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={handleEventStartTimeChange}
+          />
         )}
-        {isAdmin && ( 
-        <TextField
-          // disabled = {(currentPage != "AddOrEditEvent")}
-          required={toEditEventDetails ? false : true}
-          error={!endDateValid}
-          helperText={!endDateValid ? "Please enter a valid date " : ""}
-          id="datetime-local"
-          label="Enter end date"
-          type="datetime-local"
-          defaultValue={toEditEventDetails ? toEditEventDetails.endAt : null}
-          sx={{ width: 250 }}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          onChange={handleEventEndTimeChange}
-        />)}
+        {isAdmin && (
+          <TextField
+            // disabled = {(currentPage != "AddOrEditEvent")}
+            required={toEditEventDetails ? false : true}
+            error={!endDateValid}
+            helperText={!endDateValid ? "Please enter a valid date " : ""}
+            id="datetime-local"
+            label="Enter end date"
+            type="datetime-local"
+            defaultValue={toEditEventDetails ? toEditEventDetails.endAt : null}
+            sx={{ width: 250 }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={handleEventEndTimeChange}
+          />
+        )}
       </Box>
       <Box
         sx={{
@@ -762,7 +755,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           })}
         </List>
       </Box>
-      
+
       <Box />
       <Box />
       {toEditEventDetails && (
