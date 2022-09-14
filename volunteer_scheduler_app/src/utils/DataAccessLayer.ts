@@ -214,7 +214,7 @@ export async function getEventDetails(event_id:number, token:string){
   try{
     const response = await axios({
       method: "get",
-      url: `http://localhost:5001/event_details/${event_id}`,
+      url: `${AppConfig.server_url}/event_details/${event_id}`,
       // data: JSON.stringify(request_data),
       headers: { "Content-Type": "application/json", "authorization": token },
     });
@@ -230,7 +230,7 @@ export async function getAllEvents(token:string){
   try{
     const response = await axios({
       method: "get",
-      url: `http://localhost:5001/all_events`,
+      url: `${AppConfig.server_url}/all_events`,
       headers: {  "Content-Type": "application/json", "authorization": token},
     });
     return response;
@@ -241,11 +241,11 @@ export async function getAllEvents(token:string){
   }
 }
 
-export async function getpersonalEvents(token:string){
+export async function getPersonalEvents(token:string){
   try{
     const response = await axios({
       method: "get",
-      url: `http://localhost:5001/personal_events`,
+      url: `${AppConfig.server_url}/personal_events`,
       headers: {  "Content-Type": "application/json", "authorization": token},
     });
     return response;

@@ -13,7 +13,7 @@ export const PersonalEventsCalendar: React.FC = () => {
         <h2 className={"title"}>Personal Events Calendar</h2>
       </div>
       <div className={"Calendar__wrapper"}>
-        <CalendComponent isDark={true} />
+        <CalendComponent isGeneral={false} isDark={true} />
       </div>
       <div style={{ margin: "0 auto", paddingTop: 32 }}>
         <p style={{ color: "whitesmoke", fontSize: 15 }}>
