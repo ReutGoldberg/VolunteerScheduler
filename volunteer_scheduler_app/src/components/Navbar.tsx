@@ -1,10 +1,8 @@
 import React from "react";
 import "../App.css";
-import { Button, Box } from "@mui/material";
+import { Button, Box, Typography } from "@mui/material";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import { UserObjectContext } from "../App";
-import { AppConfig } from "../AppConfig";
-// import {removeUserSession} from "../Utils";
 
 export interface NavbarProps {
   setPageApp(page: string): void;
@@ -59,10 +57,14 @@ export const Navbar: React.FC<NavbarProps> = ({
         },
       }}
     >
-      <div>
-        <img src={user.picture}></img>
-        <h3>{user.name}</h3>
-      </div>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 4.7,
+        }}
+      ></Box>
       <Box sx={{ width: "80%" }}>
         <ButtonGroup
           size="large"
@@ -84,13 +86,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             General Events Calendar
           </Button>
-          {isAdmin && <Button id="AddEventBtn" onClick={handleAddEvent}>
-            Add Event
-          </Button>
-          }
+          {isAdmin && (
+            <Button id="AddEventBtn" onClick={handleAddEvent}>
+              Add Event
+            </Button>
+          )}
           {isAdmin && (
             <Button id="AddAdminBtn" onClick={handleAddAdmin}>
-              Add Admin
+              Admins
             </Button>
           )}
           <Button id="ProfileBtn" onClick={handleProfile}>

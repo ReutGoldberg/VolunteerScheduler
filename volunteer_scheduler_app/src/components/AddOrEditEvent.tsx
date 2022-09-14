@@ -47,6 +47,7 @@ export interface AddOrEditProps {
   toEditEventDetails: fullEventDetails | null;
   isAdmin: boolean;
   currentPage: string;
+  setOpenDialogApp(openDialogApp: boolean): void;
 }
 
 const dateToString = (date: Date) => {
@@ -67,6 +68,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   toEditEventDetails,
   isAdmin,
   currentPage,
+  setOpenDialogApp,
 }) => {
   const [eventName, setEventName] = React.useState(
     toEditEventDetails ? toEditEventDetails.title : ""
@@ -229,9 +231,13 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       console.error(`From handleEnrollement: ${err.message}`);
       throw err;
     } finally {
-      if (response.statusText === "OK")
+      if (response.statusText === "OK") {
         console.log("Enrollment proccess completed successfully");
-      else console.error("Enrollment process ended with errors");
+        alert("Enrollment proccess completed successfully");
+        setOpenDialogApp(false);
+      } else {
+        console.error("Enrollment process ended with errors");
+      }
     }
   };
 
@@ -337,6 +343,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           if (response.statusText === "OK") {
             console.log("Event added successfully");
             alert("Event addeds successfully");
+            setOpenDialogApp(false);
           } else console.log("didnt add event");
         } catch {
         } finally {
@@ -360,9 +367,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       eventMinParticipantsValid &&
       eventMaxParticipantsValid
     ) {
-      // if (await isAdminUser()) {
       if (isAdmin) {
-        //?
         console.log("admin!");
         try {
           var event_details: fullEventDetails = {
@@ -393,7 +398,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           if (response.statusText === "OK") {
             console.log("Event edited successfully");
             alert("Event edited successfully");
-            // window.location.reload();
+            setOpenDialogApp(false);
           } else console.log("didnt edit event");
         } catch {
         } finally {
@@ -431,7 +436,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         if (response.statusText === "OK") {
           console.log("Event deleted successfully");
           alert("Event deleted successfully");
-          window.location.reload();
+          setOpenDialogApp(false);
         } else console.log("didnt delete event");
       }
     } catch {

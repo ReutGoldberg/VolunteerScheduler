@@ -16,6 +16,7 @@ import { AddOrEditEvent } from "./components/AddOrEditEvent";
 import { AppConfig } from "./AppConfig";
 import { Footer } from "./components/Footer";
 import { isAdminUser } from "./utils/DataAccessLayer";
+import AppBar from "./components/AppBar";
 
 export const UserObjectContext = React.createContext<any>({
   user: "",
@@ -33,6 +34,8 @@ function App() {
     setPage(page);
   };
 
+  const setOpenDialogApp = (openDialogApp: boolean) => {};
+
   function isUserExists() {
     const data: string =
       window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
@@ -43,7 +46,7 @@ function App() {
 
   //This hook will set the value to the localStorage upon erasing the User on Refresh
   React.useEffect(() => {
-    const userStr:string = JSON.stringify(user);
+    const userStr: string = JSON.stringify(user);
     if (userStr !== "{}") {
       //making sure I'm not saving an erased context to the localstorage
       console.log(`Setting Context!!! ${userStr}`);
@@ -60,8 +63,7 @@ function App() {
   React.useEffect(() => {
     const data: string =
       sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
-    
-    
+
     //Not for initial login - when there's already data in the storage
     if (data !== "" && JSON.stringify(user) === "{}") {
       console.log(`Fetching Context!!! ${data}`);
@@ -69,44 +71,26 @@ function App() {
     }
   }, []);
 
-
-//changing isAdmin Verification to an IIFE + .then method and fixing the null issue, introduced above.
-React.useEffect(() => {
-  (async function () { // async function expression used as an IIFE
-    const data: string|null = window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || null;
-    const userFromStorage = data === null ? null : JSON.parse(data);
-    isAdminUser(userFromStorage?.token || "")
-    .then((result) => {
-      console.log("------------------------------------------")
-      console.log("IS_ADMIN REUSLT:" + result);
-      console.log("------------------------------------------")
-      setIsAdmin(result)})
-    .catch((err:any) => {
-      console.log(`Got Error when tried fetchnig user on Load: ${err}` )
-    });
-  })();  
-}, []);
-
-
-/*
-
-
-(async function (x) { // async function expression used as an IIFE
-  const p1 = resolveAfter2Seconds(20);
-  const p2 = resolveAfter2Seconds(30);
-  return x + await p1 + await p2;
-})(10).then((v) => {
-  console.log(v);  // prints 60 after 2 seconds.
-});
-
-
-*/
-
-
-
-
-
-
+  //changing isAdmin Verification to an IIFE + .then method and fixing the null issue, introduced above.
+  React.useEffect(() => {
+    (async function () {
+      // async function expression used as an IIFE
+      const data: string | null =
+        window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
+        null;
+      const userFromStorage = data === null ? null : JSON.parse(data);
+      isAdminUser(userFromStorage?.token || "")
+        .then((result) => {
+          console.log("------------------------------------------");
+          console.log("IS_ADMIN REUSLT:" + result);
+          console.log("------------------------------------------");
+          setIsAdmin(result);
+        })
+        .catch((err: any) => {
+          console.log(`Got Error when tried fetchnig user on Load: ${err}`);
+        });
+    })();
+  }, []);
 
   const pageToPresent = (page: string) => {
     sessionStorage.setItem("page", page);
@@ -121,6 +105,7 @@ React.useEffect(() => {
             toEditEventDetails={null}
             isAdmin={isAdmin}
             currentPage={"AddOrEditEvent"}
+            setOpenDialogApp={setOpenDialogApp}
           />
         );
       case "AddAdmin":
@@ -138,7 +123,7 @@ React.useEffect(() => {
       <UserObject />
       <ThemeProvider theme={lightTheme}>
         <div className={"root"}>
-          <Box>
+          {!isUserExists() && (
             <Typography
               variant="h2"
               color="text.primary"
@@ -148,7 +133,8 @@ React.useEffect(() => {
             >
               Volunteer Scheduler
             </Typography>
-          </Box>
+          )}
+          {isUserExists() && <AppBar />}
           {isUserExists() && (
             <Navbar
               setPageApp={setPageApp}
