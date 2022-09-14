@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   eventDetails,
   fullEventDetails,
-  parseGetAllEvents,
+  parseGetEvents,
 } from "../utils/helper";
 import axios from "axios";
 import { DateTime } from "luxon";
@@ -20,7 +20,7 @@ import { isAdminUser, getEventDetails } from "../utils/DataAccessLayer";
 import { AddOrEditEvent } from "./AddOrEditEvent";
 import { AppConfig } from "../AppConfig";
 
-const CalendComponent = (props: any) => {
+const CalendComponent = (props: any, isGeneral: boolean) => {
   const [demoEvents, setDemoEvents] = useState<eventDetails[] | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<fullEventDetails | null>(
@@ -37,8 +37,6 @@ const CalendComponent = (props: any) => {
       const data =
         window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
       const userFromStorage = JSON.parse(data);
-      // console.log("check if admin!!!!!!! token:");
-      // console.log(userFromStorage.token);
       var isAdminTemp = await isAdminUser(userFromStorage.token || "");
       setIsAdmin(isAdminTemp);
       console.log("isAdminTemp " + isAdminTemp);
@@ -49,9 +47,10 @@ const CalendComponent = (props: any) => {
 
   //Create and load demo events
   useEffect((): void => {
-    const data = window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
+    const data =
+      window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
     const userFromStorage = JSON.parse(data);
-    parseGetAllEvents(userFromStorage.token)
+    parseGetEvents(userFromStorage.token, isGeneral)
       .then((res) => {
         setDemoEvents(res!!);
       })
@@ -76,9 +75,13 @@ const CalendComponent = (props: any) => {
     )}`;
     console.log(msg);
     const event_id = data["id"];
-    const token_data = window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
+    const token_data =
+      window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
     const userFromStorage = JSON.parse(token_data);
-    const response = await getEventDetails(event_id, userFromStorage.token || "");
+    const response = await getEventDetails(
+      event_id,
+      userFromStorage.token || ""
+    );
     if (response.statusText === "OK") {
       setSelectedEvent(response.data);
       setOpenDialog(true);

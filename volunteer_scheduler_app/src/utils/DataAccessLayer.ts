@@ -251,7 +251,7 @@ export async function getAllEvents(token:string){
   }
 }
 
-export async function getpersonalEvents(token:string){
+export async function getPersonalEvents(token:string){
   try{
     const response = await axios({
       method: "get",
