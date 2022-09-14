@@ -117,11 +117,11 @@ app.get('/event_details/:event_id', async (req:Request, res:Response) => {
         for (var label of event_details["EventLabelMap"]){
             labels.push(label["Labels"])
         }
-        var volenteers=[]
+        var volunteers=[]
         for (var volenteer of event_details["EventVolunteerMap"]){
-            volenteers.push(volenteer["Users"])
+            volunteers.push(volenteer["Users"])
         }
-        const count_volenteers = volenteers.length;
+        const count_volunteers = volunteers.length;
         const full_event_details={
             id: event_details["id"],
             startAt: event_details["start_time"],
@@ -133,10 +133,10 @@ app.get('/event_details/:event_id', async (req:Request, res:Response) => {
             labels: labels,
             location: event_details["location"],
             created_by: event_details["created_by"],
-            min_volenteers: event_details["min_volenteering"],
-            max_volenteers: event_details["max_volenteering"],
-            count_volenteers: count_volenteers,
-            volenteers: volenteers,
+            min_volunteers: event_details["min_volenteering"],
+            max_volunteers: event_details["max_volenteering"],
+            count_volunteers: count_volunteers,
+            volunteers: volunteers,
         }
         console.log("event details after parsing:")
         console.log(full_event_details)
@@ -148,7 +148,6 @@ app.get('/event_details/:event_id', async (req:Request, res:Response) => {
     }
 });
 //Pushes data to the DB based on the request body
-
 
 app.post('/enroll_to_event', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
@@ -172,7 +171,6 @@ app.post('/enroll_to_event', async (req:Request, res:Response) => {
     }
 });
 
-
 app.post('/unenroll_to_event', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     const {event_id} = req.body;
@@ -194,8 +192,6 @@ app.post('/unenroll_to_event', async (req:Request, res:Response) => {
         res.status(500);
     }
 });
-
-
 
 app.post('/edit_event', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
@@ -238,8 +234,6 @@ app.delete('/delete_event/:event_id', async (req:Request, res:Response) => {
         res.status(500);
     }
 });
-
-
 
 app.get('/events/:event_id', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";

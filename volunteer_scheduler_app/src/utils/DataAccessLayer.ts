@@ -5,7 +5,7 @@ import { enrollement_details, fullEventDetails } from "./helper";
 
 
 //todo: change this to a class - DAL and have a private field of token.
-    async function isNewUser(token:string){
+ async function isNewUser(token:string){
       const requestURL:string = `${AppConfig.server_url}/user/isNewUser/`;
     //@ts-ignore 
       const response = await axios({
@@ -16,10 +16,9 @@ import { enrollement_details, fullEventDetails } from "./helper";
                   },
     });
       return !response.data
-    }
+}
 
- 
-  async function createUser(userToken:string){
+ async function createUser(userToken:string){
     try {
       const userObject = jwt_decode(userToken); 
     //@ts-ignore
@@ -38,9 +37,7 @@ import { enrollement_details, fullEventDetails } from "./helper";
 
     }
 
-  }
-
-
+}
 
 //make this a private function for the class DAL
  async function isAdminUser(userToken:string){
@@ -106,8 +103,6 @@ async function getAdminsList(usertoken:string){
                     });
   return response2.data;
 }
-
-
 
 export async function addAdmin(email:string, usertoken:string) {
   return await axios({

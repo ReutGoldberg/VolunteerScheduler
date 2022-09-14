@@ -84,13 +84,13 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const [eventLocationValid, setEventLocationValid] = React.useState(true);
 
   const [eventMaxParticipants, setEventMaxParticipants] = React.useState(
-    toEditEventDetails ? toEditEventDetails.max_volenteers : ""
+    toEditEventDetails ? toEditEventDetails.max_volunteers : ""
   );
   const [eventMaxParticipantsValid, setEventMaxParticipantsValid] =
     React.useState(true);
 
   const [eventMinParticipants, setEventMinParticipants] = React.useState(
-    toEditEventDetails ? toEditEventDetails.min_volenteers : ""
+    toEditEventDetails ? toEditEventDetails.min_volunteers : ""
   );
   const [eventMinParticipantsValid, setEventMinParticipantsValid] =
     React.useState(true);
@@ -305,18 +305,18 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         console.log("admin!");
         try {
           var event_details: fullEventDetails = {
-            id: 0, //todo: why is the ID hardcoded?!?! DANITTT???
+            id: 0,
             title: eventName,
             details: eventInfo,
             labels: checkedLabels,
             location: eventLocation,
-            min_volenteers: Number(eventMinParticipants),
-            max_volenteers: Number(eventMaxParticipants),
+            min_volunteers: Number(eventMinParticipants),
+            max_volunteers: Number(eventMaxParticipants),
             startAt: startDate,
             endAt: endDate,
             //@ts-ignore
             created_by: `${user.email}`,
-            volenteers: [],
+            volunteers: [],
             count_volunteers: 0,
           };
           const data =
@@ -364,14 +364,13 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             details: eventInfo,
             labels: checkedLabels,
             location: eventLocation,
-            min_volenteers: Number(eventMinParticipants),
-            max_volenteers: Number(eventMaxParticipants),
-            // TODO:check deafult in edit
+            min_volunteers: Number(eventMinParticipants),
+            max_volunteers: Number(eventMaxParticipants),
             startAt: startDate,
             endAt: endDate,
             //@ts-ignore
             created_by: `${user.email}`,
-            volenteers: [],
+            volunteers: [],
             count_volunteers: 0,
           };
 
@@ -566,8 +565,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         }
         defaultValue={
           toEditEventDetails
-            ? toEditEventDetails.min_volenteers
-              ? toEditEventDetails.min_volenteers
+            ? toEditEventDetails.min_volunteers
+              ? toEditEventDetails.min_volunteers
               : "\n"
             : ""
         }
@@ -594,8 +593,8 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         }
         defaultValue={
           toEditEventDetails
-            ? toEditEventDetails.max_volenteers
-              ? toEditEventDetails.max_volenteers
+            ? toEditEventDetails.max_volunteers
+              ? toEditEventDetails.max_volunteers
               : "\n"
             : ""
         }

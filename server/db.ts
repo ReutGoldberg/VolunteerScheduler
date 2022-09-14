@@ -167,7 +167,7 @@ const prisma = new PrismaClient()
 
   async function addNewEvent(event:any){
     console.log('adding event')
-    const {id, title, details, labels, location, min_volenteers, max_volenteers, startAt, endAt, created_by} = event; 
+    const {id, title, details, labels, location, min_volunteers: min_volunteers, max_volunteers: max_volunteers, startAt, endAt, created_by} = event; 
     var label_event_list=[]
     for (var label of labels){
       label_event_list.push({Labels: {connect: {id: label.id}}});
@@ -178,8 +178,8 @@ const prisma = new PrismaClient()
         title: title,
         details: details,
         location: location,
-        min_volenteering: min_volenteers,
-        max_volenteering: max_volenteers,
+        min_volenteering: min_volunteers,
+        max_volenteering: max_volunteers,
         start_time: startAt,
         end_time: endAt,
         created_by: created_by,
@@ -246,7 +246,7 @@ const prisma = new PrismaClient()
   
   async function editEvent(event:any){
     console.log('edit event')
-    const {id, title, details, labels, location, min_volenteers, max_volenteers, startAt, endAt, created_by} = event; 
+    const {id, title, details, labels, location, min_volunteers, max_volunteers, startAt, endAt, created_by} = event; 
     var label_event_list=[]
     for (var label of labels){
       label_event_list.push({Labels: {connect: {id: label.id}}});
@@ -260,8 +260,8 @@ const prisma = new PrismaClient()
         title: title,
         details: details,
         location: location,
-        min_volenteering: min_volenteers,
-        max_volenteering: max_volenteers,
+        min_volenteering: min_volunteers,
+        max_volenteering: max_volunteers,
         start_time: startAt,
         end_time: endAt,
         created_by: created_by,

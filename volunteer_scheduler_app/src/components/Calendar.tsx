@@ -11,7 +11,15 @@ import "kalend/dist/styles/index.css";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Button, ButtonGroup } from "@mui/material";
+import {
+  Button,
+  ButtonGroup,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
@@ -127,6 +135,57 @@ const CalendComponent = (props: any, isGeneral: boolean) => {
               isAdmin={isAdmin}
               currentPage="fromCalender"
             />
+            <Typography gutterBottom>
+              Number Of Volunteers: {selectedEvent["count_volunteers"]}
+            </Typography>
+            {isAdmin && (
+              <Typography gutterBottom>Volunteers Emails:</Typography>
+            )}
+            {isAdmin && (
+              <Typography gutterBottom>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 4.7,
+                  }}
+                >
+                  <List
+                    sx={{
+                      width: "100%",
+                      maxWidth: 360,
+                      maxHeight: 100,
+                      border: 1,
+                      borderBlockColor: "grey",
+                      borderRadius: 1,
+                      overflow: "auto",
+                    }}
+                  >
+                    {selectedEvent?.volunteers?.map((value) => {
+                      const email = value.email;
+                      const nameAndEmail =
+                        value.first_name +
+                        " " +
+                        value.last_name +
+                        " (" +
+                        value.email +
+                        ")";
+                      return (
+                        <ListItem key={value.email} disablePadding>
+                          <ListItemButton role={undefined} dense>
+                            <ListItemText
+                              id={nameAndEmail}
+                              primary={nameAndEmail}
+                            />
+                          </ListItemButton>
+                        </ListItem>
+                      );
+                    })}
+                  </List>
+                </Box>
+              </Typography>
+            )}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog}>close</Button>
