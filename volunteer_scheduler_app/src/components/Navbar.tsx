@@ -64,22 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           alignItems: "center",
           gap: 4.7,
         }}
-      >
-        <Box>
-          {" "}
-          <img src={user.picture}></img>
-          <h3>{user.name}</h3>
-        </Box>
-        <Typography
-          variant="h2"
-          color="text.primary"
-          textAlign={"center"}
-          gutterBottom
-          component="div"
-        >
-          Volunteer Scheduler
-        </Typography>
-      </Box>
+      ></Box>
       <Box sx={{ width: "80%" }}>
         <ButtonGroup
           size="large"

@@ -16,6 +16,7 @@ import { AddOrEditEvent } from "./components/AddOrEditEvent";
 import { AppConfig } from "./AppConfig";
 import { Footer } from "./components/Footer";
 import { isAdminUser } from "./utils/DataAccessLayer";
+import AppBar from "./components/AppBar";
 
 export const UserObjectContext = React.createContext<any>({
   user: "",
@@ -122,6 +123,18 @@ function App() {
       <UserObject />
       <ThemeProvider theme={lightTheme}>
         <div className={"root"}>
+          {!isUserExists() && (
+            <Typography
+              variant="h2"
+              color="text.primary"
+              textAlign={"center"}
+              gutterBottom
+              component="div"
+            >
+              Volunteer Scheduler
+            </Typography>
+          )}
+          {isUserExists() && <AppBar />}
           {isUserExists() && (
             <Navbar
               setPageApp={setPageApp}
