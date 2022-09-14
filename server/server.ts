@@ -172,27 +172,6 @@ app.post('/enroll_to_event', async (req:Request, res:Response) => {
     }
 });
 
-app.post('/unenroll_to_event', async (req:Request, res:Response) => {
-    const authToken = req.headers.authorization ? req.headers.authorization : "";
-    const {event_id} = req.body;
-    console.log('--------------- unenroll to Event ---------------')
-    try{
-        if(!(await isVerifiedUser(authToken))){
-            throw new Error("user is not certified");
-        }
-        else{
-            //@ts-ignore
-            const sub_token = jwt_decode(authToken).sub
-            console.log(sub_token)
-            const result_event = await unenrollToEvent(event_id, sub_token);
-            res.json(result_event);
-        }
-    }
-    catch(err:any){
-        console.error(err.message);
-        res.status(500);
-    }
-});
 
 app.post('/unenroll_to_event', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";

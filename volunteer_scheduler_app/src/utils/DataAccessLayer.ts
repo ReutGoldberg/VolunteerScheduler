@@ -148,7 +148,7 @@ export async function addEnrollReq(event_id:number, token:string){
   }
 }
 
-export async function unenrollReq(event_id:number, token:string){
+export async function unEnrollReq(event_id:number, token:string){
   try{
     console.log("addEnrollReq");
     console.log(event_id)
