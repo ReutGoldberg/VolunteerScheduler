@@ -51,9 +51,8 @@ app.get('/all_users', async (req:Request, res:Response) => {
 });
 
 app.get('/all_events', async (req:Request, res:Response) => {
-    console.log("get all event before ")
     const token = req.headers.authorization ? req.headers.authorization : "";
-    console.log("get all event after")
+    console.log("get all events")
     try{
         if(!(await isVerifiedUser(token))){
             throw new Error("user is not certified");
@@ -105,23 +104,24 @@ app.get('/event_details/:event_id', async (req:Request, res:Response) => {
     const eventId = Number(req.params.event_id)
     console.log(`This is the event id: ${eventId}`)//todo: remove when done testing
     const token = req.headers.authorization ? req.headers.authorization : "";
-    console.log(token)
-    console.log(req.headers.authorization)
     try{
         if(!(await isVerifiedUser(token))){
             throw new Error("user is not certified");
         }
-        console.log("good")
         const event_details = await getEvent(eventId);
         var labels=[]
         for (var label of event_details["EventLabelMap"]){
             labels.push(label["Labels"])
         }
+        const webUser = jwt_decode(token);
         var volunteers=[]
-        for (var volenteer of event_details["EventVolunteerMap"]){
-            volunteers.push(volenteer["Users"])
+        var count_volunteers = event_details["EventVolunteerMap"].length;
+        //@ts-ignore
+        if((await getUserByToken(webUser.sub).then((user) => user.is_admin))){
+            for (var volenteer of event_details["EventVolunteerMap"]){
+                volunteers.push(volenteer["Users"])
+            }
         }
-        const count_volunteers = volunteers.length;
         const full_event_details={
             id: event_details["id"],
             startAt: event_details["start_time"],
@@ -160,7 +160,6 @@ app.post('/enroll_to_event', async (req:Request, res:Response) => {
         else{
             //@ts-ignore
             const sub_token = jwt_decode(authToken).sub
-            console.log(sub_token)
             const result_event = await enrollToEvent(event_id, sub_token);
             res.json(result_event);
         }
@@ -192,6 +191,25 @@ app.post('/unenroll_to_event', async (req:Request, res:Response) => {
         res.status(500);
     }
 });
+
+app.post('/add_event', async (req:Request, res:Response) => {
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    console.log('--------------- Creates new Events ---------------')
+    try{
+        if(!(await isVerifiedUser(authToken))){
+            throw new Error("user is not certified");
+        }
+        else{
+            const result_event = await addNewEvent(req.body);
+            res.json(result_event);
+        }
+    }
+    catch(err:any){
+        console.error(err.message);
+        res.status(500);
+    }
+});
+
 
 app.post('/edit_event', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
