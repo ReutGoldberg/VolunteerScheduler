@@ -100,7 +100,7 @@ export const isValidEmail = (email:string) =>{
 // };
 
 export const parseGetEvents =  async(token:string, isGeneral:boolean): Promise<eventDetails[] | null> => {
-  const personal_events: eventDetails[] = [];
+  const events: eventDetails[] = [];
   try{
     const response = isGeneral ? await getAllEvents(token) : await getPersonalEvents(token);
     if(response.statusText === 'OK'){
@@ -117,12 +117,12 @@ export const parseGetEvents =  async(token:string, isGeneral:boolean): Promise<e
           allDay: false,
           labels: event1["labels"],
         };
-        personal_events.push(event);
+        events.push(event);
       }     
   }
   else
     console.log("didnt get event list")
-  return personal_events;
+  return events;
   }
   catch (error){
     console.log(error);
