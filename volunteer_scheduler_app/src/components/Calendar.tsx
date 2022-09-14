@@ -36,6 +36,10 @@ const CalendComponent = (props: any, isGeneral: boolean) => {
   );
   const [isAdmin, setIsAdmin] = React.useState(false);
 
+  const setOpenDialogApp = (openDialogApp: boolean) => {
+    setOpenDialog(openDialogApp);
+  };
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
@@ -134,6 +138,7 @@ const CalendComponent = (props: any, isGeneral: boolean) => {
               toEditEventDetails={selectedEvent}
               isAdmin={isAdmin}
               currentPage="fromCalender"
+              setOpenDialogApp={setOpenDialogApp}
             />
             <Typography gutterBottom>
               Number Of Volunteers: {selectedEvent["count_volunteers"]}
