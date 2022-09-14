@@ -30,7 +30,7 @@ import {
   editEventReq,
   deleteEventReq,
   addEnrollReq,
-  unenrollReq,
+  unEnrollReq,
   getIsUserEnrolled,
 } from "../utils/DataAccessLayer";
 import {
@@ -152,12 +152,16 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
 
   React.useEffect(() => {
     (async function () { //IIFE to load is_enrolled:
-      const event_id = toEditEventDetails?.id ? toEditEventDetails.id : -1;
-      const result = await getIsUserEnrolled(event_id, user.token);
-      if(result.data != null)
-        setIsEnrolled(true);
-      else
-        setIsEnrolled(false);
+      //Enroll part is only relevant when editing event details, not creating them 
+      //if this field is false/null then it means we're on Edit Events page and this shouldn't do anything
+      if(toEditEventDetails){ 
+        const event_id = toEditEventDetails.id;
+        const result = await getIsUserEnrolled(event_id, user.token);
+        if(result.data != null)
+          setIsEnrolled(true);
+        else
+          setIsEnrolled(false);
+      }
     })();  
   }, []);
 
@@ -209,40 +213,26 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   };
 
   const handleEnrollment = async () => {
+    let response:any;
     try {
-      if (toEditEventDetails) {
-        const data =
-            window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
-            "";
-          const userFromStorage = JSON.parse(data);
-        if (!isEnrolled) {
-          console.log("isEnrolled");
-          // var enroll_details: enrollement_details = {
-          //   event_id: toEditEventDetails.id,
-          //   user_token: userFromStorage.token,
-          // };
-          const response = await addEnrollReq(
-            toEditEventDetails.id,
-            userFromStorage.token || ""
-          );
-          if (response.statusText === "OK")
-            console.log("enrolled successfully");
-          else console.log("didnt enrolled");
-        } else {
-          console.log("isNotEnrolled");
-          const response = await unenrollReq(
-            toEditEventDetails.id,
-            userFromStorage.token || ""
-          );
-          if (response.statusText === "OK")
-            console.log("unenrolled successfully");
-          else console.log("didnt unenrolled");
-          //cancel enrollement
+      if(toEditEventDetails != null){ // for some reason this can be null and needs to be checked, todo - better change to empty obj: {} if time allows        
+        console.log(`isEnrolled value: ${isEnrolled}`);
+        if(isEnrolled)            
+          response = await addEnrollReq(toEditEventDetails.id, user.token);
+                    
+        else{            
+          response = await unEnrollReq(toEditEventDetails.id,user.token);
         }
-        setIsEnrolled(!isEnrolled);
-      }
-    } catch {
+                              
+      }      
+    } catch(err:any) {
+      console.error(`From handleEnrollement: ${err.message}`);
+      throw err;
     } finally {
+      if (response.statusText === "OK")
+        console.log("Enrollment proccess completed successfully");
+      else 
+        console.error("Enrollment process ended with errors");
     }
   };
 
