@@ -171,6 +171,27 @@ const prisma = new PrismaClient()
     }
   }
 
+  async function getFilterEvents(user_token: string, filters: any){
+    try {
+      const events = await prisma.Events.findMany({
+        where:{
+          EventVolunteerMap:{
+            some:{
+              Users:{
+                token: user_token
+              }
+            }
+          }
+        }
+      });
+      return events;
+    } catch (error:any) {
+      console.error("Error in getPersonalEvents from db.ts");
+      console.error(error.message);
+      throw error;
+    }
+  }
+
   async function deleteEventById(event_id: Number) {
     try {
       const deletedEvent = await prisma.Events.delete({
@@ -431,4 +452,4 @@ async function addNewLog(logTxt:string, logTime:Date) {
   }
 }
 
-export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, setAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog};
+export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, setAdmin, getAllEvents, getFilterEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog};

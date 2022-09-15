@@ -277,9 +277,10 @@ export async function getAllEvents(token:string){
 
 export async function getFilterdEvents(token:string, filters:filtersToMax){//TODO:change
   try{
+    const stringFilter = JSON.stringify(filters);
     const response = await axios({
       method: "get",
-      url: `${AppConfig.server_url}/events/filterd_events/${filters}`,
+      url: `${AppConfig.server_url}/events/filterd_events/${stringFilter}`,
       headers: {  "Content-Type": "application/json", "authorization": token},
     });
     return response;

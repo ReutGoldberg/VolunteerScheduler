@@ -1,11 +1,9 @@
 import express, {Request, Response} from "express";
-import { getAllEvents, getPersonalEvents, getEvent, addNewEvent, enrollToEvent, unenrollToEvent, editEvent, deleteEventById, getIsUserEnrolledToEvent, getUserByToken } from "../db";
+import { getAllEvents, getPersonalEvents, getEvent, addNewEvent, enrollToEvent, unenrollToEvent, editEvent, deleteEventById, getIsUserEnrolledToEvent, getUserByToken, getFilterEvents } from "../db";
 import { isVerifiedUser } from "../server_utils";
 import jwt_decode from "jwt-decode";
 const config = require('../config')
 const router = express.Router();
-
-
 
 router.get('/all_events', async (req:Request, res:Response) => {
     const token = req.headers.authorization ? req.headers.authorization : "";
@@ -43,6 +41,30 @@ router.get('/personal_events', async (req:Request, res:Response) => {
     }
 });
 
+router.get('/filterd_events/:stringFilter', async (req:Request, res:Response) => {
+    console.log("get filtered event before ")
+    const filter = JSON.parse(req.params.stringFilter);
+    const filterd_events ={ 
+        startTime: filter["startTime"],
+        endTime: filter["endTime"],
+        labels: filter["labels"],
+    }
+    const token = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(!(await isVerifiedUser(token))){
+            throw new Error(config.notVerifiedUserMsg);
+        }
+        const decoded_token:any = jwt_decode(token);
+        const token_sub = decoded_token.sub;
+        const events = await getFilterEvents(token_sub, filterd_events);
+        res.json(events);
+    }
+    catch(err:any){
+        console.log("Error in get filterd_events from events.ts (server router)")
+        console.error(err.message);
+        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);        
+    }
+});
 
 router.get('/event_details/:event_id', async (req:Request, res:Response) => {
     const eventId = Number(req.params.event_id)
