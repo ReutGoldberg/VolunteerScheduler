@@ -34,6 +34,7 @@ function App() {
 
   const setOpenDialogApp = (openDialogApp: boolean) => {};
 
+
   //This hook will set the value to the localStorage upon erasing the User on Refresh
   React.useEffect(() => {
     const userStr: string = JSON.stringify(user);
@@ -65,22 +66,29 @@ function App() {
   React.useEffect(() => {
     (async function () {
       // async function expression used as an IIFE
-      const data: string | null =
-        window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
-        null;
-      const userFromStorage = data === null ? null : JSON.parse(data);
-      isAdminUser(userFromStorage?.token || "")
-        .then((result) => {
-          console.log("------------------------------------------");
-          console.log("IS_ADMIN REUSLT:" + result);
-          console.log("------------------------------------------");
-          setIsAdmin(result);
-        })
-        .catch((err: any) => {
-          console.log(`Got Error when tried fetchnig user on Load: ${err}`);
-        });
+      const userObj = user ? user : JSON.parse(window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "");
+      if(userObj == true){
+        isAdminUser(userObj.token)
+          .then((result) => {
+            console.log("------------------------------------------");
+            console.log("IS_ADMIN REUSLT:" + result);
+            console.log("------------------------------------------");
+            setIsAdmin(result);
+          })
+          .catch((err: any) => {
+            console.log(`Got Error when tried fetchnig user on Load: ${err}`);
+          });
+      }
     })();
   }, []);
+
+//this object is for the useMemo hook, evertyihng below it being memoized, so the app doesn't re-render the user object if it
+// didn't change
+function UserObject() {
+  const { userObj, setUserObject } = React.useContext(UserObjectContext);
+  const changeHandler = (event: any) => setUserObject(event?.target?.value);
+  return <input hidden={true} value={userObj} onChange={changeHandler} />;
+}
 
   const pageToPresent = (page: string) => {
     sessionStorage.setItem("page", page);
@@ -137,12 +145,6 @@ function App() {
   );
 }
 
-//this object is for the useMemo hook, evertyihng below it being memoized, so the app doesn't re-render the user object if it
-// didn't change
-function UserObject() {
-  const { userObj, setUserObject } = React.useContext(UserObjectContext);
-  const changeHandler = (event: any) => setUserObject(event?.target?.value);
-  return <input hidden={true} value={userObj} onChange={changeHandler} />;
-}
+
 
 export default App;
