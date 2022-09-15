@@ -6,7 +6,7 @@ import { enrollement_details, fullEventDetails } from "./helper";
 
 //todo: change this to a class - DAL and have a private field of token.
  async function isNewUser(token:string){
-      const requestURL:string = `${AppConfig.server_url}/user/isNewUser/`;
+      const requestURL:string = `${AppConfig.server_url}/users/isNewUser/`;
     //@ts-ignore 
       const response = await axios({
         method: "get",
@@ -25,7 +25,7 @@ import { enrollement_details, fullEventDetails } from "./helper";
       const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email};
       const response = await axios({
           method: "post",
-          url: `${AppConfig.server_url}/user/add_user`,
+          url: `${AppConfig.server_url}/users/add_user`,
           data: JSON.stringify(data),
           headers: { "Content-Type": "application/json",
                      "Authorization": userToken
@@ -45,7 +45,7 @@ import { enrollement_details, fullEventDetails } from "./helper";
       if(userToken == null || userToken === "")
         return false;
 
-      const requestURL:string = `${AppConfig.server_url}/user/userEmail/`;
+      const requestURL:string = `${AppConfig.server_url}/users/userEmail/`;
       const response = await axios({
         method: "get",
         url: requestURL,
@@ -69,7 +69,7 @@ async function getLabels(userToken:string){
     return undefined;
   }
 
-  const requestURL:string = `${AppConfig.server_url}/all_labels`;
+  const requestURL:string = `${AppConfig.server_url}/labels/all_labels`;
   const response = await axios({
     method: "get",
     url: requestURL,
@@ -83,7 +83,7 @@ async function getLabels(userToken:string){
 async function getAdminsList(usertoken:string){
   const isAdmin = await axios({
                       method: "get",
-                      url: `${AppConfig.server_url}/user/userEmail/`,
+                      url: `${AppConfig.server_url}/users/userEmail/`,
                       headers: { "Content-Type": "application/json",
                                   "authorization": usertoken
                               },
@@ -96,7 +96,7 @@ async function getAdminsList(usertoken:string){
   
   const response2 =  await axios({
                       method: "get",
-                      url: `${AppConfig.server_url}/user/adminsUserEmail/`,
+                      url: `${AppConfig.server_url}/users/adminsUserEmail/`,
                       headers: { "Content-Type": "application/json",
                                   "authorization": usertoken
                               },
@@ -107,7 +107,7 @@ async function getAdminsList(usertoken:string){
 export async function addAdmin(email:string, usertoken:string) {
   return await axios({
     method: "put",
-    url: `${AppConfig.server_url}/user/add_admin`,
+    url: `${AppConfig.server_url}/users/add_admin`,
     data: {email:email, isAdminFlag:true},
     headers: { "Content-Type": "application/json; charset=utf-8",
     "authorization": usertoken }, 
@@ -117,7 +117,7 @@ export async function addAdmin(email:string, usertoken:string) {
 export async function removeAdmin(email:string, usertoken:string) {
   return await axios({
     method: "put",
-    url: `${AppConfig.server_url}/user/remove_admin`,
+    url: `${AppConfig.server_url}/users/remove_admin`,
     data: {email:email, isAdminFlag:false},
     headers: { "Content-Type": "application/json; charset=utf-8",
     "authorization": usertoken }, 
@@ -130,7 +130,7 @@ export async function addEnrollReq(event_id:number, token:string){
     console.log(event_id)
     const response =  await axios({
         method: "post",
-        url: `${AppConfig.server_url}/enroll_to_event`,
+        url: `${AppConfig.server_url}/events/enroll_to_event`,
         data: {event_id:event_id},
         headers: { "Content-Type": "application/json",
                     "authorization": token },
@@ -149,7 +149,7 @@ export async function unEnrollReq(event_id:number, token:string){
     console.log(event_id)
     const response =  await axios({
         method: "post",
-        url: `${AppConfig.server_url}/unenroll_to_event`,
+        url: `${AppConfig.server_url}/events/unenroll_to_event`,
         data: {event_id:event_id},
         headers: { "Content-Type": "application/json",
                     "authorization": token },
@@ -166,7 +166,7 @@ export async function editEventReq(event_details:fullEventDetails, token:string)
   try{
   const response =  await axios({
       method: "post",
-      url: `${AppConfig.server_url}/edit_event`,
+      url: `${AppConfig.server_url}/events/edit_event`,
       data: JSON.stringify(event_details),
       headers: { "Content-Type": "application/json",
                   "authorization": token
@@ -184,7 +184,7 @@ export async function addEventReq(event_details:fullEventDetails, token:string){
   try{
     const response =  await axios({
         method: "post",
-        url: `${AppConfig.server_url}/add_event`,
+        url: `${AppConfig.server_url}/events/add_event`,
         data: JSON.stringify(event_details),
         headers: { "Content-Type": "application/json",
                     "authorization": token },
@@ -202,7 +202,7 @@ export async function deleteEventReq(event_id:number, token:string){
     console.log("deleteEventReq1");
     const response =  await axios({
         method: "delete",
-        url: `${AppConfig.server_url}/delete_event/${event_id}`,
+        url: `${AppConfig.server_url}/events/delete_event/${event_id}`,
         headers: { "Content-Type": "application/json",
                     "authorization": token },
       });
@@ -219,7 +219,7 @@ export async function getEventDetails(event_id:number, token:string){
   try{
     const response = await axios({
       method: "get",
-      url: `${AppConfig.server_url}/event_details/${event_id}`,
+      url: `${AppConfig.server_url}/events/event_details/${event_id}`,
       // data: JSON.stringify(request_data),
       headers: { "Content-Type": "application/json", "authorization": token },
     });
@@ -235,7 +235,7 @@ export async function getAllEvents(token:string){
   try{
     const response = await axios({
       method: "get",
-      url: `${AppConfig.server_url}/all_events`,
+      url: `${AppConfig.server_url}/events/all_events`,
       headers: {  "Content-Type": "application/json", "authorization": token},
     });
     return response;
@@ -250,7 +250,7 @@ export async function getPersonalEvents(token:string){
   try{
     const response = await axios({
       method: "get",
-      url: `${AppConfig.server_url}/personal_events`,
+      url: `${AppConfig.server_url}/events/personal_events`,
       headers: {  "Content-Type": "application/json", "authorization": token},
     });
     return response;

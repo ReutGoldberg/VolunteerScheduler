@@ -1,5 +1,5 @@
 import express, {Request, Response} from "express";
-import { addNewUser, deleteUserById, getAllAdminUsers, getUserByEmail, updateUser,getUserByToken, setAdmin } from "../db";
+import { addNewUser, deleteUserById, getAllAdminUsers, getUserByEmail, updateUser,getUserByToken, setAdmin, getAllUsers } from "../db";
 import { isValidEmail, isVerifiedUser } from "../server_utils";
 import jwt_decode from "jwt-decode";
 
@@ -22,6 +22,21 @@ router.put('/', async (req:Request, res:Response) => {
 
     } catch (error) {
         console.log(error);
+        res.status(500);
+    }
+});
+
+router.get('/all_users', async (req:Request, res:Response) => {
+    const token = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(!(await isVerifiedUser(token))){
+            throw new Error("user is not certified");
+        }
+        const users = await getAllUsers();
+        res.json(users);   
+    }
+    catch(err:any){
+        console.error(err.message);
         res.status(500);
     }
 });
