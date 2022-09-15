@@ -21,11 +21,7 @@ import { isAdminUser, getEventDetails } from "../utils/DataAccessLayer";
 import { AddOrEditEvent } from "./AddOrEditEvent";
 import { AppConfig } from "../AppConfig";
 
-const CalendComponent = (
-  props: any,
-  isGeneral: boolean,
-  filters: filtersToMax | null
-) => {
+const CalendComponent = (props: any) => {
   const [demoEvents, setDemoEvents] = useState<eventDetails[] | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<fullEventDetails | null>(
@@ -59,7 +55,7 @@ const CalendComponent = (
     const data =
       window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
     const userFromStorage = JSON.parse(data);
-    parseGetEvents(userFromStorage.token, props.isGeneral, filters)
+    parseGetEvents(userFromStorage.token, props.isGeneral, props.filters)
       .then((res) => {
         setDemoEvents(res!!);
       })

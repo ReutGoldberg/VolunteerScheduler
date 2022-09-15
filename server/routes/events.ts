@@ -41,9 +41,11 @@ router.get('/personal_events', async (req:Request, res:Response) => {
     }
 });
 
-router.get('/filterd_events/:start_date/:end_date', async (req:Request, res:Response) => {
-    const endDate = new Date(req.params.end_date);
+router.get('/filterd_events/:start_date/:end_date/:start_time/:end_time', async (req:Request, res:Response) => {
     const startDate = new Date(req.params.start_date);//todo:check hours!!
+    const endDate = new Date(req.params.end_date);
+    const startTime = new Date(req.params.start_time);//todo:check hours!!
+    const endTime = new Date(req.params.end_time);
     console.log("get filtered event before ")
     const token = req.headers.authorization ? req.headers.authorization : "";
     try{
@@ -52,7 +54,7 @@ router.get('/filterd_events/:start_date/:end_date', async (req:Request, res:Resp
         }
         const decoded_token:any = jwt_decode(token);
         const token_sub = decoded_token.sub;
-        const events = await getFilterEvents(token_sub, startDate, endDate);
+        const events = await getFilterEvents(token_sub, startDate, endDate, startTime, endTime);
         res.json(events);
     }
     catch(err:any){
