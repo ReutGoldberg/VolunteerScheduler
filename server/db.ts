@@ -171,17 +171,16 @@ const prisma = new PrismaClient()
     }
   }
 
-  async function getFilterEvents(user_token: string, filters: any){
+  async function getFilterEvents(user_token: string, start_time:Date, end_time:Date){
     try {
       const events = await prisma.Events.findMany({
         where:{
-          EventVolunteerMap:{
-            some:{
-              Users:{
-                token: user_token
-              }
-            }
-          }
+          start_time:{
+            gte: start_time
+          },
+          end_time:{
+            lte: end_time
+          },
         }
       });
       return events;
