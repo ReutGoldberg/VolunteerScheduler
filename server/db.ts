@@ -183,6 +183,7 @@ const prisma = new PrismaClient()
           },
         }
       });
+      console.log(events);
       return events;
     } catch (error:any) {
       console.error("Error in getPersonalEvents from db.ts");

@@ -277,11 +277,11 @@ export async function getAllEvents(token:string){
 
 export async function getFilterdEvents(token:string, filters:filtersToMax){//TODO:change
   try{
-    // const startTime = filters.startDate;
-    // const endTime = filters.endDate;
-    const startTime=new Date();
-    const endTime = new Date();
-    endTime.setDate(18);
+    const startTime = filters.startDate;
+    const endTime = filters.endDate;
+    // const startTime=new Date();
+    // const endTime = new Date();
+    // endTime.setDate(18);
     const response = await axios({
       method: "get",
       url: `${AppConfig.server_url}/events/filterd_events/${startTime}/${endTime}`,

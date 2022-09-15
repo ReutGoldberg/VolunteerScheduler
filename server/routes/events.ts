@@ -42,6 +42,7 @@ router.get('/personal_events', async (req:Request, res:Response) => {
 });
 
 router.get('/filterd_events/:start_date/:end_date', async (req:Request, res:Response) => {
+    console.log("-----get filtered events-------")
     const endDate = new Date(req.params.end_date);
     const startDate = new Date(req.params.start_date);//todo:check hours!!
     console.log("get filtered event before ")
