@@ -17,7 +17,9 @@ interface AdminListProps {
 }
 
 export const AdminsList: React.FC<AdminListProps> = ({ curAdminList }) => {
-  console.log(`This is the prop value of admins list: ${JSON.stringify(curAdminList)}`);
+  console.log(
+    `This is the prop value of admins list: ${JSON.stringify(curAdminList)}`
+  );
 
   const [admins, setAdmins] = React.useState(curAdminList);
 
@@ -31,13 +33,15 @@ export const AdminsList: React.FC<AdminListProps> = ({ curAdminList }) => {
   useEffect(() => {
     let userObj = user;
     //if we get an empty object upon rendering the component - grab the user context from sessionStorage, where it's already set.
-    if(JSON.stringify(userObj) === "{}"){
-      userObj = JSON.parse(window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "");
+    if (JSON.stringify(userObj) === "{}") {
+      userObj = JSON.parse(
+        window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || ""
+      );
       setUser(userObj); //updating the context
     }
     //final safe-check for the user value
-    if(userObj === ""){
-      const msg:string = `userObject is not set, can't reterive data from DB`;
+    if (userObj === "") {
+      const msg: string = `userObject is not set, can't reterive data from DB`;
       console.error(msg);
       throw new Error(msg);
     }
@@ -64,7 +68,7 @@ export const AdminsList: React.FC<AdminListProps> = ({ curAdminList }) => {
         id="adminsList"
         ref={listRef}
         //style={{ maxHeight: 200, overflow: "auto" }} - to show more admins on the page w/o scroll
-        style={{overflow: "auto" }}
+        style={{ overflow: "auto" }}
       >
         {isPending && <CircularProgress color="primary" size={100} />}
         {admins &&
@@ -74,7 +78,6 @@ export const AdminsList: React.FC<AdminListProps> = ({ curAdminList }) => {
               disablePadding
               key={index}
               sx={{
-                color: "primary.dark",
                 display: "inline",
                 fontSize: 17,
                 fontWeight: "bold",

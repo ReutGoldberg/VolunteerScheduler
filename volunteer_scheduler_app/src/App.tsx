@@ -10,7 +10,6 @@ import { Navbar } from "./components/Navbar";
 import { lightTheme } from "./theme";
 import { Login } from "./components/Login";
 import { GeneralEventsCalendar } from "./components/GeneralEventsCalendar";
-import { Profile } from "./components/Profile";
 import { getPage, isUserExists } from "./utils/helper";
 import { AddOrEditEvent } from "./components/AddOrEditEvent";
 import { AppConfig } from "./AppConfig";
@@ -102,8 +101,6 @@ function App() {
         );
       case "AddAdmin":
         return <AddAdmin />;
-      case "Profile":
-        return <Profile />;
       case "Login":
         return <Login setPageApp={setPageApp} setUserAuth={setUser} />;
       default:

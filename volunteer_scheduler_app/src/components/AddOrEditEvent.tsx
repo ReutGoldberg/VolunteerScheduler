@@ -490,7 +490,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       )}
       <Typography
         variant="h2"
-        color="text.primary"
         textAlign={"center"}
         gutterBottom
         component="div"
@@ -499,12 +498,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         Add New Event
       </Typography>
 
-      <Typography
-        color="text.primary"
-        textAlign={"center"}
-        gutterBottom
-        component="div"
-      >
+      <Typography textAlign={"center"} gutterBottom component="div">
         {toEditEventDetails
           ? '* in order to edit the event use the "Edit Event" button bellow'
           : ""}
@@ -633,7 +627,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       >
         {isAdmin && (
           <TextField
-            // disabled = {(currentPage != "AddOrEditEvent")}
             required={toEditEventDetails ? false : true}
             error={!startDateValid}
             helperText={!startDateValid ? "Please enter a valid date " : ""}
@@ -652,7 +645,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         )}
         {isAdmin && (
           <TextField
-            // disabled = {(currentPage != "AddOrEditEvent")}
             required={toEditEventDetails ? false : true}
             error={!endDateValid}
             helperText={!endDateValid ? "Please enter a valid date " : ""}
@@ -801,7 +793,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       <ButtonGroup
         variant="contained"
         size="large"
-        // variant="text"
         aria-label="text button group"
         fullWidth={true}
       >
@@ -842,51 +833,52 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           Number Of Volunteers: {toEditEventDetails.count_volunteers}
         </Typography>
       )}
-      {toEditEventDetails && isAdmin && (
-        <Typography gutterBottom>Volunteers Emails:</Typography>
-      )}
-      {toEditEventDetails && isAdmin && (
-        <Typography gutterBottom>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 4.7,
-            }}
-          >
-            <List
+      {toEditEventDetails &&
+        isAdmin && <Typography gutterBottom>Volunteers Emails:</Typography> && (
+          <Typography gutterBottom>
+            <Box
               sx={{
-                width: "100%",
-                maxWidth: 360,
-                maxHeight: 100,
-                border: 1,
-                borderBlockColor: "grey",
-                borderRadius: 1,
-                overflow: "auto",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 4.7,
               }}
             >
-              {toEditEventDetails.volunteers?.map((value) => {
-                const email = value.email;
-                const nameAndEmail =
-                  value.first_name +
-                  " " +
-                  value.last_name +
-                  " (" +
-                  value.email +
-                  ")";
-                return (
-                  <ListItem key={value.email} disablePadding>
-                    <ListItemButton role={undefined} dense>
-                      <ListItemText id={nameAndEmail} primary={nameAndEmail} />
-                    </ListItemButton>
-                  </ListItem>
-                );
-              })}
-            </List>
-          </Box>
-        </Typography>
-      )}
+              <List
+                sx={{
+                  width: "100%",
+                  maxWidth: 360,
+                  maxHeight: 100,
+                  border: 1,
+                  borderBlockColor: "grey",
+                  borderRadius: 1,
+                  overflow: "auto",
+                }}
+              >
+                {toEditEventDetails.volunteers?.map((value) => {
+                  const email = value.email;
+                  const nameAndEmail =
+                    value.first_name +
+                    " " +
+                    value.last_name +
+                    " (" +
+                    value.email +
+                    ")";
+                  return (
+                    <ListItem key={value.email} disablePadding>
+                      <ListItemButton role={undefined} dense>
+                        <ListItemText
+                          id={nameAndEmail}
+                          primary={nameAndEmail}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  );
+                })}
+              </List>
+            </Box>
+          </Typography>
+        )}
     </Box>
   );
 };

@@ -113,7 +113,6 @@ export const AddAdmin: React.FC = () => {
       component="form"
       sx={{
         width: "70%",
-        // height: "100vh",
         display: "flex",
         flexDirection: "column",
         p: "5%",
@@ -138,7 +137,6 @@ export const AddAdmin: React.FC = () => {
           </Box>
           <Typography
             variant="h2"
-            color="text.primary"
             textAlign={"center"}
             gutterBottom
             component="div"
@@ -233,7 +231,6 @@ export const AddAdmin: React.FC = () => {
           </Box>
           <Typography
             variant="h2"
-            color="text.primary"
             textAlign={"center"}
             gutterBottom
             component="div"

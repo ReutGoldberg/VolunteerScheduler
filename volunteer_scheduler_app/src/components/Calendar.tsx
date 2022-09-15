@@ -127,7 +127,7 @@ const CalendComponent = (props: any, isGeneral: boolean) => {
           aria-labelledby="scroll-dialog-title"
           aria-describedby="scroll-dialog-description"
         >
-          <DialogTitle id="scroll-dialog-title">
+          <DialogTitle id="scroll-dialog-title" sx={{ textAlign: "center" }}>
             {selectedEvent["title"]}
           </DialogTitle>
           <DialogContent dividers>
