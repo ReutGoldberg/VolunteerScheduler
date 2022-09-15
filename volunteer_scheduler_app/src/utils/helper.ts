@@ -47,8 +47,8 @@ export interface eventDetails{
 }
 
 export interface filtersToMax{
-startTime: Number,
-endTime: Number,
+startDate: Date,
+endDate: Date,
 labels: labelOptions[],
 }
 

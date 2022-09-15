@@ -38,11 +38,17 @@ export const MaxVolunteer = () => {
 
   const { user, setUser } = React.useContext(UserObjectContext); //importing the context - user object by google token
 
-  const [startTime, setStartTime] = React.useState<Number>(7);
-  const [startTimeValid, setStartTimeValid] = React.useState(true);
+  //   const [startTime, setStartTime] = React.useState<Number>(7);
+  //   const [startTimeValid, setStartTimeValid] = React.useState(true);
 
-  const [endTime, setEndTime] = React.useState<Number>(7);
-  const [endTimeValid, setEndTimeValid] = React.useState(true);
+  //   const [endTime, setEndTime] = React.useState<Number>(7);
+  //   const [endTimeValid, setEndTimeValid] = React.useState(true);
+
+  const [startDate, setStartDate] = React.useState<Date | null>(null);
+  const [startDateValid, setStartDateValid] = React.useState(true);
+
+  const [endDate, setEndDate] = React.useState<Date | null>(null);
+  const [endDateValid, setEndDateValid] = React.useState(true);
 
   const [filters, setFilters] = React.useState<filtersToMax | null>(null);
 
@@ -77,43 +83,89 @@ export const MaxVolunteer = () => {
     return new Number(hour + "." + minute);
   };
 
+  //   const handleEventStartTimeChange = (
+  //     event: React.ChangeEvent<HTMLInputElement>
+  //   ) => {
+  //     var newVal = event.target.value;
+  //     if (newVal) {
+  //       var inputStartTime = fromStringToTime(
+  //         newVal.split(":")[0],
+  //         newVal.split(":")[1]
+  //       );
+  //       setStartTime(inputStartTime);
+  //       setStartTimeValid(endTime != null && endTime > inputStartTime);
+
+  //       if (!endTimeValid) {
+  //         setEndTimeValid(endTime != null && endTime > inputStartTime);
+  //       }
+  //     } else {
+  //       setStartTime(7);
+  //     }
+  //   };
+
+  //   const handleEventEndTimeChange = (
+  //     event: React.ChangeEvent<HTMLInputElement>
+  //   ) => {
+  //     var newVal = event.target.value;
+  //     if (newVal) {
+  //       var inputEndTime = fromStringToTime(
+  //         newVal.split(":")[0],
+  //         newVal.split(":")[1]
+  //       );
+  //       setEndTime(inputEndTime);
+  //       setEndTimeValid(startTime < inputEndTime);
+
+  //       if (!startTimeValid) {
+  //         setStartTimeValid(startTime < inputEndTime);
+  //       }
+  //     } else {
+  //       setEndTime(7);
+  //     }
+  //   };
+
   const handleEventStartTimeChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    var today = new Date();
     var newVal = event.target.value;
     if (newVal) {
-      var inputStartTime = fromStringToTime(
-        newVal.split(":")[0],
-        newVal.split(":")[1]
+      var inputStartDate = new Date(newVal);
+      setStartDateValid(
+        !(
+          inputStartDate < today ||
+          (endDate != null && inputStartDate > endDate)
+        )
       );
-      setStartTime(inputStartTime);
-      setStartTimeValid(endTime != null && endTime > inputStartTime);
+      setStartDate(inputStartDate);
 
-      if (!endTimeValid) {
-        setEndTimeValid(endTime != null && endTime > inputStartTime);
+      if (!endDateValid) {
+        setEndDateValid(endDate != null && endDate > inputStartDate);
       }
     } else {
-      setStartTime(7);
+      setStartDate(null);
     }
   };
 
   const handleEventEndTimeChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    var today = new Date();
     var newVal = event.target.value;
     if (newVal) {
-      var inputEndTime = fromStringToTime(
-        newVal.split(":")[0],
-        newVal.split(":")[1]
+      var inputEndDate = new Date(newVal);
+      setEndDateValid(
+        !(
+          inputEndDate < today ||
+          (startDate != null && inputEndDate < startDate)
+        )
       );
-      setEndTime(inputEndTime);
-      setEndTimeValid(startTime < inputEndTime);
+      setEndDate(inputEndDate);
 
-      if (!startTimeValid) {
-        setStartTimeValid(startTime < inputEndTime);
+      if (!startDateValid) {
+        setStartDateValid(startDate != null && inputEndDate > startDate);
       }
     } else {
-      setEndTime(7);
+      setEndDate(null);
     }
   };
 
@@ -132,13 +184,15 @@ export const MaxVolunteer = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      var filters: filtersToMax = {
-        startTime: startTime,
-        endTime: endTime,
-        labels: checkedLabels,
-      };
-      setFilters(filters);
-      setOpenDialog(true);
+      if (startDate && endDate) {
+        var filters: filtersToMax = {
+          startDate: startDate,
+          endDate: endDate,
+          labels: checkedLabels,
+        };
+        setFilters(filters);
+        setOpenDialog(true);
+      }
     } catch {
     } finally {
     }
@@ -190,7 +244,7 @@ export const MaxVolunteer = () => {
         ** in order to filter events choose labels and hours **
       </Typography>
 
-      <Box
+      {/* <Box
         sx={{
           display: "flex",
           flexDirection: "row",
@@ -235,8 +289,43 @@ export const MaxVolunteer = () => {
           }}
           sx={{ width: 200 }}
         />
+      </Box> */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          alignContent: "center",
+          gap: 4.7,
+        }}
+      >
+        <TextField
+          required
+          error={!startDateValid}
+          helperText={!startDateValid ? "Please enter a valid date " : ""}
+          id="datetime-local"
+          label="Enter start date"
+          type="datetime-local"
+          sx={{ width: 250 }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={handleEventStartTimeChange}
+        />
+        <TextField
+          required
+          error={!endDateValid}
+          helperText={!endDateValid ? "Please enter a valid date " : ""}
+          id="datetime-local"
+          label="Enter end date"
+          type="datetime-local"
+          sx={{ width: 250 }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={handleEventEndTimeChange}
+        />
       </Box>
-
       <Typography>lables:</Typography>
       <Box
         sx={{
