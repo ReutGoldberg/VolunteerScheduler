@@ -46,6 +46,12 @@ export interface eventDetails{
   labels: labelOptions[],
 }
 
+export interface filtersToMax{
+startTime: Number,
+endTime: Number,
+labels: labelOptions[],
+}
+
 const colors: string[] = [
   'indigo',
   'blue',
@@ -76,8 +82,8 @@ export const isUserExists=() => {
 export const isValidEmail = (email:string) =>{
   return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
 }
-
-export const parseGetEvents =  async(token:string, isGeneral:boolean): Promise<eventDetails[] | null> => {
+//todo:change according to filter
+export const parseGetEvents =  async(token:string, isGeneral:boolean=true, filters:filtersToMax|null=null): Promise<eventDetails[] | null> => {
   const events: eventDetails[] = [];
   try{
     const response = isGeneral ? await getAllEvents(token) : await getPersonalEvents(token);

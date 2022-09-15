@@ -1,10 +1,8 @@
 import { Box, ThemeProvider, Typography } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
 import "kalend/dist/styles/index.css"; // import styles
 import React from "react";
 import "./App.css";
 import { AddAdmin } from "./components/AddAdmin";
-import { AdminsList } from "./components/AdminsList";
 import { PersonalEventsCalendar } from "./components/PersonalEventsCalendar";
 import { Navbar } from "./components/Navbar";
 import { lightTheme } from "./theme";
@@ -16,6 +14,7 @@ import { AppConfig } from "./AppConfig";
 import { Footer } from "./components/Footer";
 import { isAdminUser } from "./utils/DataAccessLayer";
 import AppBar from "./components/AppBar";
+import { MaxVolunteer } from "./components/MaxVolunteer";
 
 export const UserObjectContext = React.createContext<any>({
   user: "",
@@ -101,6 +100,8 @@ function App() {
         );
       case "AddAdmin":
         return <AddAdmin />;
+      case "MaxVolunteer":
+        return <MaxVolunteer />;
       case "Login":
         return <Login setPageApp={setPageApp} setUserAuth={setUser} />;
       default:

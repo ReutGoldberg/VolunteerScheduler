@@ -40,25 +40,26 @@ export default function ButtonAppBar() {
             Volunteer Scheduler
           </Typography>
           {isUserExists() && (
-              <Box
-                sx={{
-                  mr: 2,
-                  marginTop: 1,
-                }}
-              >
-                <Typography>{user.name}</Typography>
-              </Box>
-            ) && (
-              <Box
-                sx={{
-                  mr: 2,
-                  marginTop: 1,
-                }}
-              >
-                {" "}
-                <img width={80} height={80} src={user.picture}></img>
-              </Box>
-            )}
+            <Box
+              sx={{
+                mr: 2,
+                marginTop: 1,
+              }}
+            >
+              <Typography>{user.name}</Typography>
+            </Box>
+          )}
+          {isUserExists() && (
+            <Box
+              sx={{
+                mr: 2,
+                marginTop: 1,
+              }}
+            >
+              {" "}
+              <img width={80} height={80} src={user.picture}></img>
+            </Box>
+          )}
         </Toolbar>
       </AppBar>
     </Box>
