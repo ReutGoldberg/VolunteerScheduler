@@ -96,8 +96,21 @@ export const parseGetEvents =  async(token:string, isGeneral:boolean=true, filte
     if(response.statusText === 'OK'){
       console.log("got events")
       
-      for (let i = 0; i < response.data.length; i += 1) {
+      for (let i = 0; i < response.data.length; i ++) {
         const event1=response.data[i]
+        let filtered_event_flag = false;
+        if(filters!=null && filters.labels.length!=0){
+          for(let x = 0; x < filters.labels.length; x++){
+            if(event1["labels"].find(filters.labels[x]) != null){
+              filtered_event_flag=true;
+              break;
+              }
+            }
+          if(!filtered_event_flag){
+            continue;
+          }
+        }
+        
         const event: eventDetails = {
           id: event1["id"],
           startAt: event1["start_time"],
