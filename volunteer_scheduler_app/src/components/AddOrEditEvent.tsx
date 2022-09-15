@@ -778,8 +778,9 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         </Box>
       )}
       <ButtonGroup
+        variant="contained"
         size="large"
-        variant="text"
+        // variant="text"
         aria-label="text button group"
         fullWidth={true}
         //hidden = {isAdmin} -todo: find solution, now returns a promise and therefore breaks

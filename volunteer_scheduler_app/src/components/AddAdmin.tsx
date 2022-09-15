@@ -16,8 +16,8 @@ export const AddAdmin: React.FC = () => {
   const [addAdminEmailValid, setAddAdminEmailValid] = React.useState(true);
 
   const [removeAdminEmail, setRemoveAdminEmail] = React.useState("");
-  const [removeAdminEmailValid, setRemoveAdminEmailValid] = React.useState(true);
-
+  const [removeAdminEmailValid, setRemoveAdminEmailValid] =
+    React.useState(true);
 
   const [adminsList, setAdminsList] = React.useState([]);
 
@@ -61,31 +61,9 @@ export const AddAdmin: React.FC = () => {
     event.preventDefault();
   };
 
-/* Experiment todo: remove*/ 
-// working version w/o use-state
-  // const handleRemoveAdmin = async () => {
-  //   //@ts-ignore
-  //   const adminEmailToRemove:string = String(document.getElementById("adminEmailToRemoveTxt").value);
-  //   console.log(`Admin to Remove: ${adminEmailToRemove}`);
-  //   const response = await removeAdmin(adminEmailToRemove, userFromStorage.token)
-  //     .then(() => {
-  //       console.log("Admin removed successfully");
-  //       return getAdminsList(userFromStorage.token);
-  //     })
-  //     .catch((err) => {
-  //       console.log("Error! Didn`t remove admin");
-  //       throw err;
-  //     });
-  //   console.log(response); // todo: remove when done testing
-  //   setAdminsList(response);
-  //   //@ts-ignore
-  //   document.getElementById("adminEmailToRemoveTxt").value = ""; //clear the feild for better UX
-  // };
-  //version w/ use-state on adminEmail
   const handleRemoveAdmin = async () => {
-    
-    if(!isValidEmail(removeAdminEmail)) return;
-    
+    if (!isValidEmail(removeAdminEmail)) return;
+
     //todo: remove when done testing
     console.log(`Admin to Remove: ${removeAdminEmail}`);
     console.log(`Admin's token: ${userFromStorage.token}`);
@@ -103,13 +81,12 @@ export const AddAdmin: React.FC = () => {
     setAdminsList(response);
     //@ts-ignore
     document.getElementById("adminEmailToRemoveTxt").value = ""; //clear the feild for better UX
-    alert(`${removeAdminEmail} removed successfully`);  
+    alert(`${removeAdminEmail} removed successfully`);
   };
 
   const handleAddAdmin = async () => {
-    
-    if(!isValidEmail(addAdminEmail)) return;
-    
+    if (!isValidEmail(addAdminEmail)) return;
+
     //todo: remove when done testing
     console.log(`Admin to add: ${addAdminEmail}`);
     console.log(`Admin's token: ${userFromStorage.token}`);
@@ -127,9 +104,8 @@ export const AddAdmin: React.FC = () => {
     setAdminsList(response);
     //@ts-ignore
     document.getElementById("adminEmailToAddTxt").value = ""; //clear the feild for better UX
-    alert(`${addAdminEmail} added successfully`); 
+    alert(`${addAdminEmail} added successfully`);
   };
-
 
   return (
     <Box
@@ -167,7 +143,7 @@ export const AddAdmin: React.FC = () => {
             gutterBottom
             component="div"
           >
-           Configure admin
+            Configure admin
           </Typography>
           <Box
             sx={{
@@ -177,7 +153,7 @@ export const AddAdmin: React.FC = () => {
               gap: 2,
             }}
           >
-            <TextField            
+            <TextField
               error={!addAdminEmailValid}
               id="adminEmailToAddTxt"
               label="Admin's Email to add"
@@ -194,25 +170,34 @@ export const AddAdmin: React.FC = () => {
                 ),
               }}
             />
-            <Button type="submit" form="registerForm" variant="contained" onClick={handleAddAdmin}>
+            <Button
+              type="submit"
+              form="registerForm"
+              variant="contained"
+              onClick={handleAddAdmin}
+            >
               Add Admin
             </Button>
           </Box>
-          <Box        sx={{
+          <Box
+            sx={{
               display: "flex",
               flexDirection: "column",
               p: "5%",
               gap: 2,
-            }}>
+            }}
+          >
             {/* { Start experiement} */}
-            <TextField              
+            <TextField
               error={!removeAdminEmailValid}
               id="adminEmailToRemoveTxt"
               label="Admin's Email to remove"
               variant="outlined"
               onChange={handleRemoveAdminEmailChange}
               helperText={
-                !removeAdminEmailValid ? "Please enter a valid email address " : ""
+                !removeAdminEmailValid
+                  ? "Please enter a valid email address "
+                  : ""
               }
               InputProps={{
                 startAdornment: (
@@ -222,7 +207,14 @@ export const AddAdmin: React.FC = () => {
                 ),
               }}
             />
-            <Button id="removeAdminBtn" type="submit" form="registerForm" variant="contained" color="error" onClick={handleRemoveAdmin}>
+            <Button
+              id="removeAdminBtn"
+              type="submit"
+              form="registerForm"
+              variant="contained"
+              color="error"
+              onClick={handleRemoveAdmin}
+            >
               Remove Admin
             </Button>
             {/* { End experiement} */}

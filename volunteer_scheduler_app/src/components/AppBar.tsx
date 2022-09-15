@@ -7,6 +7,7 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import { UserObjectContext } from "../App";
+import { isUserExists } from "../utils/helper";
 
 export default function ButtonAppBar() {
   const { user, setUser } = React.useContext(UserObjectContext);
@@ -38,23 +39,26 @@ export default function ButtonAppBar() {
           >
             Volunteer Scheduler
           </Typography>
-          <Box
-            sx={{
-              mr: 2,
-              marginTop: 1,
-            }}
-          >
-            <Typography>{user.name}</Typography>
-          </Box>
-          <Box
-            sx={{
-              mr: 2,
-              marginTop: 1,
-            }}
-          >
-            {" "}
-            <img width={80} height={80} src={user.picture}></img>
-          </Box>
+          {isUserExists() && (
+              <Box
+                sx={{
+                  mr: 2,
+                  marginTop: 1,
+                }}
+              >
+                <Typography>{user.name}</Typography>
+              </Box>
+            ) && (
+              <Box
+                sx={{
+                  mr: 2,
+                  marginTop: 1,
+                }}
+              >
+                {" "}
+                <img width={80} height={80} src={user.picture}></img>
+              </Box>
+            )}
         </Toolbar>
       </AppBar>
     </Box>

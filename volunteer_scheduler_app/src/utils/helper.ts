@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 import axios from 'axios';
 import {getAllEvents, getPersonalEvents} from "./DataAccessLayer";
+import { AppConfig } from '../AppConfig';
 
 
 export interface labelOptions{
@@ -63,6 +64,14 @@ const colors: string[] = [
 export const getPage = () => {
   return sessionStorage.getItem("page") || "main";
 };
+
+export const isUserExists=() => {
+  const data: string =
+    window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
+  if (data === "") return false;
+
+  return true;
+}
 
 export const isValidEmail = (email:string) =>{
   return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
