@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   eventDetails,
+  filtersToMax,
   fullEventDetails,
   parseGetEvents,
 } from "../utils/helper";
@@ -11,15 +12,7 @@ import "kalend/dist/styles/index.css";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
-import {
-  Button,
-  ButtonGroup,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
+import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
@@ -28,7 +21,11 @@ import { isAdminUser, getEventDetails } from "../utils/DataAccessLayer";
 import { AddOrEditEvent } from "./AddOrEditEvent";
 import { AppConfig } from "../AppConfig";
 
-const CalendComponent = (props: any, isGeneral: boolean) => {
+const CalendComponent = (
+  props: any,
+  isGeneral: boolean,
+  filters: filtersToMax | null
+) => {
   const [demoEvents, setDemoEvents] = useState<eventDetails[] | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<fullEventDetails | null>(
@@ -62,7 +59,7 @@ const CalendComponent = (props: any, isGeneral: boolean) => {
     const data =
       window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
     const userFromStorage = JSON.parse(data);
-    parseGetEvents(userFromStorage.token, props.isGeneral)
+    parseGetEvents(userFromStorage.token, props.isGeneral, filters)
       .then((res) => {
         setDemoEvents(res!!);
       })
