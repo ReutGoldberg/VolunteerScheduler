@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import axios from 'axios';
-import {getAllEvents, getPersonalEvents} from "./DataAccessLayer";
+import {getAllEvents, getFilterdEvents, getPersonalEvents} from "./DataAccessLayer";
 import { AppConfig } from '../AppConfig';
 
 
@@ -86,7 +86,11 @@ export const isValidEmail = (email:string) =>{
 export const parseGetEvents =  async(token:string, isGeneral:boolean=true, filters:filtersToMax|null=null): Promise<eventDetails[] | null> => {
   const events: eventDetails[] = [];
   try{
-    const response = isGeneral ? await getAllEvents(token) : await getPersonalEvents(token);
+    if(filters==null)
+      var response = isGeneral ? await getAllEvents(token) : await getPersonalEvents(token);
+    else
+      var response = await getFilterdEvents(token, filters);
+
     if(response.statusText === 'OK'){
       console.log("got events")
       
