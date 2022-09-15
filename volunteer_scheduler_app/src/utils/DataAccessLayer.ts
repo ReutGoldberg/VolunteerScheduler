@@ -398,14 +398,12 @@ export async function getIsUserEnrolled(event_id:number, token:string){
   }
 
 
-  async function createFakeEnrollToEvent(event_id:number, token:string){
+  async function createFakeEnrollToEvent(event_id:number, user_id:number){
     try {
       const response =  await axios({
         method: "post",
         url: `${AppConfig.server_url}/add_fake/enroll_to_event`,
-        data: {event_id:event_id,user_token:token},
-        headers: { "Content-Type": "application/json",
-                    "authorization": token },
+        data: {event_id:event_id,user_token:user_id},
       });
       return response;
     }

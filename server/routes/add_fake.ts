@@ -1,5 +1,5 @@
 import express, {Request, Response} from "express";
-import { addNewUser, addNewLabel, addNewLog, addNewEvent, enrollToEvent } from "../db";
+import { addNewUser, addNewLabel, addNewLog, addNewEvent, enrollToEventById } from "../db";
 import { isValidEmail } from "../server_utils";
 const config = require('../config')
 const router = express.Router();
@@ -108,18 +108,13 @@ router.post('/event', async (req:Request, res:Response) => {
 
 
 router.post('/enroll_to_event/', async (req:Request, res:Response) => {
-    const {event_id, user_token} = req.body;
-    const authToken = req.headers.authorization ? req.headers.authorization : "";
-    try{
-        if(authToken !== "fake_event"){ //verifing that the fake auth token starts with the expected prefix
-            const msg = `Event's auth token has issues \n Got: ${authToken}`
-            res.status(401);
-            throw new Error(msg);
-        }
-        else{
-            const event = await enrollToEvent(event_id, user_token);            
-            res.json(event);
-        }
+    const {event_id, user_id} = req.body;
+    try{    
+        //todo remove log when done testing
+        console.log(`Got the following: event_id: ${event_id} user_id: ${user_id}`)
+        const event = await enrollToEventById(Number(event_id), Number(user_id));            
+        res.json(event);
+ 
     }
     catch(err:any){
         console.log("In add fake Enroll_to_event from add_fake.ts (server router)");

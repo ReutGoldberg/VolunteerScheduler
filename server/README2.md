@@ -23,7 +23,8 @@ To switch to the fake data part do the following:
 
   1. In schema.prisma commnet-out the `datasource db` part for `DATABASE_URL`
   and uncomment the `datasource db` part for `FAKE_DATABASE_URL`.
-  2. Run the migrations comment to make sure the FAKE DB alligned with the scehme of the project.
+  2. Run migrations: "npx prisma migrate dev --name init" to make sure the FAKE DB alligned with the scehme of the project.
   3. Go to the AppConfig file and set the `IS_SHOW_FAKE` flag to `true`.
-  4. Run the app and the server.
-  5. Create fake data. 
+  4. Go to Server --> Config.js and change the following entry to `true` too config.server_app.IS_FAKE
+  5. Run the app and the server.
+  6. Create fake data. 

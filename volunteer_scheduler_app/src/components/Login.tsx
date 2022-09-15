@@ -9,10 +9,12 @@ import {
   createFakeUser,
   createFakeLog,
   createFakeLabel,
-  createFakeEvent
+  createFakeEvent,
+  createFakeEnrollToEvent
 } from "../utils/DataAccessLayer";
 import { AppConfig } from "../AppConfig";
 import { UserObjectContext } from "../App";
+//import { KeyboardReturnOutlined } from "@mui/icons-material";
 export interface LoginProps {
   setPageApp(page: string): void;
   setUserAuth(user: any): void;
@@ -50,54 +52,6 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
     //window.location.reload();
   }
 
-  //todo remove when done testing or move to a better position.
-  //this function takes data from fakeData.ts and sends via the api to DB
-  //In order for it to work, the function needs access both to the fakeData API and the server API (this is why it's located here)
-  async function handleGenerateFakeData(event: any) {
-    //@ts-ignore
-    const userAmount = document.getElementById("fakeUserAmount")?.value;
-    const num_users = parseInt(userAmount);
-
-    for (let index = 0; index < num_users; index++) {
-      const fakeUser = generateFakeUser();
-      const data = {
-        given_name: fakeUser.first_name,
-        family_name: fakeUser.last_name,
-        email: fakeUser.email,
-        token: fakeUser.token
-      };
-      createFakeUser(data);
-    }
-
-    //@ts-ignore
-    const EventAmount = document.getElementById("fakeEventAmount")?.value;
-    const num_events = parseInt(EventAmount);
-    for (let index = 0; index < num_events; index++) {
-      const fakeEvent = generateFakeEvent()
-      createFakeEvent(fakeEvent);
-    }
-
-    //@ts-ignore
-    const LogAmount = document.getElementById("fakeLogsAmount")?.value;
-    const num_logs = parseInt(LogAmount);
-    for (let index = 0; index < num_logs; index++) {
-      const fakeLog = generateFakeLog();
-      createFakeLog(fakeLog);
-    }
-
-    //@ts-ignore
-    const LabelAmount = document.getElementById("fakeLabelsAmount")?.value;
-    const num_labels = parseInt(LabelAmount);
-    for (let index = 0; index < num_labels; index++) {
-      const fakeLabel = generateFakeLabel();
-      createFakeLabel(fakeLabel);
-    }
-
-    console.log(`Added ${num_users} users, ${num_events} events, ${num_logs} logs, ${num_labels} labels to the fake DB`)
-    alert(`fakes added successfully`);
-    
-  }
-
   React.useEffect(() => {
     /* global google */
     google.accounts.id.initialize({
@@ -128,6 +82,92 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
     // console.log("Image URL: " + profile.getImageUrl());
     // console.log("Email: " + profile.getEmail()); // This is null if the 'email' scope is not present.
   }
+
+
+
+
+
+
+
+
+
+  function fakeEnrollUsersToEvent(num_enrolls: number, num_users: number, num_events: number) {
+    let i = 0,j = 0,count = 0;
+    while (i < num_users || count < num_enrolls) {
+      while (j < num_events) {
+        createFakeEnrollToEvent(j,i);
+        j++;
+        count++;
+      }
+      j = 0;
+      i++;
+    }
+  }
+
+  //todo remove when done testing or move to a better position.
+  //this function takes data from fakeData.ts and sends via the api to DB
+  //In order for it to work, the function needs access both to the fakeData API and the server API (this is why it's located here)
+  async function handleGenerateFakeData(event: any) {
+    //@ts-ignore
+    const userAmount = document.getElementById("fakeUserAmount")?.value;
+    const num_users = parseInt(userAmount);
+
+    //@ts-ignore
+    const EnrollslAmount = document.getElementById("fakeEnrollsAmount")?.value;
+    const num_enrolls = parseInt(EnrollslAmount);
+
+    //@ts-ignore
+    const EventAmount = document.getElementById("fakeEventAmount")?.value;
+    const num_events = parseInt(EventAmount);
+
+    if(num_enrolls < num_events*num_users){ //check
+      console.error("Not enought combinations to enroll users");
+      return;                  
+    }
+
+    for (let index = 0; index < num_users; index++) {
+      const fakeUser = generateFakeUser();
+      const data = {
+        given_name: fakeUser.first_name,
+        family_name: fakeUser.last_name,
+        email: fakeUser.email,
+        token: fakeUser.token
+      };
+      createFakeUser(data);
+    }
+
+    //Events part
+    for (let index = 0; index < num_events; index++) {
+      const fakeEvent = generateFakeEvent()
+      createFakeEvent(fakeEvent);
+    }
+
+    //@ts-ignore
+    const LogAmount = document.getElementById("fakeLogsAmount")?.value;
+    const num_logs = parseInt(LogAmount);
+    for (let index = 0; index < num_logs; index++) {
+      const fakeLog = generateFakeLog();
+      createFakeLog(fakeLog);
+    }
+
+    //@ts-ignore
+    const LabelAmount = document.getElementById("fakeLabelsAmount")?.value;
+    const num_labels = parseInt(LabelAmount);
+    for (let index = 0; index < num_labels; index++) {
+      const fakeLabel = generateFakeLabel();
+      createFakeLabel(fakeLabel);
+    }
+    //Enrolls part:
+    //enrolls the same id's but everytime it's re-generated as new fakes
+    fakeEnrollUsersToEvent(num_enrolls, num_users, num_events);
+
+    console.log(`Added ${num_users} users, ${num_events} events, ${num_logs} logs, ${num_labels} labels to the fake DB`)
+    console.log(`And enrolled ${num_enrolls}`);
+    alert(`fakes added successfully`);
+    
+  }
+
+
 
   return (
     <Box
@@ -180,6 +220,12 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
             helperText="Set the amount of fake logs to generate"
             label="Num logs"
           ></TextField>
+            <TextField
+            id="fakeEnrollsAmount"
+            type="number"
+            helperText="Set the amount of enrolls to generate"
+            label="Num Enrolls"
+          ></TextField>
         <Button onClick={(event) => handleGenerateFakeData(event)}>
           {" "}
           Generate Fake Data
@@ -190,3 +236,6 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
     </Box>
   );
 };
+
+
+

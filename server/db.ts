@@ -6,6 +6,7 @@
   */
 const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient()
+const config = require('./config')
 
   async function addNewUser(firstName:String, lastName:String, email:string, token:string){
   try {
@@ -431,4 +432,66 @@ async function addNewLog(logTxt:string, logTime:Date) {
   }
 }
 
-export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, setAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog};
+// #Fake part - added enroll by Id: to event by userId and eventId
+
+
+async function enrollToEventById(event_id:number, user_id:Number){
+  //todo: remove logging when done testing
+  console.log('enroll to event by id - fake')
+  console.log(event_id) 
+  if(!config.server_app.IS_FAKE) //safe check before allowing to use this function
+    return;
+
+    try{
+      const event_details = await prisma.Events.findFirst({
+        where:{
+          id: event_id,
+        },
+        include: {
+        EventVolunteerMap:{
+          select:{
+            Users: {
+              select:{
+                id: true,
+              }
+            }
+          }
+        },
+        },
+      });
+    const max=event_details["max_volenteering"];
+    const current = event_details["EventVolunteerMap"].length;
+    if(current<max){
+      const new_user_enrolled = await prisma.Users.update({
+        where:{
+          id: user_id
+        },
+        data: {
+          EventVolunteerMap: {
+            create: [{Events: {connect: {id: event_id}}}],
+          },
+        },
+      });
+      return true;
+    }
+    else{
+      console.log("cant enroll- full capacity")
+      return false;
+    }
+  }
+  catch(error: any){
+    console.log(error.message)
+    if (error.code === 'P2002'){  // already exsist
+      console.log("already enrolled -didnt do anything")
+      return true
+    }
+    //else
+    console.error("Error in enrollToEvent from db.ts");
+    console.error(error.message);
+    throw error;
+  }
+}
+
+
+
+export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, setAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog, enrollToEventById};
