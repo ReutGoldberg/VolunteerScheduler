@@ -116,11 +116,11 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   );
 
   const [loading, setLoading] = React.useState(true);
-  const [label, setlabel] = React.useState("");
 
   const { user, setUser } = React.useContext(UserObjectContext); //importing the context - user object by google token
 
   const [isEnrolled, setIsEnrolled] = React.useState(false);
+  const [isEnrolledValid, setIsEnrolledValid] = React.useState(false);
 
   React.useEffect(() => {
     async function callAsync() {
@@ -157,11 +157,21 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       if (toEditEventDetails) {
         const event_id = toEditEventDetails.id;
         const result = await getIsUserEnrolled(event_id, user.token);
-        if (result.data != null) setIsEnrolled(true);
-        else setIsEnrolled(false);
+        if (result.data != null) {
+          setIsEnrolled(true);
+          setIsEnrolledValid(true);
+        } else setIsEnrolled(false);
       }
     })();
   }, []);
+
+  const isBlockSubmit = () => {
+    if (toEditEventDetails)
+      return (
+        toEditEventDetails.max_volunteers <= toEditEventDetails.count_volunteers
+      );
+    return false;
+  };
 
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -218,6 +228,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           response = await addEnrollReq(toEditEventDetails.id, user.token);
         else {
           response = await unEnrollReq(toEditEventDetails.id, user.token);
+          setIsEnrolledValid(false);
         }
       }
     } catch (err: any) {
@@ -770,6 +781,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
                 <Checkbox
                   checked={isEnrolled}
                   onChange={handelIsEnrollChange}
+                  disabled={isBlockSubmit() && !isEnrolledValid}
                 />
               }
               label="Is Enrolled?"
@@ -777,28 +789,34 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           </FormGroup>
         </Box>
       )}
+      {toEditEventDetails && isBlockSubmit() && !isEnrolledValid && (
+        <Typography
+          sx={{
+            color: "red",
+          }}
+        >
+          Can't enroll - event is full
+        </Typography>
+      )}
       <ButtonGroup
         variant="contained"
         size="large"
         // variant="text"
         aria-label="text button group"
         fullWidth={true}
-        //hidden = {isAdmin} -todo: find solution, now returns a promise and therefore breaks
       >
-        {/* {toEditEventDetails ? (
-          <Button id="enrollmentEvenBtn" onClick={handleEnrollment}>
-            {isEnrolled ? "" : "Not "} Enrolled to the event
-          </Button>
-        ) : (
-          <Box />
-        )} */}
         {toEditEventDetails ? (
-          <Button id="enrollmentEvenBtn" onClick={handleEnrollment}>
-            submit enrollement{" "}
+          <Button
+            id="enrollmentEvenBtn"
+            onClick={handleEnrollment}
+            disabled={isBlockSubmit() && !isEnrolledValid}
+          >
+            submit enrollement
           </Button>
         ) : (
           <Box />
         )}
+
         {toEditEventDetails && isAdmin ? (
           <Button
             id="deleteEventBtn"
@@ -818,6 +836,57 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           <Box />
         )}
       </ButtonGroup>
+
+      {toEditEventDetails && (
+        <Typography gutterBottom>
+          Number Of Volunteers: {toEditEventDetails.count_volunteers}
+        </Typography>
+      )}
+      {toEditEventDetails && isAdmin && (
+        <Typography gutterBottom>Volunteers Emails:</Typography>
+      )}
+      {toEditEventDetails && isAdmin && (
+        <Typography gutterBottom>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 4.7,
+            }}
+          >
+            <List
+              sx={{
+                width: "100%",
+                maxWidth: 360,
+                maxHeight: 100,
+                border: 1,
+                borderBlockColor: "grey",
+                borderRadius: 1,
+                overflow: "auto",
+              }}
+            >
+              {toEditEventDetails.volunteers?.map((value) => {
+                const email = value.email;
+                const nameAndEmail =
+                  value.first_name +
+                  " " +
+                  value.last_name +
+                  " (" +
+                  value.email +
+                  ")";
+                return (
+                  <ListItem key={value.email} disablePadding>
+                    <ListItemButton role={undefined} dense>
+                      <ListItemText id={nameAndEmail} primary={nameAndEmail} />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Box>
+        </Typography>
+      )}
     </Box>
   );
 };

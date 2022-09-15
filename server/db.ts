@@ -197,21 +197,47 @@ const prisma = new PrismaClient()
     console.log('enroll to event')
     console.log(event_id) 
       try{
-      const new_user_enrolled = await prisma.Users.update({
-        where:{
-          token: user_token
-        },
-        data: {
-          EventVolunteerMap: {
-            create: [{Events: {connect: {id: event_id}}}],
+        const event_details = await prisma.Events.findFirst({
+          where:{
+            id: event_id,
           },
-        },
-      });
-      return true;
+          include: {
+          EventVolunteerMap:{
+            select:{
+              Users: {
+                select:{
+                  id: true,
+                }
+              }
+            }
+          },
+          },
+        });
+      const max=event_details["max_volenteering"];
+      const current = event_details["EventVolunteerMap"].length;
+      if(current<max){
+        console.log("there is a place")
+        const new_user_enrolled = await prisma.Users.update({
+          where:{
+            token: user_token
+          },
+          data: {
+            EventVolunteerMap: {
+              create: [{Events: {connect: {id: event_id}}}],
+            },
+          },
+        });
+        return true;
+      }
+      else{
+        console.log("cant enroll- full capacity")
+        return false;
+      }
     }
     catch(error: any){
       console.log(error.message)
       if (error.code === 'P2002'){  // already exsist
+        console.log("already enrolled -didnt do anything")
         return true
       }
       return false
@@ -233,14 +259,6 @@ const prisma = new PrismaClient()
       },
   });
     return true;
-  // }
-  //   catch(error: any){
-  //     console.log(error.message)
-  //     if (error.code == 'P2002'){  // already exsist
-  //       return true
-  //     }
-  //     return false
-  //   }
   }
   
   
@@ -300,51 +318,28 @@ const prisma = new PrismaClient()
   }
 }
 
+async function getAllLabels() {
+  const labels = await prisma.Labels.findMany();
+  return labels;
+}
 
-
-
-
-
-  async function getAllLabels() {
-    const labels = await prisma.Labels.findMany();
-    return labels;
-  }
-
-  async function addNewLabel(labelName:string) {
-    const label = await prisma.Labels.create({
-      data: {
-        name: labelName,
-      },
-    });
-    return label;
-  }
-
-  async function addNewLog(logTxt:string, logTime:Date) {
-    const log = await prisma.Logs.create({
-      data: {
-        text: logTxt,
-        time: logTime,
-      },
-    });
-    return log;
-  }
-
-
-
-
-  /*
-  async function addNewUser(firstName:String, lastName:String, email:string, token:string){
-  const user = await prisma.Users.create({
+async function addNewLabel(labelName:string) {
+  const label = await prisma.Labels.create({
     data: {
-      first_name: firstName,
-      last_name: lastName,
-      email: email,
-      token: token,
-      is_admin: false,
+      name: labelName,
     },
   });
-  return user;
-  }
-  */
+  return label;
+}
 
-  export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, setAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog};
+async function addNewLog(logTxt:string, logTime:Date) {
+  const log = await prisma.Logs.create({
+    data: {
+      text: logTxt,
+      time: logTime,
+    },
+  });
+  return log;
+}
+
+export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, setAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog};
