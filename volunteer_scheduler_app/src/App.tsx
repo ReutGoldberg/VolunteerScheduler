@@ -10,8 +10,7 @@ import { Navbar } from "./components/Navbar";
 import { lightTheme } from "./theme";
 import { Login } from "./components/Login";
 import { GeneralEventsCalendar } from "./components/GeneralEventsCalendar";
-import { Profile } from "./components/Profile";
-import { getPage } from "./utils/helper";
+import { getPage, isUserExists } from "./utils/helper";
 import { AddOrEditEvent } from "./components/AddOrEditEvent";
 import { AppConfig } from "./AppConfig";
 import { Footer } from "./components/Footer";
@@ -35,14 +34,6 @@ function App() {
   };
 
   const setOpenDialogApp = (openDialogApp: boolean) => {};
-
-  function isUserExists() {
-    const data: string =
-      window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
-    if (data === "") return false;
-
-    return true;
-  }
 
   //This hook will set the value to the localStorage upon erasing the User on Refresh
   React.useEffect(() => {
@@ -110,8 +101,6 @@ function App() {
         );
       case "AddAdmin":
         return <AddAdmin />;
-      case "Profile":
-        return <Profile />;
       case "Login":
         return <Login setPageApp={setPageApp} setUserAuth={setUser} />;
       default:
@@ -123,18 +112,7 @@ function App() {
       <UserObject />
       <ThemeProvider theme={lightTheme}>
         <div className={"root"}>
-          {!isUserExists() && (
-            <Typography
-              variant="h2"
-              color="text.primary"
-              textAlign={"center"}
-              gutterBottom
-              component="div"
-            >
-              Volunteer Scheduler
-            </Typography>
-          )}
-          {isUserExists() && <AppBar />}
+          <AppBar />
           {isUserExists() && (
             <Navbar
               setPageApp={setPageApp}

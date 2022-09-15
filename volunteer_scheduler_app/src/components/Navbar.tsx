@@ -33,11 +33,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     console.log("handleAddAdmin");
     setPageApp("AddAdmin");
   };
-  const handleProfile = () => {
-    console.log("handleProfile");
-    setPageApp("Profile");
-  };
-
   function handleSignOut(
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void {
@@ -96,9 +91,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               Admins
             </Button>
           )}
-          <Button id="ProfileBtn" onClick={handleProfile}>
-            Profile
-          </Button>
           <Button
             id="LogoutBtn"
             color="error"
