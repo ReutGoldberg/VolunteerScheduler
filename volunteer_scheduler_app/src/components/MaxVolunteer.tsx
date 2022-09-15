@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Paper,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
@@ -38,11 +39,11 @@ export const MaxVolunteer = () => {
 
   const { user, setUser } = React.useContext(UserObjectContext); //importing the context - user object by google token
 
-  //   const [startTime, setStartTime] = React.useState<Number>(7);
-  //   const [startTimeValid, setStartTimeValid] = React.useState(true);
+  const [startTime, setStartTime] = React.useState<Date | null>(null);
+  const [startTimeValid, setStartTimeValid] = React.useState(true);
 
-  //   const [endTime, setEndTime] = React.useState<Number>(7);
-  //   const [endTimeValid, setEndTimeValid] = React.useState(true);
+  const [endTime, setEndTime] = React.useState<Date | null>(null);
+  const [endTimeValid, setEndTimeValid] = React.useState(true);
 
   const [startDate, setStartDate] = React.useState<Date | null>(null);
   const [startDateValid, setStartDateValid] = React.useState(true);
@@ -79,51 +80,47 @@ export const MaxVolunteer = () => {
     callAsync();
   }, []);
 
-  const fromStringToTime = (hour: string, minute: string) => {
-    return new Number(hour + "." + minute);
+  const handleEventStartTimeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    var newVal = event.target.value;
+    if (newVal) {
+      let inputStartTime = new Date();
+      let [hours, minutes] = newVal.split(":");
+      inputStartTime.setHours(Number(hours));
+      inputStartTime.setMinutes(Number(minutes));
+      setStartTime(inputStartTime);
+      setStartTimeValid(endTime != null && endTime > inputStartTime);
+
+      if (!endTimeValid) {
+        setEndTimeValid(endTime != null && endTime > inputStartTime);
+      }
+    } else {
+      setStartTime(null);
+    }
   };
 
-  //   const handleEventStartTimeChange = (
-  //     event: React.ChangeEvent<HTMLInputElement>
-  //   ) => {
-  //     var newVal = event.target.value;
-  //     if (newVal) {
-  //       var inputStartTime = fromStringToTime(
-  //         newVal.split(":")[0],
-  //         newVal.split(":")[1]
-  //       );
-  //       setStartTime(inputStartTime);
-  //       setStartTimeValid(endTime != null && endTime > inputStartTime);
+  const handleEventEndTimeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    var newVal = event.target.value;
+    if (newVal) {
+      let inputEndTime = new Date();
+      let [hours, minutes] = newVal.split(":");
+      inputEndTime.setHours(Number(hours));
+      inputEndTime.setMinutes(Number(minutes));
+      setEndTime(inputEndTime);
+      setEndTimeValid(startTime != null && startTime < inputEndTime);
 
-  //       if (!endTimeValid) {
-  //         setEndTimeValid(endTime != null && endTime > inputStartTime);
-  //       }
-  //     } else {
-  //       setStartTime(7);
-  //     }
-  //   };
+      if (!startTimeValid) {
+        setStartTimeValid(startTime != null && startTime < inputEndTime);
+      }
+    } else {
+      setEndTime(null);
+    }
+  };
 
-  //   const handleEventEndTimeChange = (
-  //     event: React.ChangeEvent<HTMLInputElement>
-  //   ) => {
-  //     var newVal = event.target.value;
-  //     if (newVal) {
-  //       var inputEndTime = fromStringToTime(
-  //         newVal.split(":")[0],
-  //         newVal.split(":")[1]
-  //       );
-  //       setEndTime(inputEndTime);
-  //       setEndTimeValid(startTime < inputEndTime);
-
-  //       if (!startTimeValid) {
-  //         setStartTimeValid(startTime < inputEndTime);
-  //       }
-  //     } else {
-  //       setEndTime(7);
-  //     }
-  //   };
-
-  const handleEventStartTimeChange = (
+  const handleEventStartDateChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     var today = new Date();
@@ -146,7 +143,7 @@ export const MaxVolunteer = () => {
     }
   };
 
-  const handleEventEndTimeChange = (
+  const handleEventEndDateChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     var today = new Date();
@@ -184,13 +181,15 @@ export const MaxVolunteer = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      if (startDate && endDate) {
-        var filters: filtersToMax = {
+      if (startDate && endDate && startTime && endTime) {
+        var filtersSub: filtersToMax = {
           startDate: startDate,
           endDate: endDate,
+          dateForStartTime: startTime,
+          dateForEndTime: endTime,
           labels: checkedLabels,
         };
-        setFilters(filters);
+        setFilters(filtersSub);
         setOpenDialog(true);
       }
     } catch {
@@ -198,240 +197,205 @@ export const MaxVolunteer = () => {
     }
   };
 
-  const setOpenDialogApp = (openDialogApp: boolean) => {
-    setOpenDialog(openDialogApp);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-
   return (
-    <Box
-      sx={{
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        p: "5%",
-        gap: 2,
-      }}
-      id="maxForm"
-      component="form"
-      onSubmit={handleSubmit}
-    >
+    <>
       <Box
         sx={{
+          height: "100%",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          p: "5%",
           gap: 2,
         }}
+        id="maxForm"
+        component="form"
+        onSubmit={handleSubmit}
       >
-        <AutoAwesomeIcon color="info" sx={{ fontSize: "1000%" }} />
-      </Box>
-
-      <Typography
-        variant="h2"
-        textAlign={"center"}
-        gutterBottom
-        alignItems={"center"}
-        component="div"
-      >
-        Max My Volunteering
-      </Typography>
-
-      <Typography textAlign={"center"} gutterBottom component="div">
-        ** in order to filter events choose labels and hours **
-      </Typography>
-
-      {/* <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          alignContent: "center",
-          gap: 4.7,
-        }}
-      >
-        <TextField
-          id="time"
-          label="Enter start time:"
-          type="time"
-          defaultValue="07:30"
-          onChange={handleEventStartTimeChange}
-          required
-          error={!startTimeValid}
-          variant="outlined"
-          helperText={!startTimeValid ? "Please enter a valid start time " : ""}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          inputProps={{
-            step: 300, // 5 min
-          }}
-          sx={{ width: 200 }}
-        />
-        <TextField
-          id="time"
-          label="Enter end time:"
-          type="time"
-          defaultValue="07:30"
-          onChange={handleEventEndTimeChange}
-          required
-          error={!endTimeValid}
-          variant="outlined"
-          helperText={!endTimeValid ? "Please enter a valid end time " : ""}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          inputProps={{
-            step: 300, // 5 min
-          }}
-          sx={{ width: 200 }}
-        />
-      </Box> */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          alignContent: "center",
-          gap: 4.7,
-        }}
-      >
-        <TextField
-          required
-          error={!startDateValid}
-          helperText={!startDateValid ? "Please enter a valid date " : ""}
-          id="datetime-local"
-          label="Enter start date"
-          type="datetime-local"
-          sx={{ width: 250 }}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          onChange={handleEventStartTimeChange}
-        />
-        <TextField
-          required
-          error={!endDateValid}
-          helperText={!endDateValid ? "Please enter a valid date " : ""}
-          id="datetime-local"
-          label="Enter end date"
-          type="datetime-local"
-          sx={{ width: 250 }}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          onChange={handleEventEndTimeChange}
-        />
-      </Box>
-      <Typography>lables:</Typography>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 4.7,
-        }}
-      >
-        <List
+        <Box
           sx={{
-            width: "100%",
-            maxWidth: 450,
-            maxHeight: 100,
-            border: 1,
-            borderBlockColor: "grey",
-            borderRadius: 1,
-            overflow: "auto",
-          }}
-        >
-          {labelOptions.map((value) => {
-            const labelId = value.id;
-            return (
-              <ListItem key={value.id} disablePadding>
-                <ListItemButton
-                  role={undefined}
-                  onClick={handleToggle(value)}
-                  dense
-                >
-                  <ListItemIcon>
-                    <Checkbox
-                      edge="start"
-                      checked={
-                        checkedLabels.map((cl) => cl.id).indexOf(value.id) !==
-                        -1
-                      }
-                      tabIndex={-1}
-                      disableRipple
-                      inputProps={{
-                        "aria-labelledby": labelId.toString(),
-                      }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText id={labelId.toString()} primary={value.name} />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
-      </Box>
-
-      <ButtonGroup
-        variant="contained"
-        size="large"
-        aria-label="text button group"
-        fullWidth={true}
-      >
-        <Button type="submit" form="maxForm">
-          Show Matched Events
-        </Button>
-      </ButtonGroup>
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        scroll="body"
-        PaperProps={{ sx: { width: "100%" } }}
-        aria-labelledby="scroll-dialog-title"
-        aria-describedby="scroll-dialog-description"
-      >
-        <DialogTitle>
-          <Typography textAlign={"center"} gutterBottom component="div">
-            ** in order to max events choose the button bellow **
-          </Typography>
-          <ButtonGroup
-            variant="contained"
-            size="large"
-            aria-label="text button group"
-            fullWidth={true}
-          >
-            <Button
-              variant="contained"
-              size="large"
-              aria-label="text button group"
-              fullWidth={true}
-            >
-              Max It
-            </Button>
-          </ButtonGroup>
-        </DialogTitle>
-        <DialogContent
-          dividers
-          className={"Calendar__wrapper"}
-          sx={{
-            height: "70vh",
             display: "flex",
             flexDirection: "column",
-            p: "5%",
+            alignItems: "center",
             gap: 2,
           }}
         >
+          <AutoAwesomeIcon color="info" sx={{ fontSize: "1000%" }} />
+        </Box>
+
+        <Typography
+          variant="h2"
+          textAlign={"center"}
+          gutterBottom
+          alignItems={"center"}
+          component="div"
+        >
+          Max My Volunteering
+        </Typography>
+
+        <Typography>choose start date and end date:</Typography>
+
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            alignContent: "center",
+            gap: 4.7,
+          }}
+        >
+          <TextField
+            required
+            error={!startDateValid}
+            helperText={!startDateValid ? "Please enter a valid date " : ""}
+            id="datetime-local"
+            label="Enter start date"
+            type="datetime-local"
+            sx={{ width: 250 }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={handleEventStartDateChange}
+          />
+          <TextField
+            required
+            error={!endDateValid}
+            helperText={!endDateValid ? "Please enter a valid date " : ""}
+            id="datetime-local"
+            label="Enter end date"
+            type="datetime-local"
+            sx={{ width: 250 }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={handleEventEndDateChange}
+          />
+        </Box>
+        <Typography>for all days choose start hour and end hour:</Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            alignContent: "center",
+            gap: 4.7,
+          }}
+        >
+          <TextField
+            id="time"
+            label="Enter start time:"
+            type="time"
+            defaultValue="07:30"
+            onChange={handleEventStartTimeChange}
+            required
+            error={!startTimeValid}
+            variant="outlined"
+            helperText={
+              !startTimeValid ? "Please enter a valid start time " : ""
+            }
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputProps={{
+              step: 300, // 5 min
+            }}
+            sx={{ width: 200 }}
+          />
+          <TextField
+            id="time"
+            label="Enter end time:"
+            type="time"
+            defaultValue="07:30"
+            onChange={handleEventEndTimeChange}
+            required
+            error={!endTimeValid}
+            variant="outlined"
+            helperText={!endTimeValid ? "Please enter a valid end time " : ""}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputProps={{
+              step: 300, // 5 min
+            }}
+            sx={{ width: 200 }}
+          />
+        </Box>
+
+        <Typography>lables:</Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 4.7,
+          }}
+        >
+          <List
+            sx={{
+              width: "100%",
+              maxWidth: 450,
+              maxHeight: 100,
+              border: 1,
+              borderBlockColor: "grey",
+              borderRadius: 1,
+              overflow: "auto",
+            }}
+          >
+            {labelOptions.map((value) => {
+              const labelId = value.id;
+              return (
+                <ListItem key={value.id} disablePadding>
+                  <ListItemButton
+                    role={undefined}
+                    onClick={handleToggle(value)}
+                    dense
+                  >
+                    <ListItemIcon>
+                      <Checkbox
+                        edge="start"
+                        checked={
+                          checkedLabels.map((cl) => cl.id).indexOf(value.id) !==
+                          -1
+                        }
+                        tabIndex={-1}
+                        disableRipple
+                        inputProps={{
+                          "aria-labelledby": labelId.toString(),
+                        }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText
+                      id={labelId.toString()}
+                      primary={value.name}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </List>
+        </Box>
+
+        <ButtonGroup
+          variant="contained"
+          size="large"
+          aria-label="text button group"
+          fullWidth={true}
+        >
+          <Button type="submit" form="maxForm">
+            Show Matched Events
+          </Button>
+        </ButtonGroup>
+      </Box>
+      {filters && (
+        <Box
+          className={"wrapper"}
+          sx={{
+            width: "70%",
+            minHeight: "900px",
+          }}
+        >
           <CalendComponent isGeneral={true} isDark={true} filters={filters} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>close</Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+        </Box>
+      )}
+    </>
   );
 };
