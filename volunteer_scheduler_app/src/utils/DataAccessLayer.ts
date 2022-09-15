@@ -70,11 +70,6 @@ import { enrollement_details, filtersToMax, fullEventDetails } from "./helper";
 
 async function getLabels(userToken:string){
   try {
-    const isAdmin = await isAdminUser(userToken);
-    if (!isAdmin){
-      return undefined;
-    }
-  
     const requestURL:string = `${AppConfig.server_url}/labels/all_labels`;
     const response = await axios({
       method: "get",
@@ -284,7 +279,7 @@ export async function getFilterdEvents(token:string, filters:filtersToMax){//TOD
   try{
     const response = await axios({
       method: "get",
-      url: `${AppConfig.server_url}/events/filterd_events`,
+      url: `${AppConfig.server_url}/events/filterd_events/${filters}`,
       headers: {  "Content-Type": "application/json", "authorization": token},
     });
     return response;
@@ -293,7 +288,7 @@ export async function getFilterdEvents(token:string, filters:filtersToMax){//TOD
     console.error(err);
     throw err;
   }
-}getFilterdEvents
+}
 
 export async function getPersonalEvents(token:string){
   try{
@@ -327,12 +322,6 @@ export async function getIsUserEnrolled(event_id:number, token:string){
     throw err;
   }
 }
-
-
-
-
-
-
 
 /* FAKE */ 
   async function createFakeUser(userObject:any){

@@ -100,8 +100,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               Admins
             </Button>
           )}
-          <Button id="AddAdminBtn" onClick={handleMaxVolunteer}>
-            Max My Volunteering! 😇
+          <Button id="MaxVolunteerBtn" onClick={handleMaxVolunteer}>
+            Filter And Max My Volunteering! 😇
           </Button>
           <Button
             id="LogoutBtn"

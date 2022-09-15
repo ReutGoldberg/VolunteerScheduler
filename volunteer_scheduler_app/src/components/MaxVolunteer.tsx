@@ -15,8 +15,8 @@ import {
   DialogActions,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
-import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
 import Typography from "@mui/material/Typography";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 import { getLabels } from "../utils/DataAccessLayer";
 import {
@@ -173,7 +173,7 @@ export const MaxVolunteer = () => {
           gap: 2,
         }}
       >
-        <ManageAccountsTwoToneIcon color="info" sx={{ fontSize: "1000%" }} />
+        <AutoAwesomeIcon color="info" sx={{ fontSize: "1000%" }} />
       </Box>
 
       <Typography
@@ -306,6 +306,26 @@ export const MaxVolunteer = () => {
         aria-labelledby="scroll-dialog-title"
         aria-describedby="scroll-dialog-description"
       >
+        <DialogTitle>
+          <Typography textAlign={"center"} gutterBottom component="div">
+            ** in order to max events choose the button bellow **
+          </Typography>
+          <ButtonGroup
+            variant="contained"
+            size="large"
+            aria-label="text button group"
+            fullWidth={true}
+          >
+            <Button
+              variant="contained"
+              size="large"
+              aria-label="text button group"
+              fullWidth={true}
+            >
+              Max It
+            </Button>
+          </ButtonGroup>
+        </DialogTitle>
         <DialogContent
           dividers
           className={"Calendar__wrapper"}
