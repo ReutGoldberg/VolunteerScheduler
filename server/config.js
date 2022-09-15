@@ -2,7 +2,10 @@ const config = {
     server_app: {
       port: 5001, 
       name: 'myapp',
-      localhost: `http://localhost`
+      localhost: `http://localhost`,
+      notVerifiedUserMsg: "User token is not verified",
+      invalidUserMsg: "User email is not valid",
+      noAdminRightsMsg: "User is not an admin - request failed"
     },
     client_app:{
       port: 3000, 

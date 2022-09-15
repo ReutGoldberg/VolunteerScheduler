@@ -12,14 +12,15 @@ router.get('/all_events', async (req:Request, res:Response) => {
     console.log("get all events")
     try{
         if(!(await isVerifiedUser(token))){
-            throw new Error("user is not certified");
+            throw new Error(config.notVerifiedUserMsg);
         }
         const events = await getAllEvents();
         res.json(events);
     }
     catch(err:any){
+        console.log("Error in get all_events from events.ts (server router)")
         console.error(err.message);
-        res.status(500);
+        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);        
     }
 });
 
@@ -28,16 +29,17 @@ router.get('/personal_events', async (req:Request, res:Response) => {
     const token = req.headers.authorization ? req.headers.authorization : "";
     try{
         if(!(await isVerifiedUser(token))){
-            throw new Error("user is not certified");
+            throw new Error(config.notVerifiedUserMsg);
         }
-        //@ts-ignore
-        const token_sub = jwt_decode(token).sub;
+        const decoded_token:any = jwt_decode(token);
+        const token_sub = decoded_token.sub;
         const events = await getPersonalEvents(token_sub);
         res.json(events);
     }
     catch(err:any){
+        console.log("Error in get personal_events from events.ts (server router)")
         console.error(err.message);
-        res.status(500);
+        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);        
     }
 });
 
@@ -48,7 +50,7 @@ router.get('/event_details/:event_id', async (req:Request, res:Response) => {
     const token = req.headers.authorization ? req.headers.authorization : "";
     try{
         if(!(await isVerifiedUser(token))){
-            throw new Error("user is not certified");
+            throw new Error(config.notVerifiedUserMsg);
         }
         const event_details = await getEvent(eventId);
         var labels=[]
@@ -85,8 +87,9 @@ router.get('/event_details/:event_id', async (req:Request, res:Response) => {
         res.json(full_event_details);
     }
     catch (error:any) {
-        console.error(error);
-        res.status(500);
+        console.log("Error in get event_details from events.ts (server router)")
+        console.error(error.message);
+        error.message === config.notVerifiedUserMsg? res.status(401):res.status(500);    
     }
 });
 //Pushes data to the DB based on the request body
@@ -94,10 +97,9 @@ router.get('/event_details/:event_id', async (req:Request, res:Response) => {
 router.post('/enroll_to_event', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     const {event_id} = req.body;
-    console.log('--------------- enroll to Event ---------------')
     try{
         if(!(await isVerifiedUser(authToken))){
-            throw new Error("user is not certified");
+            throw new Error(config.notVerifiedUserMsg);
         }
         else{
             //@ts-ignore
@@ -107,8 +109,9 @@ router.post('/enroll_to_event', async (req:Request, res:Response) => {
         }
     }
     catch(err:any){
+        console.log("Error in enroll_to_event from events.ts (server router)")
         console.error(err.message);
-        res.status(500);
+        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);    
     }
 });
 
@@ -118,7 +121,7 @@ router.post('/unenroll_to_event', async (req:Request, res:Response) => {
     console.log('--------------- unenroll to Event ---------------')
     try{
         if(!(await isVerifiedUser(authToken))){
-            throw new Error("user is not certified");
+            throw new Error(config.notVerifiedUserMsg);
         }
         else{
             //@ts-ignore
@@ -129,17 +132,17 @@ router.post('/unenroll_to_event', async (req:Request, res:Response) => {
         }
     }
     catch(err:any){
+        console.log("Error in unenroll_to_event from events.ts (server router)")
         console.error(err.message);
-        res.status(500);
+        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);  
     }
 });
 
 router.post('/add_event', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
-    console.log('--------------- Creates new Events ---------------')
     try{
         if(!(await isVerifiedUser(authToken))){
-            throw new Error("user is not certified");
+            throw new Error(config.notVerifiedUserMsg);
         }
         else{
             const result_event = await addNewEvent(req.body);
@@ -147,19 +150,19 @@ router.post('/add_event', async (req:Request, res:Response) => {
         }
     }
     catch(err:any){
+        console.log("Error in Post add_event from events.ts (server router)")
         console.error(err.message);
-        res.status(500);
+        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);  
     }
 });
 
 
 router.post('/edit_event', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
-    console.log('--------------- edit Events ---------------')
     console.log(req.body)
     try{
         if(!(await isVerifiedUser(authToken))){
-            throw new Error("user is not certified");
+            throw new Error(config.notVerifiedUserMsg);
         }
         else{
             const result_event = await editEvent(req.body);
@@ -167,22 +170,22 @@ router.post('/edit_event', async (req:Request, res:Response) => {
         }
     }
     catch(err:any){
+        console.log("Error in Post edit_event from events.ts (server router)")
         console.error(err.message);
-        res.status(500);
+        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);  
     }
 });
 
 router.delete('/delete_event/:event_id', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
-    console.log('--------------- Delete Event By Id ---------------')
     try{
         if(!(await isVerifiedUser(authToken))){
-            throw new Error("user is not certified");
+            throw new Error(config.notVerifiedUserMsg);
         }
         const webUser = jwt_decode(authToken);
         //@ts-ignore
         if(!(await getUserByToken(webUser.sub).then((user) => user.is_admin))){
-            throw new Error("User is not admin");
+            throw new Error(config.noAdminRightsMsg);
         }
         else{
             const deletedEvent = await deleteEventById(Number(req.params.event_id));
@@ -190,16 +193,17 @@ router.delete('/delete_event/:event_id', async (req:Request, res:Response) => {
         }
     }
     catch(err:any){
+        console.log("Error in delete_event from events.ts (server router)")
         console.error(err.message);
-        res.status(500);
+        err.message === config.notVerifiedUserMsg || config.noAdminRightsMsg ? res.status(401):res.status(500);  
     }
 });
 
 router.get('/:event_id', async (req:Request, res:Response) => {
-    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    const authToken = req.headers.authorization  ? req.headers.authorization : "";
     try{
         if(!(await isVerifiedUser(authToken))){
-            throw new Error("user is not certified");
+            throw new Error(config.notVerifiedUserMsg );
         }
         //@ts-ignore
         const webUserSub:string = String(jwt_decode(authToken).sub);
@@ -207,8 +211,9 @@ router.get('/:event_id', async (req:Request, res:Response) => {
         res.json(userEvent);  
     }
     catch(err:any){
+        console.log("Error in get event_id from events.ts (server router)")
         console.error(err.message);
-        res.status(500);
+        err.message === config.notVerifiedUserMsg ? res.status(401):res.status(500);  
     }
 });
 

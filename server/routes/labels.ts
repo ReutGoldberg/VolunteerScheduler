@@ -9,15 +9,15 @@ router.get('/all_labels', async (req:Request, res:Response) => {
     const token = req.headers.authorization ? req.headers.authorization : "";
     try{
         if(!(await isVerifiedUser(token))){
-            throw new Error("user is not certified");
+            throw new Error(config.notVerifiedUserMsg );
         }
         const labels = await getAllLabels();
         res.json(labels);
     }
     catch(err:any){
+        console.log("Error in get all_labels from labels.ts (server router)")
         console.error(err.message);
-        res.status(500);
-        throw err;
+        err.message === config.notVerifiedUserMsg ? res.status(401):res.status(500);  
     }
 });
 
