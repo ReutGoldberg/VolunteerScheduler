@@ -21,18 +21,27 @@ export const Navbar: React.FC<NavbarProps> = ({
     console.log("handlePersonalEventsCalendar");
     setPageApp("PersonalEventsCalendar");
   };
+
   const handleGeneralEventsCalendar = () => {
     console.log("handleGeneralEventsCalendar");
     setPageApp("GeneralEventsCalendar");
   };
+
   const handleAddEvent = () => {
     console.log("handleAddEvent");
     setPageApp("AddOrEditEvent");
   };
+
   const handleAddAdmin = () => {
     console.log("handleAddAdmin");
     setPageApp("AddAdmin");
   };
+
+  const handleMaxVolunteer = () => {
+    console.log("handleMaxVolunteer");
+    setPageApp("MaxVolunteer");
+  };
+
   function handleSignOut(
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): void {
@@ -91,6 +100,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               Admins
             </Button>
           )}
+          <Button id="AddAdminBtn" onClick={handleMaxVolunteer}>
+            Max My Volunteering! 😇
+          </Button>
           <Button
             id="LogoutBtn"
             color="error"
