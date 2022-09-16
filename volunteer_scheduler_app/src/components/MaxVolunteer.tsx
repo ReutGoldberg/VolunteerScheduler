@@ -91,13 +91,18 @@ export const MaxVolunteer = () => {
       inputStartTime.setMinutes(Number(minutes));
       inputStartTime.setSeconds(0);
       setStartTime(inputStartTime);
-      setStartTimeValid(endTime != null && endTime > inputStartTime);
-
+      if (endTime != null) {
+        setStartTimeValid(endTime > inputStartTime);
+      }
       if (!endTimeValid) {
-        setEndTimeValid(endTime != null && endTime > inputStartTime);
+        if (endTime != null) {
+          setEndTimeValid(endTime > inputStartTime);
+        }
       }
     } else {
       setStartTime(null);
+      setStartTimeValid(true);
+      setEndTimeValid(true);
     }
   };
 
@@ -110,15 +115,21 @@ export const MaxVolunteer = () => {
       let [hours, minutes] = newVal.split(":");
       inputEndTime.setHours(Number(hours));
       inputEndTime.setMinutes(Number(minutes));
-      inputEndTime.setSeconds(0);
+      inputEndTime.setSeconds(59);
       setEndTime(inputEndTime);
-      setEndTimeValid(startTime != null && startTime < inputEndTime);
+      if (startTime != null) {
+        setEndTimeValid(startTime < inputEndTime);
+      }
 
       if (!startTimeValid) {
-        setStartTimeValid(startTime != null && startTime < inputEndTime);
+        if (startTime != null) {
+          setStartTimeValid(startTime < inputEndTime);
+        }
       }
     } else {
       setEndTime(null);
+      setEndTimeValid(true);
+      setStartTimeValid(true);
     }
   };
 
@@ -182,17 +193,31 @@ export const MaxVolunteer = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    console.log("hh");
+    var submitStartTime = startTime;
+    var submitEndTime = endTime;
+    if (submitStartTime == null) {
+      submitStartTime = new Date();
+      submitStartTime.setHours(0);
+      submitStartTime.setMinutes(0);
+      submitStartTime.setSeconds(0);
+    }
+    if (submitEndTime == null) {
+      submitEndTime = new Date();
+      submitEndTime.setHours(23);
+      submitEndTime.setMinutes(59);
+      submitEndTime.setSeconds(59);
+    }
     try {
-      if (startDate && endDate && startTime && endTime) {
+      if (startDate && endDate) {
         var filtersSub: filtersToMax = {
           startDate: startDate,
           endDate: endDate,
-          dateForStartTime: startTime,
-          dateForEndTime: endTime,
+          dateForStartTime: submitStartTime,
+          dateForEndTime: submitEndTime,
           labels: checkedLabels,
         };
         setFilters(filtersSub);
-        setOpenDialog(true);
       }
     } catch {
     } finally {
@@ -231,7 +256,7 @@ export const MaxVolunteer = () => {
           alignItems={"center"}
           component="div"
         >
-          Max My Volunteering
+          Filter And Max My Volunteering
         </Typography>
 
         <Typography>choose start date and end date:</Typography>
@@ -286,9 +311,8 @@ export const MaxVolunteer = () => {
             id="time"
             label="Enter start time:"
             type="time"
-            defaultValue="07:30"
             onChange={handleEventStartTimeChange}
-            required
+            // required
             error={!startTimeValid}
             variant="outlined"
             helperText={
@@ -306,9 +330,8 @@ export const MaxVolunteer = () => {
             id="time"
             label="Enter end time:"
             type="time"
-            defaultValue="07:30"
             onChange={handleEventEndTimeChange}
-            required
+            // required
             error={!endTimeValid}
             variant="outlined"
             helperText={!endTimeValid ? "Please enter a valid end time " : ""}

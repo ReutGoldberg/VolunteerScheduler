@@ -293,7 +293,7 @@ export async function getAllEvents(token:string){
   }
 }
 
-export async function getFilterdEvents(token:string, filters:filtersToMax){//TODO:change
+export async function getFilterdEvents(token:string, filters:filtersToMax){
   try{
     const response = await axios({
       method: "get",

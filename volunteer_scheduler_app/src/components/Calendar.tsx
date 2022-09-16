@@ -60,7 +60,7 @@ const CalendComponent = (props: any) => {
         setDemoEvents(res!!);
       })
       .catch((er) => {});
-  }, []);
+  }, [props.filters]);
 
   const onNewEventClick = (data: any) => {
     const msg = `New event click action\n\n Callback data:\n\n${JSON.stringify({

@@ -57,7 +57,7 @@ router.get('/filterd_events/:start_date/:end_date/:start_time/:end_time', async 
         const decoded_token:any = jwt_decode(token);
         const token_sub = decoded_token.sub;
         const events = await getFilterEvents(token_sub, startDate, endDate, startTime, endTime);
-        console.log("filtered_events:")
+        console.log("filtered_events server:")
         console.log(events);
         res.json(events);
     }

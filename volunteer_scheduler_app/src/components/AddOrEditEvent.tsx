@@ -50,7 +50,7 @@ export interface AddOrEditProps {
 
 const dateToString = (date: Date) => {
   return (
-    ("00" + (date.getDate() + 1)).slice(-2) +
+    ("00" + date.getDate()).slice(-2) +
     "/" +
     ("00" + date.getMonth()).slice(-2) +
     "/" +

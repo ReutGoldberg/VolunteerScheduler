@@ -84,7 +84,7 @@ export const isUserExists=() => {
 export const isValidEmail = (email:string) =>{
   return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
 }
-//todo:change according to filter
+
 export const parseGetEvents =  async(token:string, isGeneral:boolean=true, filters:filtersToMax|null=null): Promise<eventDetails[] | null> => {
   const events: eventDetails[] = [];
   try{
@@ -100,8 +100,8 @@ export const parseGetEvents =  async(token:string, isGeneral:boolean=true, filte
         const event1=response.data[i]
         let filtered_event_flag = false;
         if(filters!=null && filters.labels.length!=0){
-          for(let x = 0; x < filters.labels.length; x++){
-            if(event1["labels"].find(filters.labels[x]) != null){
+          for(var label of filters.labels){
+            if(event1["labels"].name.find(label.name) != null){
               filtered_event_flag=true;
               break;
               }

@@ -1,5 +1,8 @@
 // Prisma section //
 //----------------------------------------------------------------
+
+import { inflateSync } from "zlib";
+
   /** Data Access Layer for our DB
    *
    *  Contains all methods that change the data inside our DB
@@ -171,8 +174,18 @@ const prisma = new PrismaClient()
     }
   }
 
+  function timeToStr(date: Date){
+    return (("00" + date.getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2) + ":" + ("00" + date.getSeconds()).slice(-2));    
+  }
+
+  function dateToStr(date: Date){
+    return (("00" + date.getFullYear()).slice(-2) + ":" + ("00" + date.getMonth()).slice(-2) + ":" + ("00" + date.getDate()).slice(-2));    
+  }
+
   async function getFilterEvents(user_token: string, start_date:Date, end_date:Date, start_time:Date, end_time:Date){
     try {
+      console.log(start_time);
+      console.log(end_time);
       const events = await prisma.Events.findMany({
         where:{
           start_time:{
@@ -183,16 +196,24 @@ const prisma = new PrismaClient()
           },
         }
       });
-      console.log(events);
-      console.log("events:")
-      const relevant_events = [];
-      for (var event of events){
-        if (event["start_time"].getTime()>=start_time.getTime()&&event["end_time"].getTime()<=end_time.getTime()){
-          relevant_events.push(event)
-        }
+      const filter_start_time = timeToStr(start_time);
+      const filter_end_time = timeToStr(end_time);
+      if(filter_start_time == "00:00:00" && filter_end_time == "23:59:59"){
+        return events
       }
-      console.log(relevant_events);
-      return relevant_events;
+      else{
+        const relevant_events = []
+        for (var event of events){
+          const event_start_time = timeToStr(event["start_time"]);
+          const event_end_time = timeToStr(event["end_time"]);
+          const event_start_date = dateToStr(event["start_time"]);
+          const event_end_date = dateToStr(event["end_time"]);
+          if (event_start_date == event_end_date && event_start_time >= filter_start_time && event_end_time <= filter_end_time){
+            relevant_events.push(event)
+          }
+        }
+        return relevant_events;
+      }
     } catch (error:any) {
       console.error("Error in getPersonalEvents from db.ts");
       console.error(error.message);
@@ -463,3 +484,7 @@ async function addNewLog(logTxt:string, logTime:Date) {
 }
 
 export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, setAdmin, getAllEvents, getFilterEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog};
+  function slice(arg0: number) {
+    throw new Error("Function not implemented.");
+  }
+
