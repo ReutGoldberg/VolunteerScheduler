@@ -9,11 +9,6 @@ import {
   ListItemText,
   ButtonGroup,
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Paper,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
@@ -23,16 +18,12 @@ import { getLabels } from "../utils/DataAccessLayer";
 import { filtersToMax, labelOptions } from "../utils/helper";
 import React from "react";
 import { UserObjectContext } from "../App";
-import { AppConfig } from "../AppConfig";
 import CalendComponent from "./Calendar";
+import { AppConfig } from "../AppConfig";
 
 export const MaxVolunteer = () => {
-  const [loading, setLoading] = React.useState(true);
-
   const [labelOptions, setlabelOptions] = React.useState<labelOptions[]>([]);
   const [checkedLabels, setCheckedLabels] = React.useState<labelOptions[]>([]);
-
-  const { user, setUser } = React.useContext(UserObjectContext); //importing the context - user object by google token
 
   const [startTime, setStartTime] = React.useState<Date | null>(null);
   const [startTimeValid, setStartTimeValid] = React.useState(true);
@@ -48,33 +39,67 @@ export const MaxVolunteer = () => {
 
   const [filters, setFilters] = React.useState<filtersToMax | null>(null);
 
-  const [openDialog, setOpenDialog] = React.useState(false);
-
   const [isMax, setIsMax] = React.useState(false);
 
+  // ------------------------------------------------------ Persisted Auth after page refresh for admins Section -----------------------
+  //why doing like this?
+  //We can only use user object by the useContext hook which is allowed within a React Functional Component
+  //Using the setUser from the useState hook resutls in an endless loop so we tackle this by using a different variable with the correct value assigned
+  const { user } = React.useContext(UserObjectContext); //using App's context
+  let userFromStorage: any; //option to default back to sessionStorage
+  if (JSON.stringify(user) === "{}") {
+    const data =
+      sessionStorage.getItem(`${AppConfig.sessionStorageContextKey}`) || "";
+    userFromStorage = JSON.parse(data);
+  } else userFromStorage = user;
+  // -------------------------------------------------------------------- End of persisted auth ----------------------------------------------------
+
+  // React.useEffect(() => {
+  //   async function callAsync() {
+  //     try {
+  //       const data: labelOptions[] = await getLabels(user.token);
+  //       if (data) {
+  //         if (data.length === 0) {
+  //           return;
+  //         }
+  //         setlabelOptions(
+  //           data.map((labelOption) => {
+  //             return { id: labelOption.id, name: labelOption.name };
+  //           })
+  //         );
+  //       }
+  //     } catch (error) {
+  //       alert("An error accured in server. can't get labels");
+  //       return;
+  //     }
+  //   }
+  //   callAsync();
+  // }, []);
+
   React.useEffect(() => {
-    async function callAsync() {
-      try {
-        const data: labelOptions[] = await getLabels(user.token);
-        if (data) {
-          setLoading(false);
-          if (data.length === 0) {
-            return;
-          }
-          setlabelOptions(
-            data.map((labelOption) => {
-              return { id: labelOption.id, name: labelOption.name };
-            })
-          );
-        }
-      } catch (error) {
-        alert("An error accured in server. can't get labels");
-        setLoading(false);
-        return;
-      }
-    }
-    callAsync();
+    const userToken = userFromStorage.token;
+    getLabels(userToken).then((data) => {
+      setlabelOptions(data);
+    });
   }, []);
+
+  const setTimesForDates = (date: Date | null, isStart: boolean): Date => {
+    var time = new Date();
+    if (date) time = date;
+
+    if (isStart) {
+      // startTime
+      time.setHours(0);
+      time.setMinutes(0);
+      time.setSeconds(0);
+    } else {
+      //endTime
+      time.setHours(23);
+      time.setMinutes(59);
+      time.setSeconds(59);
+    }
+    return time;
+  };
 
   const handleEventStartTimeChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -135,7 +160,10 @@ export const MaxVolunteer = () => {
     var today = new Date();
     var newVal = event.target.value;
     if (newVal) {
-      var inputStartDate = new Date(newVal);
+      let inputStartDate = new Date(newVal + "T02:55:08.151437Z");
+      inputStartDate = setTimesForDates(inputStartDate, true);
+      console.log("date " + inputStartDate);
+      // var inputStartDate = new Date(newVal);
       setStartDateValid(
         !(
           inputStartDate < today ||
@@ -158,7 +186,9 @@ export const MaxVolunteer = () => {
     var today = new Date();
     var newVal = event.target.value;
     if (newVal) {
-      var inputEndDate = new Date(newVal);
+      let inputEndDate = new Date(newVal + "T02:55:08.151437Z");
+      inputEndDate = setTimesForDates(inputEndDate, true);
+      console.log("inputEndDate " + inputEndDate);
       setEndDateValid(
         !(
           inputEndDate < today ||
@@ -187,20 +217,9 @@ export const MaxVolunteer = () => {
     setCheckedLabels(newChecked);
   };
 
-  const setTimes = (isStart: boolean): Date => {
-    var time = new Date();
-    if (isStart) {
-      // startTime
-      time.setHours(0);
-      time.setMinutes(0);
-      time.setSeconds(0);
-    } else {
-      //endTime
-      time.setHours(23);
-      time.setMinutes(59);
-      time.setSeconds(59);
-    }
-    return time;
+  //to stop refershing the page when adding/removing admins.
+  const handleSubmitForm = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
   };
 
   const handleSubmit = (isMaxEvents: boolean) => {
@@ -210,10 +229,10 @@ export const MaxVolunteer = () => {
     var submitEndTime = endTime;
 
     if (submitStartTime == null) {
-      submitStartTime = setTimes(true);
+      submitStartTime = setTimesForDates(null, true);
     }
     if (submitEndTime == null) {
-      submitEndTime = setTimes(false);
+      submitEndTime = setTimesForDates(null, false);
     }
     try {
       if (startDate && endDate) {
@@ -251,7 +270,7 @@ export const MaxVolunteer = () => {
         }}
         id="maxForm"
         component="form"
-        onSubmit={handleOnFilter}
+        onSubmit={handleSubmitForm}
       >
         <Box
           sx={{
@@ -289,9 +308,9 @@ export const MaxVolunteer = () => {
             required
             error={!startDateValid}
             helperText={!startDateValid ? "Please enter a valid date " : ""}
-            id="datetime-local"
+            id="date"
             label="Enter start date"
-            type="datetime-local"
+            type="date"
             sx={{ width: 250 }}
             InputLabelProps={{
               shrink: true,
@@ -302,9 +321,9 @@ export const MaxVolunteer = () => {
             required
             error={!endDateValid}
             helperText={!endDateValid ? "Please enter a valid date " : ""}
-            id="datetime-local"
+            id="date"
             label="Enter end date"
-            type="datetime-local"
+            type="date"
             sx={{ width: 250 }}
             InputLabelProps={{
               shrink: true,
@@ -419,7 +438,7 @@ export const MaxVolunteer = () => {
           fullWidth={true}
           sx={{ gap: "1%" }}
         >
-          <Button type="submit" form="maxForm">
+          <Button onClick={handleOnFilter} form="maxForm">
             Filter Events
           </Button>
           <Button onClick={handelOnMax} form="maxForm">

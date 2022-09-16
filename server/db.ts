@@ -182,9 +182,22 @@ const prisma = new PrismaClient()
     return (("00" + date.getFullYear()).slice(-2) + ":" + ("00" + date.getMonth()).slice(-2) + ":" + ("00" + date.getDate()).slice(-2));    
   }
 
-  async function getFilterEvents(user_token: string, start_date:Date, end_date:Date, start_time:Date, end_time:Date, labelsIds:number[]){
+  async function getFilterEvents(start_date:Date, end_date:Date, start_time:Date, end_time:Date, labelsIds:number[]){
     try {
-      const events = await prisma.Events.findMany({
+      let events;
+      if(labelsIds.length==0){
+        events = await prisma.Events.findMany({
+          where:{
+            start_time:{
+              gte: start_date
+            },
+            end_time:{
+              lte: end_date
+            },  
+          }
+        });
+      }else{
+        events = await prisma.Events.findMany({
         where:{
           start_time:{
             gte: start_date
@@ -203,6 +216,8 @@ const prisma = new PrismaClient()
 
         }
       });
+      }
+
       const filter_start_time = timeToStr(start_time);
       const filter_end_time = timeToStr(end_time);
       if(filter_start_time == "00:00:00" && filter_end_time == "23:59:59"){

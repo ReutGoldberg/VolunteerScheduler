@@ -61,13 +61,12 @@ router.get('/filterd_events', async (req:Request, res:Response) => {
         if(!(await isVerifiedUser(token))){
             throw new Error(config.notVerifiedUserMsg);
         }
-        const decoded_token:any = jwt_decode(token);
-        const token_sub = decoded_token.sub;
-        const events = await getFilterEvents(token_sub, startDate, endDate, startTime, endTime, labels);
+        const events = await getFilterEvents(startDate, endDate, startTime, endTime, labels);
         if(isMax=="true"){
             //algo
             console.log("its algo time!!!");
         }
+        console.log(events);
         res.json(events);
     }
     catch(err:any){
