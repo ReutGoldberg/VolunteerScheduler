@@ -133,6 +133,22 @@ export async function addAdmin(email:string, usertoken:string) {
   }
 }
 
+export async function addLabel(label:string, usertoken:string) {
+  try {
+    return await axios({
+      method: "post",
+      url: `${AppConfig.server_url}/users/add_label`,
+      data: {labelName:label},
+      headers: { "Content-Type": "application/json; charset=utf-8",
+      "authorization": usertoken }, 
+    });
+  } catch (error:any) {
+    console.log("Error in addLabel from DAL");
+    console.error(error.message);
+    throw error;
+  }
+}
+
 export async function removeAdmin(email:string, usertoken:string) {
   try {
     return await axios({

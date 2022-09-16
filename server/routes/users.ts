@@ -129,7 +129,6 @@ router.get('/userEmail/', async (req:Request, res:Response) => {
     }
  });
 
-
  router.get('/adminsUserEmail/', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     try {

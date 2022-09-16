@@ -240,7 +240,7 @@ const prisma = new PrismaClient()
       throw error;
     }
   }
-
+  
   async function addNewEvent(event:any){
     try {
       const {id, title, details, labels, location, min_volunteers: min_volunteers, max_volunteers: max_volunteers, startAt, endAt, created_by} = event; 

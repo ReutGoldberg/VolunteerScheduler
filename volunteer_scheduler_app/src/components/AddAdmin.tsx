@@ -63,11 +63,6 @@ export const AddAdmin: React.FC = () => {
 
   const handleRemoveAdmin = async () => {
     if (!isValidEmail(removeAdminEmail)) return;
-
-    //todo: remove when done testing
-    console.log(`Admin to Remove: ${removeAdminEmail}`);
-    console.log(`Admin's token: ${userFromStorage.token}`);
-    //
     const response = await removeAdmin(removeAdminEmail, userFromStorage.token)
       .then(() => {
         console.log("Admin removed successfully");
@@ -86,11 +81,6 @@ export const AddAdmin: React.FC = () => {
 
   const handleAddAdmin = async () => {
     if (!isValidEmail(addAdminEmail)) return;
-
-    //todo: remove when done testing
-    console.log(`Admin to add: ${addAdminEmail}`);
-    console.log(`Admin's token: ${userFromStorage.token}`);
-    //
     const response = await addAdmin(addAdminEmail, userFromStorage.token)
       .then(() => {
         console.log("Admin added successfully");
