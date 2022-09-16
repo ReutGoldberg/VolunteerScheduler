@@ -2,14 +2,19 @@ import React from "react";
 import { Button, Box, TextField } from "@mui/material";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
-import { generateFakeUser, generateFakeEvent, generateFakeLabel, generateFakeLog } from "../fakeData";
+import {
+  generateFakeUser,
+  generateFakeEvent,
+  generateFakeLabel,
+  generateFakeLog,
+} from "../fakeData";
 import {
   isNewUser,
   createUser,
   createFakeUser,
   createFakeLog,
   createFakeLabel,
-  createFakeEvent
+  createFakeEvent,
 } from "../utils/DataAccessLayer";
 import { AppConfig } from "../AppConfig";
 import { UserObjectContext } from "../App";
@@ -43,9 +48,8 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
       AppConfig.sessionStorageContextKey,
       JSON.stringify(userObject)
     );
-    
-    setPageApp("GeneralEventsCalendar");
 
+    setPageApp("GeneralEventsCalendar");
 
     //window.location.reload();
   }
@@ -64,7 +68,7 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
         given_name: fakeUser.first_name,
         family_name: fakeUser.last_name,
         email: fakeUser.email,
-        token: fakeUser.token
+        token: fakeUser.token,
       };
       createFakeUser(data);
     }
@@ -73,7 +77,7 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
     const EventAmount = document.getElementById("fakeEventAmount")?.value;
     const num_events = parseInt(EventAmount);
     for (let index = 0; index < num_events; index++) {
-      const fakeEvent = generateFakeEvent()
+      const fakeEvent = generateFakeEvent();
       createFakeEvent(fakeEvent);
     }
 
@@ -93,9 +97,10 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
       createFakeLabel(fakeLabel);
     }
 
-    console.log(`Added ${num_users} users, ${num_events} events, ${num_logs} logs, ${num_labels} labels to the fake DB`)
+    console.log(
+      `Added ${num_users} users, ${num_events} events, ${num_logs} logs, ${num_labels} labels to the fake DB`
+    );
     alert(`fakes added successfully`);
-    
   }
 
   React.useEffect(() => {
@@ -133,7 +138,7 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
     <Box
       sx={{
         width: "30%",
-        height: "100vh",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         p: "5%",
@@ -148,45 +153,45 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
         }}
         id="signInDiv"
       ></Box>
-      {AppConfig.IS_SHOW_FAKE && 
-      (
-      <Box id="genFakeContainer"        
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}>
+      {AppConfig.IS_SHOW_FAKE && (
+        <Box
+          id="genFakeContainer"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <TextField
             id="fakeUserAmount"
             type="number"
             helperText="Set the amount of fake users to generate"
             label="Num users"
           ></TextField>
-           <TextField
+          <TextField
             id="fakeEventAmount"
             type="number"
             helperText="Set the amount of fake events to generate"
             label="Num events"
           ></TextField>
-            <TextField
+          <TextField
             id="fakeLabelsAmount"
             type="number"
             helperText="Set the amount of fake labels to generate"
             label="Num labels"
           ></TextField>
-            <TextField
+          <TextField
             id="fakeLogsAmount"
             type="number"
             helperText="Set the amount of fake logs to generate"
             label="Num logs"
           ></TextField>
-        <Button onClick={(event) => handleGenerateFakeData(event)}>
-          {" "}
-          Generate Fake Data
-        </Button>
-      </Box>
-      )
-      }
+          <Button onClick={(event) => handleGenerateFakeData(event)}>
+            {" "}
+            Generate Fake Data
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };

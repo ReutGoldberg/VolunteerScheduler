@@ -15,30 +15,27 @@ export const Navbar: React.FC<NavbarProps> = ({
   setUserAuth,
   isAdmin,
 }) => {
-  const { user, setUser } = React.useContext(UserObjectContext);
-
   const handlePersonalEventsCalendar = () => {
-    console.log("handlePersonalEventsCalendar");
     setPageApp("PersonalEventsCalendar");
   };
 
   const handleGeneralEventsCalendar = () => {
-    console.log("handleGeneralEventsCalendar");
     setPageApp("GeneralEventsCalendar");
   };
 
   const handleAddEvent = () => {
-    console.log("handleAddEvent");
     setPageApp("AddOrEditEvent");
   };
 
   const handleAddAdmin = () => {
-    console.log("handleAddAdmin");
     setPageApp("AddAdmin");
   };
 
+  const handleAddLabel = () => {
+    setPageApp("AddLabel");
+  };
+
   const handleMaxVolunteer = () => {
-    console.log("handleMaxVolunteer");
     setPageApp("MaxVolunteer");
   };
 
@@ -98,6 +95,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           {isAdmin && (
             <Button id="AddAdminBtn" onClick={handleAddAdmin}>
               Admins
+            </Button>
+          )}
+          {isAdmin && (
+            <Button id="AddLabelBtn" onClick={handleAddLabel}>
+              Labels
             </Button>
           )}
           <Button id="MaxVolunteerBtn" onClick={handleMaxVolunteer}>

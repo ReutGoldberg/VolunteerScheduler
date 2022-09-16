@@ -248,7 +248,7 @@ const prisma = new PrismaClient()
       throw error;
     }
   }
-
+  
   async function addNewEvent(event:any){
     try {
       const {id, title, details, labels, location, min_volunteers: min_volunteers, max_volunteers: max_volunteers, startAt, endAt, created_by} = event; 
@@ -421,6 +421,7 @@ const prisma = new PrismaClient()
 
 async function getAllLabels() {
   try {
+    console.log("getAllLabels");
     return await prisma.Labels.findMany();    
   } catch (error:any) {
     console.error("Error in getAllLabels from db.ts");
@@ -432,6 +433,7 @@ async function getAllLabels() {
 
 async function addNewLabel(labelName:string) {
   try {
+    console.log("addNewLabel");
     return await prisma.Labels.create({
       data: {
         name: labelName,

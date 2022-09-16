@@ -1,5 +1,4 @@
 import "../App.css";
-import jwt_decode from "jwt-decode";
 import {
   Button,
   Box,
@@ -13,7 +12,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  SelectChangeEvent,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
@@ -115,8 +113,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     toEditEventDetails ? toEditEventDetails.labels : []
   );
 
-  const [loading, setLoading] = React.useState(true);
-
   const { user, setUser } = React.useContext(UserObjectContext); //importing the context - user object by google token
 
   const [isEnrolled, setIsEnrolled] = React.useState(false);
@@ -127,7 +123,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       try {
         const data: labelOptions[] = await getLabels(user.token);
         if (data) {
-          setLoading(false);
           if (data.length === 0) {
             return;
           }
@@ -139,7 +134,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         }
       } catch (error) {
         alert("An error accured in server. can't get labels");
-        setLoading(false);
         return;
       }
     }
@@ -174,8 +168,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const handleEventNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    console.log("isAdmin: " + isAdmin);
-    console.log("page: " + currentPage);
     if (!event.target.value.match(/^[a-z0-9]+/i)) setEventNameValid(false);
     else setEventNameValid(true);
     setEventName(event.target.value);
@@ -466,7 +458,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     <Box
       component="form"
       sx={{
-        height: "100vh",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         p: "5%",

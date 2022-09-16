@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import List from "@mui/material/List";
-import { getAdminsList } from "../utils/DataAccessLayer";
+import { getLabels } from "../utils/DataAccessLayer";
 import CircularProgress from "@mui/material/CircularProgress";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
@@ -11,17 +11,19 @@ import { AccountCircle } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import { UserObjectContext } from "../App";
 import { AppConfig } from "../AppConfig";
+import { labelOptions } from "../utils/helper";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 
-interface AdminListProps {
-  curAdminList: any;
+interface LabelsListProps {
+  curLabelsList: labelOptions[];
 }
 
-export const AdminsList: React.FC<AdminListProps> = ({ curAdminList }) => {
+export const LabelsList: React.FC<LabelsListProps> = ({ curLabelsList }) => {
   console.log(
-    `This is the prop value of admins list: ${JSON.stringify(curAdminList)}`
+    `This is the prop value of labels list: ${JSON.stringify(curLabelsList)}`
   );
 
-  const [admins, setAdmins] = React.useState(curAdminList);
+  const [labels, setLabels] = React.useState(curLabelsList);
 
   const [isPending, setIsPending] = React.useState(true);
   const boxRef = useRef(null);
@@ -29,7 +31,7 @@ export const AdminsList: React.FC<AdminListProps> = ({ curAdminList }) => {
 
   const { user, setUser } = React.useContext(UserObjectContext);
 
-  //set admin list one on initial load
+  //set labels list one on initial load
   useEffect(() => {
     let userObj = user;
     //if we get an empty object upon rendering the component - grab the user context from sessionStorage, where it's already set.
@@ -45,32 +47,20 @@ export const AdminsList: React.FC<AdminListProps> = ({ curAdminList }) => {
       console.error(msg);
       throw new Error(msg);
     }
-    getAdminsList(userObj.token).then((data) => {
+    getLabels(userObj.token).then((data) => {
       console.log(data);
-      setAdmins(data);
+      setLabels(data);
       setIsPending(false);
     });
   }, []);
 
-  useEffect(() => {
-    if (curAdminList.length > 0) {
-      setAdmins(curAdminList);
-      setIsPending(false);
-    }
-  }, [curAdminList]);
-
   return (
-    <Box id="AdminListTabId" ref={boxRef}>
-      <List
-        id="adminsList"
-        ref={listRef}
-        //style={{ maxHeight: 200, overflow: "auto" }} - to show more admins on the page w/o scroll
-        style={{ overflow: "auto" }}
-      >
+    <Box id="LabelsListTabId" ref={boxRef}>
+      <List id="labelsList" ref={listRef} style={{ overflow: "auto" }}>
         {isPending && <CircularProgress color="primary" size={100} />}
-        {admins &&
+        {labels &&
           //@ts-ignore
-          admins.map((adminUser, index) => (
+          labels.map((label, index) => (
             <ListItem
               disablePadding
               key={index}
@@ -86,10 +76,10 @@ export const AdminsList: React.FC<AdminListProps> = ({ curAdminList }) => {
               <ListItemButton>
                 <ListItemAvatar>
                   <Avatar variant="rounded">
-                    <AccountCircle />
+                    <BookmarkIcon />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={adminUser.email} />
+                <ListItemText primary={label.name} />
               </ListItemButton>
             </ListItem>
           ))}

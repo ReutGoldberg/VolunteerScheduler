@@ -69,6 +69,7 @@ import { enrollement_details, filtersToMax, fullEventDetails } from "./helper";
 }
 
 async function getLabels(userToken:string){
+  console.log("getLabels");
   try {
     const requestURL:string = `${AppConfig.server_url}/labels/all_labels`;
     const response = await axios({
@@ -128,6 +129,23 @@ export async function addAdmin(email:string, usertoken:string) {
     });
   } catch (error:any) {
     console.log("Error in addAdmin from DAL");
+    console.error(error.message);
+    throw error;
+  }
+}
+
+export async function addLabel(label:string, usertoken:string) {
+  console.log("addLabel");
+  try {
+    return await axios({
+      method: "post",
+      url: `${AppConfig.server_url}/labels/add_label`,
+      data: {labelName: label},
+      headers: { "Content-Type": "application/json; charset=utf-8",
+      "authorization": usertoken }, 
+    });
+  } catch (error:any) {
+    console.log("Error in addLabel from DAL");
     console.error(error.message);
     throw error;
   }
