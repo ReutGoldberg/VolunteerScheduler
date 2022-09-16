@@ -184,7 +184,15 @@ const prisma = new PrismaClient()
         }
       });
       console.log(events);
-      return events;
+      console.log("events:")
+      const relevant_events = [];
+      for (var event of events){
+        if (event["start_time"].getTime()>=start_time.getTime()&&event["end_time"].getTime()<=end_time.getTime()){
+          relevant_events.push(event)
+        }
+      }
+      console.log(relevant_events);
+      return relevant_events;
     } catch (error:any) {
       console.error("Error in getPersonalEvents from db.ts");
       console.error(error.message);

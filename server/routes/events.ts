@@ -48,7 +48,7 @@ router.get('/filterd_events/:start_date/:end_date/:start_time/:end_time', async 
     const endDate = new Date(req.params.end_date);
     const startTime = new Date(req.params.start_time);//todo:check hours!!
     const endTime = new Date(req.params.end_time);
-    console.log("get filtered event before ")
+    console.log("get filtered event before ");
     const token = req.headers.authorization ? req.headers.authorization : "";
     try{
         if(!(await isVerifiedUser(token))){
@@ -57,6 +57,8 @@ router.get('/filterd_events/:start_date/:end_date/:start_time/:end_time', async 
         const decoded_token:any = jwt_decode(token);
         const token_sub = decoded_token.sub;
         const events = await getFilterEvents(token_sub, startDate, endDate, startTime, endTime);
+        console.log("filtered_events:")
+        console.log(events);
         res.json(events);
     }
     catch(err:any){

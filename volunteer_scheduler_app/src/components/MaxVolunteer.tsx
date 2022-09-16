@@ -89,6 +89,7 @@ export const MaxVolunteer = () => {
       let [hours, minutes] = newVal.split(":");
       inputStartTime.setHours(Number(hours));
       inputStartTime.setMinutes(Number(minutes));
+      inputStartTime.setSeconds(0);
       setStartTime(inputStartTime);
       setStartTimeValid(endTime != null && endTime > inputStartTime);
 
@@ -109,6 +110,7 @@ export const MaxVolunteer = () => {
       let [hours, minutes] = newVal.split(":");
       inputEndTime.setHours(Number(hours));
       inputEndTime.setMinutes(Number(minutes));
+      inputEndTime.setSeconds(0);
       setEndTime(inputEndTime);
       setEndTimeValid(startTime != null && startTime < inputEndTime);
 
