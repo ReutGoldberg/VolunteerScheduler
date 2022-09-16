@@ -7,7 +7,6 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemButton from "@mui/material/ListItemButton";
-import { AccountCircle } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import { UserObjectContext } from "../App";
 import { AppConfig } from "../AppConfig";
@@ -53,6 +52,13 @@ export const LabelsList: React.FC<LabelsListProps> = ({ curLabelsList }) => {
       setIsPending(false);
     });
   }, []);
+
+  useEffect(() => {
+    if (curLabelsList.length > 0) {
+      setLabels(curLabelsList);
+      setIsPending(false);
+    }
+  }, [curLabelsList]);
 
   return (
     <Box id="LabelsListTabId" ref={boxRef}>

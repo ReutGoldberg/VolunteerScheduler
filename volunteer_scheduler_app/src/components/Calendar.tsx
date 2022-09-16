@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   eventDetails,
-  filtersToMax,
   fullEventDetails,
   parseGetEvents,
 } from "../utils/helper";
@@ -55,7 +54,12 @@ const CalendComponent = (props: any) => {
     const data =
       window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
     const userFromStorage = JSON.parse(data);
-    parseGetEvents(userFromStorage.token, props.isGeneral, props.filters)
+    parseGetEvents(
+      userFromStorage.token,
+      props.isGeneral,
+      props.filters,
+      props.isMax
+    )
       .then((res) => {
         setDemoEvents(res!!);
       })
@@ -78,7 +82,6 @@ const CalendComponent = (props: any) => {
     const msg = `Click on event action\n\n Callback data:\n\n${JSON.stringify(
       data
     )}`;
-    console.log(msg);
     const event_id = data["id"];
     const token_data =
       window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";

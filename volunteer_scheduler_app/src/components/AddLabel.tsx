@@ -53,8 +53,20 @@ export const AddLabel: React.FC = () => {
     callAsync();
   }, []);
 
+  // React.useEffect(() => {
+  //   const userToken = userFromStorage.token;
+  //   getLabels(userToken).then((data) => {
+  //     setLabelsList(data);
+  //   });
+  // }, []);
+
   const handleAddLabelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.value.match(/^[a-z0-9]+/i)) setAddLabelValid(false);
+    // console.log(labelsList.map((l) => l.name).find((l) => l == label));
+    if (
+      !event.target.value.match(/^[a-z0-9]+/i) ||
+      labelsList.map((l) => l.name).find((l) => l == event.target.value)
+    )
+      setAddLabelValid(false);
     else setAddLabelValid(true);
     setLabel(event.target.value);
   };
@@ -65,7 +77,6 @@ export const AddLabel: React.FC = () => {
   };
 
   const handleAddLabel = async () => {
-    console.log("handleAddLabel");
     if (!addLabelValid) return;
     const response = await addLabel(label, userFromStorage.token)
       .then(() => {
@@ -117,7 +128,12 @@ export const AddLabel: React.FC = () => {
               gap: 2,
             }}
           >
+            <Typography>
+              please notice - a new label identical to an existing one will not
+              be approved!{" "}
+            </Typography>
             <TextField
+              sx={{ mt: 5 }}
               error={!addLabelValid}
               id="labelToAddTxt"
               label="Label"

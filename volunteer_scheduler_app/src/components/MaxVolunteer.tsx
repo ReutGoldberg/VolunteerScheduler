@@ -20,12 +20,7 @@ import Typography from "@mui/material/Typography";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 import { getLabels } from "../utils/DataAccessLayer";
-import {
-  eventDetails,
-  filtersToMax,
-  labelOptions,
-  parseGetEvents,
-} from "../utils/helper";
+import { filtersToMax, labelOptions } from "../utils/helper";
 import React from "react";
 import { UserObjectContext } from "../App";
 import { AppConfig } from "../AppConfig";
@@ -55,6 +50,8 @@ export const MaxVolunteer = () => {
 
   const [openDialog, setOpenDialog] = React.useState(false);
 
+  const [isMax, setIsMax] = React.useState(false);
+
   React.useEffect(() => {
     async function callAsync() {
       try {
@@ -76,7 +73,6 @@ export const MaxVolunteer = () => {
         return;
       }
     }
-
     callAsync();
   }, []);
 
@@ -191,22 +187,33 @@ export const MaxVolunteer = () => {
     setCheckedLabels(newChecked);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log("hh");
+  const setTimes = (isStart: boolean): Date => {
+    var time = new Date();
+    if (isStart) {
+      // startTime
+      time.setHours(0);
+      time.setMinutes(0);
+      time.setSeconds(0);
+    } else {
+      //endTime
+      time.setHours(23);
+      time.setMinutes(59);
+      time.setSeconds(59);
+    }
+    return time;
+  };
+
+  const handleSubmit = (isMaxEvents: boolean) => {
+    setIsMax(isMaxEvents);
+
     var submitStartTime = startTime;
     var submitEndTime = endTime;
+
     if (submitStartTime == null) {
-      submitStartTime = new Date();
-      submitStartTime.setHours(0);
-      submitStartTime.setMinutes(0);
-      submitStartTime.setSeconds(0);
+      submitStartTime = setTimes(true);
     }
     if (submitEndTime == null) {
-      submitEndTime = new Date();
-      submitEndTime.setHours(23);
-      submitEndTime.setMinutes(59);
-      submitEndTime.setSeconds(59);
+      submitEndTime = setTimes(false);
     }
     try {
       if (startDate && endDate) {
@@ -224,6 +231,14 @@ export const MaxVolunteer = () => {
     }
   };
 
+  const handleOnFilter = () => {
+    handleSubmit(false);
+  };
+
+  const handelOnMax = () => {
+    handleSubmit(true);
+  };
+
   return (
     <>
       <Box
@@ -236,7 +251,7 @@ export const MaxVolunteer = () => {
         }}
         id="maxForm"
         component="form"
-        onSubmit={handleSubmit}
+        onSubmit={handleOnFilter}
       >
         <Box
           sx={{
@@ -312,7 +327,6 @@ export const MaxVolunteer = () => {
             label="Enter start time:"
             type="time"
             onChange={handleEventStartTimeChange}
-            // required
             error={!startTimeValid}
             variant="outlined"
             helperText={
@@ -331,7 +345,6 @@ export const MaxVolunteer = () => {
             label="Enter end time:"
             type="time"
             onChange={handleEventEndTimeChange}
-            // required
             error={!endTimeValid}
             variant="outlined"
             helperText={!endTimeValid ? "Please enter a valid end time " : ""}
@@ -404,9 +417,13 @@ export const MaxVolunteer = () => {
           size="large"
           aria-label="text button group"
           fullWidth={true}
+          sx={{ gap: "1%" }}
         >
           <Button type="submit" form="maxForm">
-            Show Matched Events
+            Filter Events
+          </Button>
+          <Button onClick={handelOnMax} form="maxForm">
+            Max Events
           </Button>
         </ButtonGroup>
       </Box>
@@ -418,7 +435,12 @@ export const MaxVolunteer = () => {
             minHeight: "900px",
           }}
         >
-          <CalendComponent isGeneral={true} isDark={true} filters={filters} />
+          <CalendComponent
+            isGeneral={true}
+            isDark={true}
+            filters={filters}
+            isMax={isMax}
+          />
         </Box>
       )}
     </>

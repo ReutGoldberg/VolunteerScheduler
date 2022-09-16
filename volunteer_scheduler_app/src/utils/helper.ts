@@ -85,13 +85,13 @@ export const isValidEmail = (email:string) =>{
   return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
 }
 
-export const parseGetEvents =  async(token:string, isGeneral:boolean=true, filters:filtersToMax|null=null): Promise<eventDetails[] | null> => {
+export const parseGetEvents =  async(token:string, isGeneral:boolean=true, filters:filtersToMax|null=null, isMax:boolean=false): Promise<eventDetails[] | null> => {
   const events: eventDetails[] = [];
   try{
     if(filters==null)
       var response = isGeneral ? await getAllEvents(token) : await getPersonalEvents(token);
     else
-      var response = await getFilterdEvents(token, filters);
+      var response = await getFilterdEvents(token, filters, isMax);
 
     if(response.statusText === 'OK'){
       console.log("got events")

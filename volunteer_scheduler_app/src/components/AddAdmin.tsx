@@ -36,8 +36,6 @@ export const AddAdmin: React.FC = () => {
   React.useEffect(() => {
     const userToken = userFromStorage.token;
     getAdminsList(userToken).then((data) => {
-      console.log("Below are the admins"); //todo: remove when done testing
-      console.log(data);
       setAdminsList(data);
     });
   }, []);
@@ -72,7 +70,6 @@ export const AddAdmin: React.FC = () => {
         console.log("Error! Didn`t remove admin");
         throw err;
       });
-    console.log(`Got admins list from DB: ${response}`); // todo: remove when done testing
     setAdminsList(response);
     //@ts-ignore
     document.getElementById("adminEmailToRemoveTxt").value = ""; //clear the feild for better UX
@@ -90,7 +87,6 @@ export const AddAdmin: React.FC = () => {
         console.log("Error! Didn`t add admin");
         throw err;
       });
-    console.log(`Got admins list from DB: ${response}`); // todo: remove when done testing
     setAdminsList(response);
     //@ts-ignore
     document.getElementById("adminEmailToAddTxt").value = ""; //clear the feild for better UX

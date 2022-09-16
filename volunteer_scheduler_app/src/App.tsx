@@ -39,8 +39,7 @@ function App() {
   React.useEffect(() => {
     const userStr: string = JSON.stringify(user);
     if (userStr !== "{}") {
-      //making sure I'm not saving an erased context to the localstorage
-      console.log(`Setting Context!!! ${userStr}`);
+      //making sure I'm not saving an erased context to the sessionStorage
       window.sessionStorage.setItem(
         AppConfig.sessionStorageContextKey,
         userStr
@@ -57,7 +56,6 @@ function App() {
 
     //Not for initial login - when there's already data in the storage
     if (data !== "" && JSON.stringify(user) === "{}") {
-      console.log(`Fetching Context!!! ${data}`);
       setUser(JSON.parse(data));
     }
   }, []);

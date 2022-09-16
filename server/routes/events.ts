@@ -44,17 +44,18 @@ router.get('/personal_events', async (req:Request, res:Response) => {
 
 router.get('/filterd_events', async (req:Request, res:Response) => {
     console.log("-----get filtered events-------")  
-    if(req.query.startDate && req.query.endDate && req.query.dateForStartTime && req.query.dateForEndTime){
+    if(req.query.startDate && req.query.endDate && req.query.dateForStartTime && req.query.dateForEndTime && req.query.isMax){
     const startDate = new Date(req.query.startDate.toString());
     const endDate = new Date(req.query.endDate.toString());
     const startTime = new Date(req.query.dateForStartTime.toString());
     const endTime = new Date(req.query.dateForEndTime.toString());
+    const isMax = req.query.isMax.toString();
+    console.log("isMax " + isMax)
     const labelsId = req.query.labelsId?.toString();
     let labels :number[] = [];
     if(labelsId){
         labels=labelsId.split(',').map(x => Number(x));
     }
-    console.log("get filtered event before ");
     const token = req.headers.authorization ? req.headers.authorization : "";
     try{
         if(!(await isVerifiedUser(token))){
@@ -63,7 +64,10 @@ router.get('/filterd_events', async (req:Request, res:Response) => {
         const decoded_token:any = jwt_decode(token);
         const token_sub = decoded_token.sub;
         const events = await getFilterEvents(token_sub, startDate, endDate, startTime, endTime, labels);
-        console.log("filtered_events server:")
+        if(isMax=="true"){
+            //algo
+            console.log("its algo time!!!");
+        }
         res.json(events);
     }
     catch(err:any){
