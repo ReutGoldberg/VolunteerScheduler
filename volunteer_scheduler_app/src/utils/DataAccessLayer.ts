@@ -2,6 +2,7 @@ import jwt_decode from "jwt-decode";
 import axios from 'axios';
 import { AppConfig } from "../AppConfig";
 import { enrollement_details, filtersToMax, fullEventDetails } from "./helper";
+import qs from "qs";
 
 
 //todo: change this to a class - DAL and have a private field of token.
@@ -295,9 +296,21 @@ export async function getAllEvents(token:string){
 
 export async function getFilterdEvents(token:string, filters:filtersToMax){
   try{
+    const labelsIds = filters.labels.map(l => l.id);
     const response = await axios({
       method: "get",
-      url: `${AppConfig.server_url}/events/filterd_events/${filters.startDate}/${filters.endDate}/${filters.dateForStartTime}/${filters.dateForEndTime}`,
+      url: `${AppConfig.server_url}/events/filterd_events`,
+      params: {
+          labelsId: labelsIds,
+          startDate: filters.startDate,
+          endDate: filters.endDate,
+          dateForStartTime: filters.dateForStartTime,
+          dateForEndTime: filters.dateForEndTime,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params)
+        }
+      ,
       headers: {  "Content-Type": "application/json", "authorization": token},
     });
     return response;

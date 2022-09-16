@@ -42,12 +42,18 @@ router.get('/personal_events', async (req:Request, res:Response) => {
 });
 
 
-router.get('/filterd_events/:start_date/:end_date/:start_time/:end_time', async (req:Request, res:Response) => {
-    console.log("-----get filtered events-------")    
-    const startDate = new Date(req.params.start_date);//todo:check hours!!
-    const endDate = new Date(req.params.end_date);
-    const startTime = new Date(req.params.start_time);//todo:check hours!!
-    const endTime = new Date(req.params.end_time);
+router.get('/filterd_events', async (req:Request, res:Response) => {
+    console.log("-----get filtered events-------")  
+    if(req.query.startDate && req.query.endDate && req.query.dateForStartTime && req.query.dateForEndTime){
+    const startDate = new Date(req.query.startDate.toString());
+    const endDate = new Date(req.query.endDate.toString());
+    const startTime = new Date(req.query.dateForStartTime.toString());
+    const endTime = new Date(req.query.dateForEndTime.toString());
+    const labelsId = req.query.labelsId?.toString();
+    let labels :number[] = [];
+    if(labelsId){
+        labels=labelsId.split(',').map(x => Number(x));
+    }
     console.log("get filtered event before ");
     const token = req.headers.authorization ? req.headers.authorization : "";
     try{
@@ -56,9 +62,8 @@ router.get('/filterd_events/:start_date/:end_date/:start_time/:end_time', async 
         }
         const decoded_token:any = jwt_decode(token);
         const token_sub = decoded_token.sub;
-        const events = await getFilterEvents(token_sub, startDate, endDate, startTime, endTime);
+        const events = await getFilterEvents(token_sub, startDate, endDate, startTime, endTime, labels);
         console.log("filtered_events server:")
-        console.log(events);
         res.json(events);
     }
     catch(err:any){
@@ -66,6 +71,8 @@ router.get('/filterd_events/:start_date/:end_date/:start_time/:end_time', async 
         console.error(err.message);
         err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);        
     }
+    }
+    
 });
 
 router.get('/event_details/:event_id', async (req:Request, res:Response) => {
