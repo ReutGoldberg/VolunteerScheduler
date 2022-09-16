@@ -458,7 +458,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     <Box
       component="form"
       sx={{
-        height: "100vh",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         p: "5%",

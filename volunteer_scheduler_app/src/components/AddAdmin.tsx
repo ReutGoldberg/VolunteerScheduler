@@ -101,13 +101,6 @@ export const AddAdmin: React.FC = () => {
     <Box
       className="content-container"
       component="form"
-      sx={{
-        width: "70%",
-        display: "flex",
-        flexDirection: "column",
-        p: "5%",
-        gap: 2,
-      }}
       id="registerForm"
       onSubmit={handleSubmitForm}
     >
@@ -118,6 +111,7 @@ export const AddAdmin: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              mt: 2,
             }}
           >
             <ManageAccountsTwoToneIcon
@@ -215,6 +209,7 @@ export const AddAdmin: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              mt: 2,
             }}
           >
             <SupervisorAccountIcon color="primary" sx={{ fontSize: "1000%" }} />

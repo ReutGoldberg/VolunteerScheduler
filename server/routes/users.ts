@@ -65,7 +65,6 @@ router.post('/add_user', async (req:Request, res:Response) => {
 });
 
 
-
 //delete specific user
 //todo: consider deleting this function as it's dangerous.
 router.delete('/:id', async (req:Request, res:Response) => {

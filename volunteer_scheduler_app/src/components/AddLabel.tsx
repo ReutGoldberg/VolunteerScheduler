@@ -2,13 +2,13 @@ import React from "react";
 import { Button, Box, InputAdornment } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { AccountCircle } from "@mui/icons-material";
-import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import Typography from "@mui/material/Typography";
 import { addLabel, getLabels } from "../utils/DataAccessLayer";
 import { UserObjectContext } from "../App";
 import { labelOptions } from "../utils/helper";
 import { AppConfig } from "../AppConfig";
-import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import { LabelsList } from "./LabelsList";
 
 export const AddLabel: React.FC = () => {
@@ -31,10 +31,26 @@ export const AddLabel: React.FC = () => {
   // -------------------------------------------------------------------- End of persisted auth ----------------------------------------------------
 
   React.useEffect(() => {
-    const userToken = userFromStorage.token;
-    getLabels(userToken).then((data) => {
-      setLabelsList(data);
-    });
+    async function callAsync() {
+      try {
+        const data: labelOptions[] = await getLabels(user.token);
+        if (data) {
+          if (data.length === 0) {
+            return;
+          }
+          setLabelsList(
+            data.map((labelOption) => {
+              return { id: labelOption.id, name: labelOption.name };
+            })
+          );
+        }
+      } catch (error) {
+        alert("An error accured in server. can't get labels");
+        return;
+      }
+    }
+
+    callAsync();
   }, []);
 
   const handleAddLabelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,6 +65,7 @@ export const AddLabel: React.FC = () => {
   };
 
   const handleAddLabel = async () => {
+    console.log("handleAddLabel");
     if (!addLabelValid) return;
     const response = await addLabel(label, userFromStorage.token)
       .then(() => {
@@ -67,14 +84,8 @@ export const AddLabel: React.FC = () => {
 
   return (
     <Box
+      className="content-container"
       component="form"
-      sx={{
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        p: "5%",
-        gap: 2,
-      }}
       id="registerForm"
       onSubmit={handleSubmitForm}
     >
@@ -85,12 +96,10 @@ export const AddLabel: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              mt: 2,
             }}
           >
-            <ManageAccountsTwoToneIcon
-              color="primary"
-              sx={{ fontSize: "1000%" }}
-            />
+            <BookmarkIcon color="primary" sx={{ fontSize: "1000%" }} />
           </Box>
           <Typography
             variant="h2"
@@ -134,15 +143,16 @@ export const AddLabel: React.FC = () => {
           </Box>
         </Box>
         <Box className="middle-panel"></Box>
-        <Box className="right-panel box">
+        <Box className="right-panel box" sx={{ alignContent: "center" }}>
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              mt: 2,
             }}
           >
-            <SupervisorAccountIcon color="primary" sx={{ fontSize: "1000%" }} />
+            <BookmarksIcon color="primary" sx={{ fontSize: "1000%" }} />
           </Box>
           <Typography
             variant="h2"

@@ -413,6 +413,7 @@ const prisma = new PrismaClient()
 
 async function getAllLabels() {
   try {
+    console.log("getAllLabels");
     return await prisma.Labels.findMany();    
   } catch (error:any) {
     console.error("Error in getAllLabels from db.ts");
@@ -424,6 +425,7 @@ async function getAllLabels() {
 
 async function addNewLabel(labelName:string) {
   try {
+    console.log("addNewLabel");
     return await prisma.Labels.create({
       data: {
         name: labelName,

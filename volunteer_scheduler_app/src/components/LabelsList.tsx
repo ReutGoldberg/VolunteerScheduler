@@ -11,9 +11,11 @@ import { AccountCircle } from "@mui/icons-material";
 import Box from "@mui/material/Box";
 import { UserObjectContext } from "../App";
 import { AppConfig } from "../AppConfig";
+import { labelOptions } from "../utils/helper";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 
 interface LabelsListProps {
-  curLabelsList: any;
+  curLabelsList: labelOptions[];
 }
 
 export const LabelsList: React.FC<LabelsListProps> = ({ curLabelsList }) => {
@@ -52,13 +54,6 @@ export const LabelsList: React.FC<LabelsListProps> = ({ curLabelsList }) => {
     });
   }, []);
 
-  useEffect(() => {
-    if (curLabelsList.length > 0) {
-      setLabels(curLabelsList);
-      setIsPending(false);
-    }
-  }, [curLabelsList]);
-
   return (
     <Box id="LabelsListTabId" ref={boxRef}>
       <List id="labelsList" ref={listRef} style={{ overflow: "auto" }}>
@@ -81,10 +76,10 @@ export const LabelsList: React.FC<LabelsListProps> = ({ curLabelsList }) => {
               <ListItemButton>
                 <ListItemAvatar>
                   <Avatar variant="rounded">
-                    <AccountCircle />
+                    <BookmarkIcon />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={label} />
+                <ListItemText primary={label.name} />
               </ListItemButton>
             </ListItem>
           ))}
