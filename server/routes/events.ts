@@ -44,7 +44,9 @@ router.get('/personal_events', async (req:Request, res:Response) => {
 
 function isEnrolled(token_sub:string, event:any){
     for(let volunteer of event["EventVolunteerMap"]){
-        if(volunteer["token"]==token_sub) return true;
+        if(volunteer["Users"]["token"] == token_sub) {
+            return true;
+        }
     }
     return false;
 }
@@ -67,8 +69,8 @@ function cleanEvents(events:any[]){
 }
 
 function maxAlgo(events:any[]){
-    console.log("before - \n");
-    console.log(events);
+    // console.log("before - \n");
+    // console.log(events);
     events.sort(function(first, second) {
                     let diff = first["end_time"].getTime() - second["end_time"].getTime();
                     if(diff == 0){
@@ -77,11 +79,15 @@ function maxAlgo(events:any[]){
                     return diff;
                 }
             );
-    console.log("after - \n");
-    console.log(events);
-
-    
-       
+    let opt_events:any[] = events.length!=0 ? [events[0]] : [];
+    for(let event of events){
+        if(opt_events[opt_events.length-1]["end_time"].getTime() <= event["start_time"].getTime()){
+                opt_events.push(event);
+        }
+    }
+    // console.log("after - \n");
+    // console.log(events);
+    return opt_events;       
 }
 
 router.get('/filterd_events', async (req:Request, res:Response) => {
@@ -96,6 +102,7 @@ router.get('/filterd_events', async (req:Request, res:Response) => {
             if(!(await isVerifiedUser(token))){
                 throw new Error(config.notVerifiedUserMsg);
             }
+
             const events = await getFilterEvents( new Date(req.query.startDate.toString()), new Date(req.query.endDate.toString()), 
                                                 new Date(req.query.dateForStartTime.toString()), new Date(req.query.dateForEndTime.toString()),
                                                 labels);
@@ -109,10 +116,8 @@ router.get('/filterd_events', async (req:Request, res:Response) => {
             if(req.query.isMax.toString()=="true"){
                 //max-algo
                 console.log("its algo time!!!");
-                maxAlgo(filter_events);
-
+                filter_events = maxAlgo(filter_events);
             }
-            //console.log(filter_events);
             res.json(filter_events);
         }
         catch(err:any){
