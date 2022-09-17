@@ -472,7 +472,6 @@ const prisma = new PrismaClient()
     {
       const user = await getUserByToken(user_token)
       const user_id = user.id
-      //console.log(`IsEnrolledToEvent userId: ${user_id} event_id: ${event_id}`) 
       const new_user_enrolled = await prisma.EventVolunteerMap.findFirst({
         where:{
           event_id: event_id,

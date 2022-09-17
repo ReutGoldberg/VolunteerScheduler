@@ -59,45 +59,67 @@ function filterOnlyAvailableEvents(token_sub:string, events:any){
     return filter_events;
   }
 
+function cleanEvents(events:any[]){
+    return events.map(e => {
+        delete e["EventVolunteerMap"];
+        return e;
+    });  
+}
+
+function maxAlgo(events:any[]){
+    console.log("before - \n");
+    console.log(events);
+    events.sort(function(first, second) {
+                    let diff = first["end_time"].getTime() - second["end_time"].getTime();
+                    if(diff == 0){
+                        diff = first["start_time"].getTime() - second["start_time"].getTime();
+                    }
+                    return diff;
+                }
+            );
+    console.log("after - \n");
+    console.log(events);
+
+    
+       
+}
+
 router.get('/filterd_events', async (req:Request, res:Response) => {
     console.log("-----get filtered events-------")  
     if(req.query.startDate && req.query.endDate && req.query.dateForStartTime && req.query.dateForEndTime && req.query.isMax){
-    const startDate = new Date(req.query.startDate.toString());
-    const endDate = new Date(req.query.endDate.toString());
-    const startTime = new Date(req.query.dateForStartTime.toString());
-    const endTime = new Date(req.query.dateForEndTime.toString());
-    const isMax = req.query.isMax.toString();
-    let showOnlyAvailableEvents = req.query.showOnlyAvailableEvents?.toString();
-    if(!showOnlyAvailableEvents) showOnlyAvailableEvents="false";
-    console.log("isMax " + isMax)
-    const labelsId = req.query.labelsId?.toString();
-    let labels :number[] = [];
-    if(labelsId){
-        labels=labelsId.split(',').map(x => Number(x));
-    }
-    const token = req.headers.authorization ? req.headers.authorization : "";
-    try{
-        if(!(await isVerifiedUser(token))){
-            throw new Error(config.notVerifiedUserMsg);
+        let showOnlyAvailableEvents = req.query.showOnlyAvailableEvents?.toString();
+        if(!showOnlyAvailableEvents) showOnlyAvailableEvents="false";
+        const labelsId = req.query.labelsId?.toString();
+        let labels :number[] = labelsId ? labelsId.split(',').map(x => Number(x)) : [];
+        const token = req.headers.authorization ? req.headers.authorization : "";
+        try{
+            if(!(await isVerifiedUser(token))){
+                throw new Error(config.notVerifiedUserMsg);
+            }
+            const events = await getFilterEvents( new Date(req.query.startDate.toString()), new Date(req.query.endDate.toString()), 
+                                                new Date(req.query.dateForStartTime.toString()), new Date(req.query.dateForEndTime.toString()),
+                                                labels);
+            let filter_events = events;
+            
+            if(showOnlyAvailableEvents=="true"){
+                //@ts-ignore
+                filter_events = filterOnlyAvailableEvents(jwt_decode(token).sub, events);
+            }
+            filter_events = cleanEvents(filter_events);
+            if(req.query.isMax.toString()=="true"){
+                //max-algo
+                console.log("its algo time!!!");
+                maxAlgo(filter_events);
+
+            }
+            //console.log(filter_events);
+            res.json(filter_events);
         }
-        const events = await getFilterEvents(startDate, endDate, startTime, endTime, labels);
-        let filter_events = events;
-        if(showOnlyAvailableEvents=="true"){
-            //@ts-ignore
-            filter_events = filterOnlyAvailableEvents(jwt_decode(token).sub, events);
+        catch(err:any){
+            console.log("Error in get filterd_events from events.ts (server router)")
+            console.error(err.message);
+            err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);        
         }
-        if(isMax=="true"){
-            //algo
-            console.log("its algo time!!!");
-        }
-        console.log(filter_events);
-        res.json(filter_events);
-    }
-    catch(err:any){
-        console.log("Error in get filterd_events from events.ts (server router)")
-        console.error(err.message);
-        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);        
-    }
     }
     
 });
@@ -140,8 +162,6 @@ router.get('/event_details/:event_id', async (req:Request, res:Response) => {
             count_volunteers: count_volunteers,
             volunteers: volunteers,
         }
-        console.log("event details after parsing:")
-        console.log(full_event_details)
         res.json(full_event_details);
     }
     catch (error:any) {
