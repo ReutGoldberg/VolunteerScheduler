@@ -2,6 +2,7 @@ import express, {Request, Response} from "express";
 import { getAllEvents, getPersonalEvents, getEvent, addNewEvent, enrollToEvent, unenrollToEvent, editEvent, deleteEventById, getIsUserEnrolledToEvent, getUserByToken, getFilterEvents } from "../db";
 import { isVerifiedUser } from "../server_utils";
 import jwt_decode from "jwt-decode";
+
 const config = require('../config')
 const router = express.Router();
 
@@ -41,6 +42,22 @@ router.get('/personal_events', async (req:Request, res:Response) => {
     }
 });
 
+function isEnrolled(token_sub:string, event:any){
+    for(let volunteer of event["EventVolunteerMap"]){
+        if(volunteer["token"]==token_sub) return true;
+    }
+    return false;
+}
+
+function filterOnlyAvailableEvents(token_sub:string, events:any){
+    let filter_events = [];
+    for(let event of events){
+        if(event["max_volenteering"] > event["EventVolunteerMap"].length || isEnrolled(token_sub,event)){
+            filter_events.push(event);
+        }
+    }
+    return filter_events;
+  }
 
 router.get('/filterd_events', async (req:Request, res:Response) => {
     console.log("-----get filtered events-------")  
@@ -50,6 +67,8 @@ router.get('/filterd_events', async (req:Request, res:Response) => {
     const startTime = new Date(req.query.dateForStartTime.toString());
     const endTime = new Date(req.query.dateForEndTime.toString());
     const isMax = req.query.isMax.toString();
+    let showOnlyAvailableEvents = req.query.showOnlyAvailableEvents?.toString();
+    if(!showOnlyAvailableEvents) showOnlyAvailableEvents="false";
     console.log("isMax " + isMax)
     const labelsId = req.query.labelsId?.toString();
     let labels :number[] = [];
@@ -62,12 +81,17 @@ router.get('/filterd_events', async (req:Request, res:Response) => {
             throw new Error(config.notVerifiedUserMsg);
         }
         const events = await getFilterEvents(startDate, endDate, startTime, endTime, labels);
+        let filter_events = events;
+        if(showOnlyAvailableEvents=="true"){
+            //@ts-ignore
+            filter_events = filterOnlyAvailableEvents(jwt_decode(token).sub, events);
+        }
         if(isMax=="true"){
             //algo
             console.log("its algo time!!!");
         }
-        console.log(events);
-        res.json(events);
+        console.log(filter_events);
+        res.json(filter_events);
     }
     catch(err:any){
         console.log("Error in get filterd_events from events.ts (server router)")
@@ -87,16 +111,16 @@ router.get('/event_details/:event_id', async (req:Request, res:Response) => {
             throw new Error(config.notVerifiedUserMsg);
         }
         const event_details = await getEvent(eventId);
-        var labels=[]
-        for (var label of event_details["EventLabelMap"]){
+        let labels=[]
+        for (let label of event_details["EventLabelMap"]){
             labels.push(label["Labels"])
         }
         const webUser = jwt_decode(token);
-        var volunteers=[]
-        var count_volunteers = event_details["EventVolunteerMap"].length;
+        let volunteers=[]
+        let count_volunteers = event_details["EventVolunteerMap"].length;
         //@ts-ignore
         if((await getUserByToken(webUser.sub).then((user) => user.is_admin))){
-            for (var volenteer of event_details["EventVolunteerMap"]){
+            for (let volenteer of event_details["EventVolunteerMap"]){
                 volunteers.push(volenteer["Users"])
             }
         }
@@ -189,7 +213,6 @@ router.post('/add_event', async (req:Request, res:Response) => {
         err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);  
     }
 });
-
 
 router.post('/edit_event', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";

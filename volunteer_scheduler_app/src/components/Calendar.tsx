@@ -4,9 +4,7 @@ import {
   fullEventDetails,
   parseGetEvents,
 } from "../utils/helper";
-import axios from "axios";
-import { DateTime } from "luxon";
-import Kalend, { CalendarView, OnEventDragFinish } from "kalend";
+import Kalend, { CalendarView } from "kalend";
 import "kalend/dist/styles/index.css";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -14,7 +12,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import Typography from "@mui/material/Typography";
 import { isAdminUser, getEventDetails } from "../utils/DataAccessLayer";
 import { AddOrEditEvent } from "./AddOrEditEvent";
@@ -56,9 +53,10 @@ const CalendComponent = (props: any) => {
     const userFromStorage = JSON.parse(data);
     parseGetEvents(
       userFromStorage.token,
-      props.isGeneral,
-      props.filters,
-      props.isMax
+      props.isGeneral, //general or personal events
+      props.filters, //filters on or off
+      props.isMax, //algo' on or off
+      props.showOnlyAvailableEvents //show only events that are not maxed out (include personal)
     )
       .then((res) => {
         setDemoEvents(res!!);

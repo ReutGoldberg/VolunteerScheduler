@@ -9,6 +9,8 @@ import {
   ListItemText,
   ButtonGroup,
   Button,
+  FormGroup,
+  FormControlLabel,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
@@ -40,6 +42,8 @@ export const MaxVolunteer = () => {
   const [filters, setFilters] = React.useState<filtersToMax | null>(null);
 
   const [isMax, setIsMax] = React.useState(false);
+
+  const [isAvailable, setIsAvailable] = React.useState(false);
 
   // ------------------------------------------------------ Persisted Auth after page refresh for admins Section -----------------------
   //why doing like this?
@@ -214,6 +218,12 @@ export const MaxVolunteer = () => {
       newChecked.splice(currentIndex, 1);
     }
     setCheckedLabels(newChecked);
+  };
+
+  const handelIsAvailableChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setIsAvailable(event.target.checked);
   };
 
   //to stop refershing the page when adding/removing admins.
@@ -430,6 +440,20 @@ export const MaxVolunteer = () => {
           </List>
         </Box>
 
+        <Box sx={{ maxWidth: "40%" }}>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isAvailable}
+                  onChange={handelIsAvailableChange}
+                />
+              }
+              label="Show only available events"
+            />
+          </FormGroup>
+        </Box>
+
         <ButtonGroup
           variant="contained"
           size="large"
@@ -458,6 +482,7 @@ export const MaxVolunteer = () => {
             isDark={true}
             filters={filters}
             isMax={isMax}
+            showOnlyAvailableEvents={isAvailable} //show only events that are not maxed out (include personal)
           />
         </Box>
       )}

@@ -294,7 +294,7 @@ export async function getAllEvents(token:string){
   }
 }
 
-export async function getFilterdEvents(token:string, filters:filtersToMax, isMax:boolean){
+export async function getFilterdEvents(token:string, filters:filtersToMax, isMax:boolean, showOnlyAvailableEvents:boolean){
   try{
     const labelsIds = filters.labels.map(l => l.id);
     const response = await axios({
@@ -307,6 +307,7 @@ export async function getFilterdEvents(token:string, filters:filtersToMax, isMax
           dateForStartTime: filters.dateForStartTime,
           dateForEndTime: filters.dateForEndTime,
           isMax: isMax,
+          showOnlyAvailableEvents: showOnlyAvailableEvents,
         },
         paramsSerializer: params => {
           return qs.stringify(params)

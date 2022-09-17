@@ -13,7 +13,12 @@ export const GeneralEventsCalendar: React.FC = () => {
         <h2 className={"title"}>General Events Calendar</h2>
       </div>
       <div className={"Calendar__wrapper"}>
-        <CalendComponent isGeneral={true} isDark={true} isMax={false} />
+        <CalendComponent
+          isGeneral={true}
+          isDark={true}
+          isMax={false}
+          showOnlyAvailableEvents={false}
+        />
       </div>
       <div style={{ margin: "0 auto", paddingTop: 32 }}>
         <p style={{ color: "whitesmoke", fontSize: 15 }}>

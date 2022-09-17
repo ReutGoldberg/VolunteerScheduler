@@ -182,40 +182,69 @@ const prisma = new PrismaClient()
     return (("00" + date.getFullYear()).slice(-2) + ":" + ("00" + date.getMonth()).slice(-2) + ":" + ("00" + date.getDate()).slice(-2));    
   }
 
+  async function filterWithLabels(start_date:Date, end_date:Date, labelsIds:number[]){
+    return await prisma.Events.findMany({
+      where:{
+        start_time:{
+          gte: start_date
+        },
+        end_time:{
+          lte: end_date
+        },
+        EventLabelMap:{
+          some:{
+            Labels:{
+              id:{ in : labelsIds
+              }
+            }
+          }
+        }
+
+      },
+      include: {
+        EventVolunteerMap:{
+          select:{
+            Users: {
+              select:{
+                token:true
+              }
+            }
+          }
+        },
+      }
+    });
+  }
+
+  async function filterWithoutLabels(start_date:Date, end_date:Date){
+    return await prisma.Events.findMany({
+      where:{
+        start_time:{
+          gte: start_date
+        },
+        end_time:{
+          lte: end_date
+        },  
+      }, 
+      include: {
+        EventVolunteerMap:{
+          select:{
+            Users: {
+              select:{
+                token:true
+              }
+            }
+          }
+        },    
+  }});
+  }
+
   async function getFilterEvents(start_date:Date, end_date:Date, start_time:Date, end_time:Date, labelsIds:number[]){
     try {
       let events;
       if(labelsIds.length==0){
-        events = await prisma.Events.findMany({
-          where:{
-            start_time:{
-              gte: start_date
-            },
-            end_time:{
-              lte: end_date
-            },  
-          }
-        });
+        events = await filterWithoutLabels(start_date,end_date);
       }else{
-        events = await prisma.Events.findMany({
-        where:{
-          start_time:{
-            gte: start_date
-          },
-          end_time:{
-            lte: end_date
-          },
-          EventLabelMap:{
-            some:{
-              Labels:{
-                id:{ in : labelsIds
-                }
-              }
-            }
-          }
-
-        }
-      });
+       events = await filterWithLabels(start_date,end_date,labelsIds);
       }
 
       const filter_start_time = timeToStr(start_time);
@@ -401,7 +430,6 @@ const prisma = new PrismaClient()
 
   }
   
-  
   async function editEvent(event:any){
     try {
       const {id, title, details, labels, location, min_volunteers, max_volunteers, startAt, endAt, created_by} = event; 
@@ -437,7 +465,6 @@ const prisma = new PrismaClient()
     }
 
   }
-
 
   export async function getIsUserEnrolledToEvent(event_id:number, user_token:string){
     
