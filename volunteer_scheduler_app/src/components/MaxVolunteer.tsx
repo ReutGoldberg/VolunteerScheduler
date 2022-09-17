@@ -163,7 +163,6 @@ export const MaxVolunteer = () => {
       let inputStartDate = new Date(newVal + "T02:55:08.151437Z");
       inputStartDate = setTimesForDates(inputStartDate, true);
       console.log("date " + inputStartDate);
-      // var inputStartDate = new Date(newVal);
       setStartDateValid(
         !(
           inputStartDate < today ||
@@ -187,7 +186,7 @@ export const MaxVolunteer = () => {
     var newVal = event.target.value;
     if (newVal) {
       let inputEndDate = new Date(newVal + "T02:55:08.151437Z");
-      inputEndDate = setTimesForDates(inputEndDate, true);
+      inputEndDate = setTimesForDates(inputEndDate, false);
       console.log("inputEndDate " + inputEndDate);
       setEndDateValid(
         !(
