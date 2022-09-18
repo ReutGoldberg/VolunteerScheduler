@@ -47,8 +47,10 @@ export interface eventDetails{
 }
 
 export interface filtersToMax{
-startTime: Number,
-endTime: Number,
+startDate: Date,
+endDate: Date,
+dateForStartTime: Date,
+dateForEndTime: Date,
 labels: labelOptions[],
 }
 
@@ -82,20 +84,21 @@ export const isUserExists=() => {
 export const isValidEmail = (email:string) =>{
   return email.match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/) ? true : false;
 }
-//todo:change according to filter
-export const parseGetEvents =  async(token:string, isGeneral:boolean=true, filters:filtersToMax|null=null): Promise<eventDetails[] | null> => {
+
+export const parseGetEvents =  async(token:string, isGeneral:boolean=true, filters:filtersToMax|null=null, isMax:boolean=false, showOnlyAvailableEvents:boolean=false): Promise<eventDetails[] | null> => {
   const events: eventDetails[] = [];
   try{
     if(filters==null)
       var response = isGeneral ? await getAllEvents(token) : await getPersonalEvents(token);
     else
-      var response = await getFilterdEvents(token, filters);
+      var response = await getFilterdEvents(token, filters, isMax, showOnlyAvailableEvents);
 
     if(response.statusText === 'OK'){
       console.log("got events")
       
-      for (let i = 0; i < response.data.length; i += 1) {
+      for (let i = 0; i < response.data.length; i ++) {
         const event1=response.data[i]
+                
         const event: eventDetails = {
           id: event1["id"],
           startAt: event1["start_time"],

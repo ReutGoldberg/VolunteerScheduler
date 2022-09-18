@@ -36,8 +36,6 @@ export const AddAdmin: React.FC = () => {
   React.useEffect(() => {
     const userToken = userFromStorage.token;
     getAdminsList(userToken).then((data) => {
-      console.log("Below are the admins"); //todo: remove when done testing
-      console.log(data);
       setAdminsList(data);
     });
   }, []);
@@ -63,11 +61,6 @@ export const AddAdmin: React.FC = () => {
 
   const handleRemoveAdmin = async () => {
     if (!isValidEmail(removeAdminEmail)) return;
-
-    //todo: remove when done testing
-    console.log(`Admin to Remove: ${removeAdminEmail}`);
-    console.log(`Admin's token: ${userFromStorage.token}`);
-    //
     const response = await removeAdmin(removeAdminEmail, userFromStorage.token)
       .then(() => {
         console.log("Admin removed successfully");
@@ -77,7 +70,6 @@ export const AddAdmin: React.FC = () => {
         console.log("Error! Didn`t remove admin");
         throw err;
       });
-    console.log(`Got admins list from DB: ${response}`); // todo: remove when done testing
     setAdminsList(response);
     //@ts-ignore
     document.getElementById("adminEmailToRemoveTxt").value = ""; //clear the feild for better UX
@@ -86,11 +78,6 @@ export const AddAdmin: React.FC = () => {
 
   const handleAddAdmin = async () => {
     if (!isValidEmail(addAdminEmail)) return;
-
-    //todo: remove when done testing
-    console.log(`Admin to add: ${addAdminEmail}`);
-    console.log(`Admin's token: ${userFromStorage.token}`);
-    //
     const response = await addAdmin(addAdminEmail, userFromStorage.token)
       .then(() => {
         console.log("Admin added successfully");
@@ -100,7 +87,6 @@ export const AddAdmin: React.FC = () => {
         console.log("Error! Didn`t add admin");
         throw err;
       });
-    console.log(`Got admins list from DB: ${response}`); // todo: remove when done testing
     setAdminsList(response);
     //@ts-ignore
     document.getElementById("adminEmailToAddTxt").value = ""; //clear the feild for better UX
@@ -111,13 +97,6 @@ export const AddAdmin: React.FC = () => {
     <Box
       className="content-container"
       component="form"
-      sx={{
-        width: "70%",
-        display: "flex",
-        flexDirection: "column",
-        p: "5%",
-        gap: 2,
-      }}
       id="registerForm"
       onSubmit={handleSubmitForm}
     >
@@ -128,6 +107,7 @@ export const AddAdmin: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              mt: 2,
             }}
           >
             <ManageAccountsTwoToneIcon
@@ -225,6 +205,7 @@ export const AddAdmin: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              mt: 2,
             }}
           >
             <SupervisorAccountIcon color="primary" sx={{ fontSize: "1000%" }} />

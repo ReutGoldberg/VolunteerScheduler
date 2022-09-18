@@ -2,6 +2,7 @@ import jwt_decode from "jwt-decode";
 import axios from 'axios';
 import { AppConfig } from "../AppConfig";
 import { enrollement_details, filtersToMax, fullEventDetails } from "./helper";
+import qs from "qs";
 
 
 //todo: change this to a class - DAL and have a private field of token.
@@ -69,6 +70,7 @@ import { enrollement_details, filtersToMax, fullEventDetails } from "./helper";
 }
 
 async function getLabels(userToken:string){
+  console.log("getLabels");
   try {
     const requestURL:string = `${AppConfig.server_url}/labels/all_labels`;
     const response = await axios({
@@ -128,6 +130,23 @@ export async function addAdmin(email:string, usertoken:string) {
     });
   } catch (error:any) {
     console.log("Error in addAdmin from DAL");
+    console.error(error.message);
+    throw error;
+  }
+}
+
+export async function addLabel(label:string, usertoken:string) {
+  console.log("addLabel");
+  try {
+    return await axios({
+      method: "post",
+      url: `${AppConfig.server_url}/labels/add_label`,
+      data: {labelName: label},
+      headers: { "Content-Type": "application/json; charset=utf-8",
+      "authorization": usertoken }, 
+    });
+  } catch (error:any) {
+    console.log("Error in addLabel from DAL");
     console.error(error.message);
     throw error;
   }
@@ -275,11 +294,25 @@ export async function getAllEvents(token:string){
   }
 }
 
-export async function getFilterdEvents(token:string, filters:filtersToMax){//TODO:change
+export async function getFilterdEvents(token:string, filters:filtersToMax, isMax:boolean, showOnlyAvailableEvents:boolean){
   try{
+    const labelsIds = filters.labels.map(l => l.id);
     const response = await axios({
       method: "get",
-      url: `${AppConfig.server_url}/events/filterd_events/${filters}`,
+      url: `${AppConfig.server_url}/events/filterd_events`,
+      params: {
+          labelsId: labelsIds,
+          startDate: filters.startDate,
+          endDate: filters.endDate,
+          dateForStartTime: filters.dateForStartTime,
+          dateForEndTime: filters.dateForEndTime,
+          isMax: isMax,
+          showOnlyAvailableEvents: showOnlyAvailableEvents,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params)
+        }
+      ,
       headers: {  "Content-Type": "application/json", "authorization": token},
     });
     return response;
@@ -326,7 +359,7 @@ export async function getIsUserEnrolled(event_id:number, token:string){
 /* FAKE */ 
   async function createFakeUser(userObject:any){
     try {
-      const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email, token: userObject.token};
+      const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email, token: userObject.token, is_admin: userObject.is_admin};
       const response = await axios({
           method: "post",
           url: `${AppConfig.server_url}/add_fake/user`,
@@ -397,13 +430,14 @@ export async function getIsUserEnrolled(event_id:number, token:string){
     }
   }
 
-
-  async function createFakeEnrollToEvent(event_id:number, user_id:number){
+  export async function createFakeEnrollToEvent(num_enrolls:number){
     try {
       const response =  await axios({
         method: "post",
         url: `${AppConfig.server_url}/add_fake/enroll_to_event`,
-        data: {event_id:event_id,user_id:user_id},
+        data: {num_enrolls:num_enrolls},
+        headers: { "Content-Type": "application/json",
+        "Authorization": "fake_eventEnroll"}
       });
       return response;
     }
@@ -416,4 +450,4 @@ export async function getIsUserEnrolled(event_id:number, token:string){
 
 
 
-export {isNewUser, createUser, isAdminUser, getAdminsList , createFakeUser, getLabels, createFakeLabel, createFakeLog, createFakeEvent,createFakeEnrollToEvent}
+export {isNewUser, createUser, isAdminUser, getAdminsList , createFakeUser, getLabels, createFakeLabel, createFakeLog, createFakeEvent}

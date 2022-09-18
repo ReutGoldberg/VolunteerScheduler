@@ -1,19 +1,16 @@
 import React from "react";
 import { Button, Box, TextField } from "@mui/material";
 import jwt_decode from "jwt-decode";
-import axios from "axios";
-import { generateFakeUser, generateFakeEvent, generateFakeLabel, generateFakeLog } from "../fakeData";
+
+
 import {
   isNewUser,
   createUser,
-  createFakeUser,
-  createFakeLog,
-  createFakeLabel,
-  createFakeEvent,
-  createFakeEnrollToEvent
+
 } from "../utils/DataAccessLayer";
 import { AppConfig } from "../AppConfig";
 import { UserObjectContext } from "../App";
+import { FakeDataGen } from "./FakeDataGen";
 //import { KeyboardReturnOutlined } from "@mui/icons-material";
 export interface LoginProps {
   setPageApp(page: string): void;
@@ -45,9 +42,8 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
       AppConfig.sessionStorageContextKey,
       JSON.stringify(userObject)
     );
-    
-    setPageApp("GeneralEventsCalendar");
 
+    setPageApp("GeneralEventsCalendar");
 
     //window.location.reload();
   }
@@ -83,98 +79,12 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
     // console.log("Email: " + profile.getEmail()); // This is null if the 'email' scope is not present.
   }
 
-
-
-
-
-
-
-
-
-  function fakeEnrollUsersToEvent(num_enrolls: number, num_users: number, num_events: number) {
-    let i = 1, j = 1;
-    let count = 0;
-    while (i <= num_events || count < num_enrolls) {
-      while (j <= num_users || count < num_enrolls) {
-        createFakeEnrollToEvent(j,i);
-        j++;
-        count++;
-      }
-      j = 0;
-      i++;
-    }
-  }
-
-  //todo remove when done testing or move to a better position.
-  //this function takes data from fakeData.ts and sends via the api to DB
-  //In order for it to work, the function needs access both to the fakeData API and the server API (this is why it's located here)
-  async function handleGenerateFakeData(event: any) {
-    //@ts-ignore
-    const userAmount = document.getElementById("fakeUserAmount")?.value;
-    const num_users = parseInt(userAmount);
-
-    //@ts-ignore
-    const EnrollslAmount = document.getElementById("fakeEnrollsAmount")?.value;
-    const num_enrolls = parseInt(EnrollslAmount);
-
-    //@ts-ignore
-    const EventAmount = document.getElementById("fakeEventAmount")?.value;
-    const num_events = parseInt(EventAmount);
-
-    if(num_enrolls > num_events*num_users){ //check
-      console.error("Not enought combinations to enroll users");
-      return;                  
-    }
-
-    for (let index = 0; index < num_users; index++) {
-      const fakeUser = generateFakeUser();
-      const data = {
-        given_name: fakeUser.first_name,
-        family_name: fakeUser.last_name,
-        email: fakeUser.email,
-        token: fakeUser.token
-      };
-      createFakeUser(data);
-    }
-
-    //Events part
-    for (let index = 0; index < num_events; index++) {
-      const fakeEvent = generateFakeEvent()
-      createFakeEvent(fakeEvent);
-    }
-
-    //@ts-ignore
-    const LogAmount = document.getElementById("fakeLogsAmount")?.value;
-    const num_logs = parseInt(LogAmount);
-    for (let index = 0; index < num_logs; index++) {
-      const fakeLog = generateFakeLog();
-      createFakeLog(fakeLog);
-    }
-
-    //@ts-ignore
-    const LabelAmount = document.getElementById("fakeLabelsAmount")?.value;
-    const num_labels = parseInt(LabelAmount);
-    for (let index = 0; index < num_labels; index++) {
-      const fakeLabel = generateFakeLabel();
-      createFakeLabel(fakeLabel);
-    }
-    //Enrolls part:
-    //enrolls the same id's but everytime it's re-generated as new fakes
-    fakeEnrollUsersToEvent(num_enrolls, num_users, num_events);
-
-    console.log(`Added ${num_users} users, ${num_events} events, ${num_logs} logs, ${num_labels} labels to the fake DB`)
-    console.log(`And enrolled ${num_enrolls}`);
-    alert(`fakes added successfully`);
-    
-  }
-
-
-
+ 
   return (
     <Box
       sx={{
         width: "30%",
-        height: "100vh",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         p: "5%",
@@ -189,51 +99,7 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
         }}
         id="signInDiv"
       ></Box>
-      {AppConfig.IS_SHOW_FAKE && 
-      (
-      <Box id="genFakeContainer"        
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}>
-          <TextField
-            id="fakeUserAmount"
-            type="number"
-            helperText="Set the amount of fake users to generate"
-            label="Num users"
-          ></TextField>
-           <TextField
-            id="fakeEventAmount"
-            type="number"
-            helperText="Set the amount of fake events to generate"
-            label="Num events"
-          ></TextField>
-            <TextField
-            id="fakeLabelsAmount"
-            type="number"
-            helperText="Set the amount of fake labels to generate"
-            label="Num labels"
-          ></TextField>
-            <TextField
-            id="fakeLogsAmount"
-            type="number"
-            helperText="Set the amount of fake logs to generate"
-            label="Num logs"
-          ></TextField>
-            <TextField
-            id="fakeEnrollsAmount"
-            type="number"
-            helperText="Set the amount of enrolls to generate"
-            label="Num Enrolls"
-          ></TextField>
-        <Button onClick={(event) => handleGenerateFakeData(event)}>
-          {" "}
-          Generate Fake Data
-        </Button>
-      </Box>
-      )
-      }
+      {AppConfig.IS_SHOW_FAKE && <FakeDataGen/>}
     </Box>
   );
 };

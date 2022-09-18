@@ -35,8 +35,8 @@ model Events {
   details String
   created_by String
   location String?
-  min_volenteering Int?
-  max_volenteering Int?
+  min_volunteers Int?
+  max_volunteers Int?
   start_time DateTime
   end_time DateTime
   EventManagerMap EventManagerMap[]

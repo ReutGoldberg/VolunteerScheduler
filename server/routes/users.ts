@@ -65,7 +65,6 @@ router.post('/add_user', async (req:Request, res:Response) => {
 });
 
 
-
 //delete specific user
 //todo: consider deleting this function as it's dangerous.
 router.delete('/:id', async (req:Request, res:Response) => {
@@ -128,7 +127,6 @@ router.get('/userEmail/', async (req:Request, res:Response) => {
         error.message === config.notVerifiedUserMsg? res.status(401):res.status(500);   
     }
  });
-
 
  router.get('/adminsUserEmail/', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";

@@ -1,5 +1,8 @@
 // Prisma section //
 //----------------------------------------------------------------
+
+import { inflateSync } from "zlib";
+
   /** Data Access Layer for our DB
    *
    *  Contains all methods that change the data inside our DB
@@ -172,6 +175,104 @@ const config = require('./config')
     }
   }
 
+  function timeToStr(date: Date){
+    return (("00" + date.getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2) + ":" + ("00" + date.getSeconds()).slice(-2));    
+  }
+
+  function dateToStr(date: Date){
+    return (("00" + date.getFullYear()).slice(-2) + ":" + ("00" + date.getMonth()).slice(-2) + ":" + ("00" + date.getDate()).slice(-2));    
+  }
+
+  async function filterWithLabels(start_date:Date, end_date:Date, labelsIds:number[]){
+    return await prisma.Events.findMany({
+      where:{
+        start_time:{
+          gte: start_date
+        },
+        end_time:{
+          lte: end_date
+        },
+        EventLabelMap:{
+          some:{
+            Labels:{
+              id:{ in : labelsIds
+              }
+            }
+          }
+        }
+
+      },
+      include: {
+        EventVolunteerMap:{
+          select:{
+            Users: {
+              select:{
+                token:true
+              }
+            }
+          }
+        },
+      }
+    });
+  }
+
+  async function filterWithoutLabels(start_date:Date, end_date:Date){
+    return await prisma.Events.findMany({
+      where:{
+        start_time:{
+          gte: start_date
+        },
+        end_time:{
+          lte: end_date
+        },  
+      }, 
+      include: {
+        EventVolunteerMap:{
+          select:{
+            Users: {
+              select:{
+                token:true
+              }
+            }
+          }
+        },    
+  }});
+  }
+
+  async function getFilterEvents(start_date:Date, end_date:Date, start_time:Date, end_time:Date, labelsIds:number[]){
+    try {
+      let events;
+      if(labelsIds.length==0){
+        events = await filterWithoutLabels(start_date,end_date);
+      }else{
+       events = await filterWithLabels(start_date,end_date,labelsIds);
+      }
+
+      const filter_start_time = timeToStr(start_time);
+      const filter_end_time = timeToStr(end_time);
+      if(filter_start_time == "00:00:00" && filter_end_time == "23:59:59"){
+        return events
+      }
+      else{
+        const relevant_events = []
+        for (var event of events){
+          const event_start_time = timeToStr(event["start_time"]);
+          const event_end_time = timeToStr(event["end_time"]);
+          const event_start_date = dateToStr(event["start_time"]);
+          const event_end_date = dateToStr(event["end_time"]);
+          if (event_start_date == event_end_date && event_start_time >= filter_start_time && event_end_time <= filter_end_time){
+            relevant_events.push(event)
+          }
+        }
+        return relevant_events;
+      }
+    } catch (error:any) {
+      console.error("Error in getPersonalEvents from db.ts");
+      console.error(error.message);
+      throw error;
+    }
+  }
+
   async function deleteEventById(event_id: Number) {
     try {
       const deletedEvent = await prisma.Events.delete({
@@ -220,7 +321,7 @@ const config = require('./config')
       throw error;
     }
   }
-
+  
   async function addNewEvent(event:any){
     try {
       const {id, title, details, labels, location, min_volunteers: min_volunteers, max_volunteers: max_volunteers, startAt, endAt, created_by} = event; 
@@ -233,8 +334,8 @@ const config = require('./config')
           title: title,
           details: details,
           location: location,
-          min_volenteering: min_volunteers,
-          max_volenteering: max_volunteers,
+          min_volunteers: min_volunteers,
+          max_volunteers: max_volunteers,
           start_time: startAt,
           end_time: endAt,
           created_by: created_by,
@@ -272,7 +373,7 @@ const config = require('./config')
           },
           },
         });
-      const max=event_details["max_volenteering"];
+      const max=event_details["max_volunteers"];
       const current = event_details["EventVolunteerMap"].length;
       if(current<max){
         const new_user_enrolled = await prisma.Users.update({
@@ -330,7 +431,6 @@ const config = require('./config')
 
   }
   
-  
   async function editEvent(event:any){
     try {
       const {id, title, details, labels, location, min_volunteers, max_volunteers, startAt, endAt, created_by} = event; 
@@ -346,8 +446,8 @@ const config = require('./config')
           title: title,
           details: details,
           location: location,
-          min_volenteering: min_volunteers,
-          max_volenteering: max_volunteers,
+          min_volunteers: min_volunteers,
+          max_volunteers: max_volunteers,
           start_time: startAt,
           end_time: endAt,
           created_by: created_by,
@@ -367,14 +467,12 @@ const config = require('./config')
 
   }
 
-
   export async function getIsUserEnrolledToEvent(event_id:number, user_token:string){
     
     try
     {
       const user = await getUserByToken(user_token)
       const user_id = user.id
-      //console.log(`IsEnrolledToEvent userId: ${user_id} event_id: ${event_id}`) 
       const new_user_enrolled = await prisma.EventVolunteerMap.findFirst({
         where:{
           event_id: event_id,
@@ -393,6 +491,7 @@ const config = require('./config')
 
 async function getAllLabels() {
   try {
+    console.log("getAllLabels");
     return await prisma.Labels.findMany();    
   } catch (error:any) {
     console.error("Error in getAllLabels from db.ts");
@@ -404,6 +503,7 @@ async function getAllLabels() {
 
 async function addNewLabel(labelName:string) {
   try {
+    console.log("addNewLabel");
     return await prisma.Labels.create({
       data: {
         name: labelName,
@@ -432,66 +532,4 @@ async function addNewLog(logTxt:string, logTime:Date) {
   }
 }
 
-// #Fake part - added enroll by Id: to event by userId and eventId
-
-
-async function enrollToEventById(event_id:number, user_id:Number){
-  //todo: remove logging when done testing
-  console.log('enroll to event by id - fake')
-  console.log(event_id) 
-  if(!config.server_app.IS_FAKE) //safe check before allowing to use this function
-    return;
-
-    try{
-      const event_details = await prisma.Events.findFirst({
-        where:{
-          id: event_id,
-        },
-        include: {
-        EventVolunteerMap:{
-          select:{
-            Users: {
-              select:{
-                id: true,
-              }
-            }
-          }
-        },
-        },
-      });
-    const max=event_details["max_volenteering"];
-    const current = event_details["EventVolunteerMap"].length;
-    if(current<max){
-      const new_user_enrolled = await prisma.Users.update({
-        where:{
-          id: user_id
-        },
-        data: {
-          EventVolunteerMap: {
-            create: [{Events: {connect: {id: event_id}}}],
-          },
-        },
-      });
-      return true;
-    }
-    else{
-      console.log("cant enroll- full capacity")
-      return false;
-    }
-  }
-  catch(error: any){
-    console.log(error.message)
-    if (error.code === 'P2002'){  // already exsist
-      console.log("already enrolled -didnt do anything")
-      return true
-    }
-    //else
-    console.error("Error in enrollToEvent from db.ts");
-    console.error(error.message);
-    throw error;
-  }
-}
-
-
-
-export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, setAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog, enrollToEventById};
+export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, setAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog, getFilterEvents};

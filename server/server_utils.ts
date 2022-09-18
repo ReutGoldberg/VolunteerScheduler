@@ -42,7 +42,6 @@ export async function isVerifiedUser(token:string, isNewUser = false){
     //@ts-ignore
     decResult = jwt_decode(token);
     if(isNewUser === false){
-      
       //@ts-ignore
       const isExist = await getUserByToken(decResult.sub);
       if(!isExist){

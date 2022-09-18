@@ -15,6 +15,7 @@ import { Footer } from "./components/Footer";
 import { isAdminUser } from "./utils/DataAccessLayer";
 import AppBar from "./components/AppBar";
 import { MaxVolunteer } from "./components/MaxVolunteer";
+import { AddLabel } from "./components/AddLabel";
 
 export const UserObjectContext = React.createContext<any>({
   user: "",
@@ -34,13 +35,11 @@ function App() {
 
   const setOpenDialogApp = (openDialogApp: boolean) => {};
 
-
   //This hook will set the value to the localStorage upon erasing the User on Refresh
   React.useEffect(() => {
     const userStr: string = JSON.stringify(user);
     if (userStr !== "{}") {
-      //making sure I'm not saving an erased context to the localstorage
-      console.log(`Setting Context!!! ${userStr}`);
+      //making sure I'm not saving an erased context to the sessionStorage
       window.sessionStorage.setItem(
         AppConfig.sessionStorageContextKey,
         userStr
@@ -57,7 +56,6 @@ function App() {
 
     //Not for initial login - when there's already data in the storage
     if (data !== "" && JSON.stringify(user) === "{}") {
-      console.log(`Fetching Context!!! ${data}`);
       setUser(JSON.parse(data));
     }
   }, []);
@@ -66,8 +64,13 @@ function App() {
   React.useEffect(() => {
     (async function () {
       // async function expression used as an IIFE
-      const userObj = user ? user : JSON.parse(window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "");
-      if(userObj == true){
+      const userObj = user
+        ? user
+        : JSON.parse(
+            window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
+              ""
+          );
+      if (userObj == true) {
         isAdminUser(userObj.token)
           .then((result) => {
             console.log("------------------------------------------");
@@ -82,13 +85,13 @@ function App() {
     })();
   }, []);
 
-//this object is for the useMemo hook, evertyihng below it being memoized, so the app doesn't re-render the user object if it
-// didn't change
-function UserObject() {
-  const { userObj, setUserObject } = React.useContext(UserObjectContext);
-  const changeHandler = (event: any) => setUserObject(event?.target?.value);
-  return <input hidden={true} value={userObj} onChange={changeHandler} />;
-}
+  //this object is for the useMemo hook, evertyihng below it being memoized, so the app doesn't re-render the user object if it
+  // didn't change
+  function UserObject() {
+    const { userObj, setUserObject } = React.useContext(UserObjectContext);
+    const changeHandler = (event: any) => setUserObject(event?.target?.value);
+    return <input hidden={true} value={userObj} onChange={changeHandler} />;
+  }
 
   const pageToPresent = (page: string) => {
     sessionStorage.setItem("page", page);
@@ -108,6 +111,8 @@ function UserObject() {
         );
       case "AddAdmin":
         return <AddAdmin />;
+      case "AddLabel":
+        return <AddLabel />;
       case "MaxVolunteer":
         return <MaxVolunteer />;
       case "Login":
@@ -144,7 +149,5 @@ function UserObject() {
     </UserObjectContext.Provider>
   );
 }
-
-
 
 export default App;

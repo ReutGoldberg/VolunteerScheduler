@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
   eventDetails,
-  filtersToMax,
   fullEventDetails,
   parseGetEvents,
 } from "../utils/helper";
-import axios from "axios";
-import { DateTime } from "luxon";
-import Kalend, { CalendarView, OnEventDragFinish } from "kalend";
+import Kalend, { CalendarView } from "kalend";
 import "kalend/dist/styles/index.css";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -15,17 +12,12 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import Typography from "@mui/material/Typography";
 import { isAdminUser, getEventDetails } from "../utils/DataAccessLayer";
 import { AddOrEditEvent } from "./AddOrEditEvent";
 import { AppConfig } from "../AppConfig";
 
-const CalendComponent = (
-  props: any,
-  isGeneral: boolean,
-  filters: filtersToMax | null
-) => {
+const CalendComponent = (props: any) => {
   const [demoEvents, setDemoEvents] = useState<eventDetails[] | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<fullEventDetails | null>(
@@ -59,12 +51,18 @@ const CalendComponent = (
     const data =
       window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
     const userFromStorage = JSON.parse(data);
-    parseGetEvents(userFromStorage.token, props.isGeneral, filters)
+    parseGetEvents(
+      userFromStorage.token,
+      props.isGeneral, //general or personal events
+      props.filters, //filters on or off
+      props.isMax, //algo' on or off
+      props.showOnlyAvailableEvents //show only events that are not maxed out (include personal)
+    )
       .then((res) => {
         setDemoEvents(res!!);
       })
       .catch((er) => {});
-  }, []);
+  }, [props.filters]);
 
   const onNewEventClick = (data: any) => {
     const msg = `New event click action\n\n Callback data:\n\n${JSON.stringify({
@@ -82,7 +80,6 @@ const CalendComponent = (
     const msg = `Click on event action\n\n Callback data:\n\n${JSON.stringify(
       data
     )}`;
-    console.log(msg);
     const event_id = data["id"];
     const token_data =
       window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";

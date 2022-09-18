@@ -28,8 +28,8 @@ function generateFakeEvent(){
     const created_by = faker.name.findName(); //returns full name
     const location = faker.address.city();
 
-    const min_volenteering = faker.datatype.number({min:0, max:255});
-    const max_volenteering = faker.datatype.number({min:min_volenteering, max:255});
+    const min_volunteers = faker.datatype.number({min:0, max:255});
+    const max_volunteers = faker.datatype.number({min:min_volunteers, max:255});
 
     const start_time = faker.date.soon(10); //random date from Now --> +10days
     const end_time  = faker.date.soon(1,start_time); //random date from start_time wihtin the same 24h
@@ -40,8 +40,8 @@ function generateFakeEvent(){
       "labels": labels,
       "created_by": created_by,
       "location": location,
-      "min_volenteering": min_volenteering,
-      "max_volenteering": max_volenteering,
+      "min_volunteers": min_volunteers,
+      "max_volunteers": max_volunteers,
       "start_time": start_time,
       "end_time": end_time
     }

@@ -1,11 +1,10 @@
 import express, {Request, Response} from "express";
-import { getAllEvents, getPersonalEvents, getEvent, addNewEvent, enrollToEvent, unenrollToEvent, editEvent, deleteEventById, getIsUserEnrolledToEvent, getUserByToken } from "../db";
+import { getAllEvents, getPersonalEvents, getEvent, addNewEvent, enrollToEvent, unenrollToEvent, editEvent, deleteEventById, getIsUserEnrolledToEvent, getUserByToken, getFilterEvents } from "../db";
 import { isVerifiedUser } from "../server_utils";
 import jwt_decode from "jwt-decode";
+
 const config = require('../config')
 const router = express.Router();
-
-
 
 router.get('/all_events', async (req:Request, res:Response) => {
     const token = req.headers.authorization ? req.headers.authorization : "";
@@ -43,6 +42,92 @@ router.get('/personal_events', async (req:Request, res:Response) => {
     }
 });
 
+function isEnrolled(token_sub:string, event:any){
+    for(let volunteer of event["EventVolunteerMap"]){
+        if(volunteer["Users"]["token"] == token_sub) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function filterOnlyAvailableEvents(token_sub:string, events:any){
+    let filter_events = [];
+    for(let event of events){
+        if(event["max_volunteers"] > event["EventVolunteerMap"].length || isEnrolled(token_sub,event)){
+            filter_events.push(event);
+        }
+    }
+    return filter_events;
+  }
+
+function cleanEvents(events:any[]){
+    return events.map(e => {
+        delete e["EventVolunteerMap"];
+        return e;
+    });  
+}
+
+function maxAlgo(events:any[]){
+    // console.log("before - \n");
+    // console.log(events);
+    events.sort(function(first, second) {
+                    let diff = first["end_time"].getTime() - second["end_time"].getTime();
+                    if(diff == 0){
+                        diff = first["start_time"].getTime() - second["start_time"].getTime();
+                    }
+                    return diff;
+                }
+            );
+    let opt_events:any[] = events.length!=0 ? [events[0]] : [];
+    for(let event of events){
+        if(opt_events[opt_events.length-1]["end_time"].getTime() <= event["start_time"].getTime()){
+                opt_events.push(event);
+        }
+    }
+    // console.log("after - \n");
+    // console.log(events);
+    return opt_events;       
+}
+
+router.get('/filterd_events', async (req:Request, res:Response) => {
+    console.log("-----get filtered events-------")  
+    if(req.query.startDate && req.query.endDate && req.query.dateForStartTime && req.query.dateForEndTime && req.query.isMax){
+        let showOnlyAvailableEvents = req.query.showOnlyAvailableEvents?.toString();
+        if(!showOnlyAvailableEvents) showOnlyAvailableEvents="false";
+        const labelsId = req.query.labelsId?.toString();
+        let labels :number[] = labelsId ? labelsId.split(',').map(x => Number(x)) : [];
+        const token = req.headers.authorization ? req.headers.authorization : "";
+        try{
+            if(!(await isVerifiedUser(token))){
+                throw new Error(config.notVerifiedUserMsg);
+            }
+
+            const events = await getFilterEvents( new Date(req.query.startDate.toString()), new Date(req.query.endDate.toString()), 
+                                                new Date(req.query.dateForStartTime.toString()), new Date(req.query.dateForEndTime.toString()),
+                                                labels);
+            let filter_events = events;
+            
+            if(showOnlyAvailableEvents=="true"){
+                //@ts-ignore
+                filter_events = filterOnlyAvailableEvents(jwt_decode(token).sub, events);
+            }
+            filter_events = cleanEvents(filter_events);
+            if(req.query.isMax.toString()=="true"){
+                //max-algo
+                console.log("its algo time!!!");
+                filter_events = maxAlgo(filter_events);
+            }
+            res.json(filter_events);
+        }
+        catch(err:any){
+            console.log("Error in get filterd_events from events.ts (server router)")
+            console.error(err.message);
+            err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);        
+        }
+    }
+    
+});
 
 router.get('/event_details/:event_id', async (req:Request, res:Response) => {
     const eventId = Number(req.params.event_id)
@@ -53,16 +138,16 @@ router.get('/event_details/:event_id', async (req:Request, res:Response) => {
             throw new Error(config.notVerifiedUserMsg);
         }
         const event_details = await getEvent(eventId);
-        var labels=[]
-        for (var label of event_details["EventLabelMap"]){
+        let labels=[]
+        for (let label of event_details["EventLabelMap"]){
             labels.push(label["Labels"])
         }
         const webUser = jwt_decode(token);
-        var volunteers=[]
-        var count_volunteers = event_details["EventVolunteerMap"].length;
+        let volunteers=[]
+        let count_volunteers = event_details["EventVolunteerMap"].length;
         //@ts-ignore
         if((await getUserByToken(webUser.sub).then((user) => user.is_admin))){
-            for (var volenteer of event_details["EventVolunteerMap"]){
+            for (let volenteer of event_details["EventVolunteerMap"]){
                 volunteers.push(volenteer["Users"])
             }
         }
@@ -77,13 +162,11 @@ router.get('/event_details/:event_id', async (req:Request, res:Response) => {
             labels: labels,
             location: event_details["location"],
             created_by: event_details["created_by"],
-            min_volunteers: event_details["min_volenteering"],
-            max_volunteers: event_details["max_volenteering"],
+            min_volunteers: event_details["min_volunteers"],
+            max_volunteers: event_details["max_volunteers"],
             count_volunteers: count_volunteers,
             volunteers: volunteers,
         }
-        console.log("event details after parsing:")
-        console.log(full_event_details)
         res.json(full_event_details);
     }
     catch (error:any) {
@@ -155,7 +238,6 @@ router.post('/add_event', async (req:Request, res:Response) => {
         err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);  
     }
 });
-
 
 router.post('/edit_event', async (req:Request, res:Response) => {
     const authToken = req.headers.authorization ? req.headers.authorization : "";

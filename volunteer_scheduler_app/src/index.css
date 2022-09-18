@@ -15,7 +15,7 @@ html body{
   width: 100%;
   height: 100%;
   background: rgb(199, 245, 224) !important;
-  min-height: 100%;
+  min-height: 100vh;
 }
 
 p {
@@ -94,20 +94,22 @@ a {
   }
 }
 
-
 .content-container {
-  padding: 10%;
-  height: 100vh;
-  width: 100vh;
+  padding: 5%;
+  height: 80vh;
+  width: 70%;
+  display: "flex";
+  flex-direction: "column";
 }
+
 .left-panel {
-  flex: 60vh;
+  flex: 70%;
 }
 .right-panel {
-  flex: 60vh;
+  flex: 70%;
 }
 .middle-panel {
-  flex: 0.1vh;
+  flex: 10%;
 }
 .box {
   background-color: white;
