@@ -13,7 +13,7 @@ import {
     createFakeLabel,
     createFakeEvent,
     createFakeEnrollToEvent
-  } from "../utils/DataAccessLayer";
+  } from "../utils/FakeDAL";
 
   async function handleGenerateFakeData(event: any) {
     //@ts-ignore
