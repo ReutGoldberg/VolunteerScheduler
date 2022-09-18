@@ -1,5 +1,5 @@
 import express, {Request, Response} from "express";
-import { addNewFakeUser, addNewFakeLabel, addNewFakeLog, addNewFakeEvent, enrollToFakeEvent2} from "../fake_db";
+import { addNewFakeUser, addNewFakeLabel, addNewFakeLog, addNewFakeEvent, enrollToFakeEvent} from "../fake_db";
 import { isValidEmail } from "../server_utils";
 const config = require('../config')
 const router = express.Router();
@@ -70,7 +70,7 @@ router.post('/enroll_to_event/', async (req:Request, res:Response) => {
         else{
             //todo remove log when done testing
             console.log(`Got the following: num_enrolls: ${num_enrolls}`)
-            const event = await enrollToFakeEvent2(Number(num_enrolls));            
+            const event = await enrollToFakeEvent(Number(num_enrolls));            
             res.json(event);
         }
     }

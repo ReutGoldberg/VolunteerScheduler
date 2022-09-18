@@ -47,7 +47,6 @@ export async function addNewFakeEvent(event:any){
         });
         dbLabels.push(dbLabel);
       }
-      console.log(`This is the dbLabels object that's going to be used: ${JSON.stringify(dbLabels)}`)
       //save for mapping
       let label_event_list= [];
       for (let label of dbLabels){
@@ -110,9 +109,7 @@ export async function addNewFakeEvent(event:any){
     }
   }
 
-  export async function enrollToFakeEvent2(num_enrolls:number){
-    //todo: remove logging when done testing
-    console.log('enroll to event by id - fake')
+  export async function enrollToFakeEvent(num_enrolls:number){
     if(!config.server_app.IS_FAKE) //safe check before allowing to use this function
       return;
       let count:number = 0
@@ -135,14 +132,14 @@ export async function addNewFakeEvent(event:any){
                 },
               },
             });          
-          }       
+          }             
         return true;  
     }
     catch(error: any){
       console.log(error.message)
       if (error.code === 'P2002'){  // already exsist
         console.log("already enrolled -didnt do anything")
-        enrollToFakeEvent2(num_enrolls-count) //call again to resum the enrollmenet
+        enrollToFakeEvent(num_enrolls-count) //call again to resum the enrollmenet
       }
       //else
       console.error("Error in enrollToEvent from db.ts");
