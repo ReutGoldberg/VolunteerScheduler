@@ -92,9 +92,10 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
 
 
   function fakeEnrollUsersToEvent(num_enrolls: number, num_users: number, num_events: number) {
-    let i = 0,j = 0,count = 0;
-    while (i < num_users || count < num_enrolls) {
-      while (j < num_events) {
+    let i = 1, j = 1;
+    let count = 0;
+    while (i <= num_events || count < num_enrolls) {
+      while (j <= num_users || count < num_enrolls) {
         createFakeEnrollToEvent(j,i);
         j++;
         count++;
@@ -120,7 +121,7 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
     const EventAmount = document.getElementById("fakeEventAmount")?.value;
     const num_events = parseInt(EventAmount);
 
-    if(num_enrolls < num_events*num_users){ //check
+    if(num_enrolls > num_events*num_users){ //check
       console.error("Not enought combinations to enroll users");
       return;                  
     }

@@ -403,7 +403,7 @@ export async function getIsUserEnrolled(event_id:number, token:string){
       const response =  await axios({
         method: "post",
         url: `${AppConfig.server_url}/add_fake/enroll_to_event`,
-        data: {event_id:event_id,user_token:user_id},
+        data: {event_id:event_id,user_id:user_id},
       });
       return response;
     }
