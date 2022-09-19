@@ -6,7 +6,7 @@ const config = {
       notVerifiedUserMsg: "User token is not verified",
       invalidUserMsg: "User email is not valid",
       noAdminRightsMsg: "User is not an admin - request failed",
-      IS_FAKE: true
+      IS_FAKE: false
     },
     client_app:{
       port: 3000, 

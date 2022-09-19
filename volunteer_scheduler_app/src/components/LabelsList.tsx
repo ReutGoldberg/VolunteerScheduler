@@ -62,7 +62,7 @@ export const LabelsList: React.FC<LabelsListProps> = ({ curLabelsList }) => {
 
   return (
     <Box id="LabelsListTabId" ref={boxRef}>
-      <List id="labelsList" ref={listRef} style={{ overflow: "auto" }}>
+      <List id="labelsList" ref={listRef} style={{ maxHeight: 350, overflow: "auto" }}>
         {isPending && <CircularProgress color="primary" size={100} />}
         {labels &&
           //@ts-ignore
