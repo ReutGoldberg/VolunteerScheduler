@@ -69,8 +69,6 @@ function cleanEvents(events:any[]){
 }
 
 function maxAlgo(events:any[]){
-    // console.log("before - \n");
-    // console.log(events);
     events.sort(function(first, second) {
                     let diff = first["end_time"].getTime() - second["end_time"].getTime();
                     if(diff == 0){
@@ -85,8 +83,6 @@ function maxAlgo(events:any[]){
                 opt_events.push(event);
         }
     }
-    // console.log("after - \n");
-    // console.log(events);
     return opt_events;       
 }
 

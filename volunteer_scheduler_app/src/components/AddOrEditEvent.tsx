@@ -14,7 +14,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
-import ManageAccountsTwoToneIcon from "@mui/icons-material/ManageAccountsTwoTone";
+import TodayIcon from "@mui/icons-material/Today";
 import Typography from "@mui/material/Typography";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import InfoIcon from "@mui/icons-material/Info";
@@ -475,7 +475,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             alignItems: "center",
           }}
         >
-          <ManageAccountsTwoToneIcon color="info" sx={{ fontSize: "1000%" }} />
+          <TodayIcon color="info" sx={{ fontSize: "1000%" }} />
         </Box>
       )}
       <Typography

@@ -53,15 +53,7 @@ export const AddLabel: React.FC = () => {
     callAsync();
   }, []);
 
-  // React.useEffect(() => {
-  //   const userToken = userFromStorage.token;
-  //   getLabels(userToken).then((data) => {
-  //     setLabelsList(data);
-  //   });
-  // }, []);
-
   const handleAddLabelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(labelsList.map((l) => l.name).find((l) => l == label));
     if (
       !event.target.value.match(/^[a-z0-9]+/i) ||
       labelsList.map((l) => l.name).find((l) => l == event.target.value)

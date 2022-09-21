@@ -299,7 +299,7 @@ export const MaxVolunteer = () => {
           alignItems={"center"}
           component="div"
         >
-          Filter And Max My Volunteering
+          Filter And Maximize My Volunteering
         </Typography>
 
         <Typography>choose start date and end date:</Typography>
@@ -465,7 +465,7 @@ export const MaxVolunteer = () => {
             Filter Events
           </Button>
           <Button onClick={handelOnMax} form="maxForm">
-            Max Events
+            Maximize Events
           </Button>
         </ButtonGroup>
       </Box>
