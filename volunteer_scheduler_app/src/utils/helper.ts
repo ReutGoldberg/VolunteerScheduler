@@ -94,8 +94,6 @@ export const parseGetEvents =  async(token:string, isGeneral:boolean=true, filte
       var response = await getFilterdEvents(token, filters, isMax, showOnlyAvailableEvents);
 
     if(response.statusText === 'OK'){
-      console.log("got events")
-      
       for (let i = 0; i < response.data.length; i ++) {
         const event1=response.data[i]
                 

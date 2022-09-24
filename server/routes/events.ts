@@ -190,7 +190,7 @@ router.post('/enroll_to_event', async (req:Request, res:Response) => {
     catch(err:any){
         console.log("Error in enroll_to_event from events.ts (server router)")
         console.error(err.message);
-        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);    
+        err.message === config.notVerifiedUserMsg ? res.status(401) : res.status(500);    
     }
 });
 

@@ -1,7 +1,7 @@
 import jwt_decode from "jwt-decode";
 import axios from 'axios';
 import { AppConfig } from "../AppConfig";
-import { enrollement_details, filtersToMax, fullEventDetails } from "./helper";
+import { filtersToMax, fullEventDetails } from "./helper";
 import qs from "qs";
 
 
@@ -42,16 +42,13 @@ import qs from "qs";
       console.log("Error in createUser from DAL");
       console.error(error.message);
       throw error;
-
     }
-
 }
 
 //make this a private function for the class DAL
  async function isAdminUser(userToken:string){
     try {
       if(userToken == null || userToken === "") return false;
-
       const requestURL:string = `${AppConfig.server_url}/users/userEmail/`;
       const response = await axios({
         method: "get",
@@ -60,7 +57,6 @@ import qs from "qs";
                    "authorization": userToken
                   },
         });
-      console.log(`Is Admin result: ${response.data.is_admin}`)
       return response.data.is_admin;
     } catch (error:any) {
       console.log("Error in isAdminUser from DAL");
@@ -70,7 +66,6 @@ import qs from "qs";
 }
 
 async function getLabels(userToken:string){
-  console.log("getLabels");
   try {
     const requestURL:string = `${AppConfig.server_url}/labels/all_labels`;
     const response = await axios({
@@ -136,7 +131,6 @@ export async function addAdmin(email:string, usertoken:string) {
 }
 
 export async function addLabel(label:string, usertoken:string) {
-  console.log("addLabel");
   try {
     return await axios({
       method: "post",
@@ -170,8 +164,6 @@ export async function removeAdmin(email:string, usertoken:string) {
 
 export async function addEnrollReq(event_id:number, token:string){
   try{
-    console.log("addEnrollReq");
-    console.log(event_id)
     const response =  await axios({
         method: "post",
         url: `${AppConfig.server_url}/events/enroll_to_event`,
@@ -190,8 +182,6 @@ export async function addEnrollReq(event_id:number, token:string){
 
 export async function unEnrollReq(event_id:number, token:string){
   try{
-    console.log("addEnrollReq");
-    console.log(event_id)
     const response =  await axios({
         method: "post",
         url: `${AppConfig.server_url}/events/unenroll_to_event`,

@@ -40,7 +40,6 @@ const CalendComponent = (props: any) => {
       const userFromStorage = JSON.parse(data);
       var isAdminTemp = await isAdminUser(userFromStorage.token || "");
       setIsAdmin(isAdminTemp);
-      console.log("isAdminTemp " + isAdminTemp);
     };
 
     genIsAdmin();
@@ -117,7 +116,7 @@ const CalendComponent = (props: any) => {
           open={openDialog}
           onClose={handleCloseDialog}
           scroll="body"
-          PaperProps={{ sx: { width: "35%" } }}
+          PaperProps={{ sx: { maxWidth: "800px", width: "40%" } }}
           aria-labelledby="scroll-dialog-title"
           aria-describedby="scroll-dialog-description"
         >

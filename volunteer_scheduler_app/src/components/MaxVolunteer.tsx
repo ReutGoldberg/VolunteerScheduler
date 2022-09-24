@@ -166,7 +166,6 @@ export const MaxVolunteer = () => {
     if (newVal) {
       let inputStartDate = new Date(newVal + "T02:55:08.151437Z");
       inputStartDate = setTimesForDates(inputStartDate, true);
-      console.log("date " + inputStartDate);
       setStartDateValid(
         !(
           inputStartDate < today ||
@@ -191,7 +190,6 @@ export const MaxVolunteer = () => {
     if (newVal) {
       let inputEndDate = new Date(newVal + "T02:55:08.151437Z");
       inputEndDate = setTimesForDates(inputEndDate, false);
-      console.log("inputEndDate " + inputEndDate);
       setEndDateValid(
         !(
           inputEndDate < today ||

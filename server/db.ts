@@ -353,9 +353,6 @@ const config = require('./config')
   }
 
   async function enrollToEvent(event_id:number, user_token:string){
-    //todo: remove logging when done testing
-    console.log('enroll to event')
-    console.log(event_id) 
       try{
         const event_details = await prisma.Events.findFirst({
           where:{
@@ -375,7 +372,7 @@ const config = require('./config')
         });
       const max=event_details["max_volunteers"];
       const current = event_details["EventVolunteerMap"].length;
-      if(current<max){
+      if(current < max){
         const new_user_enrolled = await prisma.Users.update({
           where:{
             token: user_token
@@ -394,10 +391,9 @@ const config = require('./config')
       }
     }
     catch(error: any){
-      console.log(error.message)
       if (error.code === 'P2002'){  // already exsist
-        console.log("already enrolled -didnt do anything")
-        return true
+        console.log("already enrolled - didnt do anything")
+        return true;
       }
       //else
       console.error("Error in enrollToEvent from db.ts");
@@ -407,13 +403,9 @@ const config = require('./config')
   }
     
   async function unenrollToEvent(event_id:number, user_token:string){
-    //todo: remove when done testing
-    console.log('unenroll to event')
-    console.log(event_id) 
     try {
       const user = await getUserByToken(user_token)
       const user_id = user.id
-      console.log(user_id) 
       const new_user_enrolled = await prisma.EventVolunteerMap.delete({
         where:{
           event_id_user_id: {
@@ -457,7 +449,6 @@ const config = require('./config')
           },
         },
       });
-      console.log("event was successfully edited")
       return new_event;      
     } catch (error:any) {
       console.error("Error in editEvent from db.ts");
@@ -468,7 +459,6 @@ const config = require('./config')
   }
 
   export async function getIsUserEnrolledToEvent(event_id:number, user_token:string){
-    
     try
     {
       const user = await getUserByToken(user_token)
@@ -491,7 +481,6 @@ const config = require('./config')
 
 async function getAllLabels() {
   try {
-    console.log("getAllLabels");
     return await prisma.Labels.findMany();    
   } catch (error:any) {
     console.error("Error in getAllLabels from db.ts");
@@ -503,7 +492,6 @@ async function getAllLabels() {
 
 async function addNewLabel(labelName:string) {
   try {
-    console.log("addNewLabel");
     return await prisma.Labels.create({
       data: {
         name: labelName,

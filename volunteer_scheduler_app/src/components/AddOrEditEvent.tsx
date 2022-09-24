@@ -10,7 +10,6 @@ import {
   ListItem,
   List,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
@@ -23,23 +22,26 @@ import MaximizeIcon from "@mui/icons-material/Maximize";
 import MinimizeIcon from "@mui/icons-material/Minimize";
 
 import {
-  getLabels,
   addEventReq,
   editEventReq,
   deleteEventReq,
   addEnrollReq,
   unEnrollReq,
   getIsUserEnrolled,
+  getLabels,
 } from "../utils/DataAccessLayer";
-import {
-  enrollement_details,
-  fullEventDetails,
-  labelOptions,
-  volenteer,
-} from "../utils/helper";
+import { fullEventDetails, labelOptions } from "../utils/helper";
 import React from "react";
 import { UserObjectContext } from "../App";
 import { AppConfig } from "../AppConfig";
+import { LabelsOptionsComp } from "./LabelsOptionsComp";
+
+const offset = new Date().getTimezoneOffset() * 1000 * 60;
+const getLocalDate = (value: string | number | Date) => {
+  const offsetDate = new Date(value).valueOf() - offset;
+  const date = new Date(offsetDate).toISOString();
+  return date.substring(0, 16);
+};
 
 export interface AddOrEditProps {
   toEditEventDetails: fullEventDetails | null;
@@ -47,20 +49,6 @@ export interface AddOrEditProps {
   currentPage: string;
   setOpenDialogApp(openDialogApp: boolean): void;
 }
-
-const dateToString = (date: Date) => {
-  return (
-    ("00" + date.getDate()).slice(-2) +
-    "/" +
-    ("00" + date.getMonth()).slice(-2) +
-    "/" +
-    date.getFullYear() +
-    " " +
-    ("00" + date.getHours()).slice(-2) +
-    ":" +
-    ("00" + date.getMinutes()).slice(-2)
-  );
-};
 
 export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   toEditEventDetails,
@@ -108,38 +96,15 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const [allDayChecked, setAllDayChecked] = React.useState(false);
   const [isAllDayDisable, setIsAllDayDisable] = React.useState(false);
 
-  const [labelOptions, setlabelOptions] = React.useState<labelOptions[]>([]);
-  const [checkedLabels, setCheckedLabels] = React.useState<labelOptions[]>(
-    toEditEventDetails ? toEditEventDetails.labels : []
-  );
-
   const { user, setUser } = React.useContext(UserObjectContext); //importing the context - user object by google token
 
   const [isEnrolled, setIsEnrolled] = React.useState(false);
   const [isEnrolledValid, setIsEnrolledValid] = React.useState(false);
 
-  React.useEffect(() => {
-    async function callAsync() {
-      try {
-        const data: labelOptions[] = await getLabels(user.token);
-        if (data) {
-          if (data.length === 0) {
-            return;
-          }
-          setlabelOptions(
-            data.map((labelOption) => {
-              return { id: labelOption.id, name: labelOption.name };
-            })
-          );
-        }
-      } catch (error) {
-        alert("An error accured in server. can't get labels");
-        return;
-      }
-    }
-
-    callAsync();
-  }, []);
+  const [labelsList, setLabelsList] = React.useState<labelOptions[]>([]);
+  const [checkedLabels, setCheckedLabels] = React.useState<labelOptions[]>(
+    toEditEventDetails ? toEditEventDetails.labels : []
+  );
 
   React.useEffect(() => {
     (async function () {
@@ -155,6 +120,28 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
         } else setIsEnrolled(false);
       }
     })();
+  }, []);
+
+  React.useEffect(() => {
+    async function callAsync() {
+      try {
+        const data: labelOptions[] = await getLabels(user.token);
+        if (data) {
+          if (data.length === 0) {
+            return;
+          }
+          setLabelsList(
+            data.map((labelOption) => {
+              return { id: labelOption.id, name: labelOption.name };
+            })
+          );
+        }
+      } catch (error) {
+        alert("An error accured in server. can't get labels");
+        return;
+      }
+    }
+    callAsync();
   }, []);
 
   const isBlockSubmit = () => {
@@ -212,8 +199,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
     let response: any;
     try {
       if (toEditEventDetails != null) {
-        // for some reason this can be null and needs to be checked, todo - better change to empty obj: {} if time allows
-        console.log(`isEnrolled value: ${isEnrolled}`);
         if (isEnrolled)
           response = await addEnrollReq(toEditEventDetails.id, user.token);
         else {
@@ -226,7 +211,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       throw err;
     } finally {
       if (response.statusText === "OK") {
-        console.log("Enrollment proccess completed successfully");
         alert("Enrollment proccess completed successfully");
         setOpenDialogApp(false);
       } else {
@@ -306,10 +290,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       eventMinParticipantsValid &&
       eventMaxParticipantsValid
     ) {
-      // if (await isAdminUser(user.sub)) {
       if (isAdmin) {
-        //?
-        console.log("admin!");
         try {
           var event_details: fullEventDetails = {
             id: 0,
@@ -335,7 +316,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             userFromStorage.token || ""
           );
           if (response.statusText === "OK") {
-            console.log("Event added successfully");
             alert("Event addeds successfully");
             setOpenDialogApp(false);
           } else console.log("didnt add event");
@@ -362,7 +342,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       eventMaxParticipantsValid
     ) {
       if (isAdmin) {
-        console.log("admin!");
         try {
           var event_details: fullEventDetails = {
             id: toEditEventDetails ? toEditEventDetails.id : -1,
@@ -390,7 +369,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
             userFromStorage.token || ""
           );
           if (response.statusText === "OK") {
-            console.log("Event edited successfully");
             alert("Event edited successfully");
             setOpenDialogApp(false);
           } else console.log("didnt edit event");
@@ -415,7 +393,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
 
   const handleDeleteEvent = async () => {
     try {
-      console.log("handleDeleteEvent");
       if (toEditEventDetails != null) {
         var eventId = toEditEventDetails?.id;
         const data =
@@ -428,7 +405,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           userFromStorage.token || ""
         );
         if (response.statusText === "OK") {
-          console.log("Event deleted successfully");
           alert("Event deleted successfully");
           setOpenDialogApp(false);
         } else console.log("didnt delete event");
@@ -440,18 +416,6 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
 
   const handelIsEnrollChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsEnrolled(event.target.checked);
-  };
-
-  const handleToggle = (value: labelOptions) => () => {
-    const currentIndex = checkedLabels.map((cl) => cl.id).indexOf(value.id);
-    const newChecked = [...checkedLabels];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-    setCheckedLabels(newChecked);
   };
 
   return (
@@ -615,71 +579,41 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           gap: 4.7,
         }}
       >
-        {isAdmin && (
-          <TextField
-            required={toEditEventDetails ? false : true}
-            error={!startDateValid}
-            helperText={!startDateValid ? "Please enter a valid date " : ""}
-            id="datetime-local"
-            label="Enter start date"
-            type="datetime-local"
-            defaultValue={
-              toEditEventDetails ? toEditEventDetails.startAt : null
-            }
-            sx={{ width: 250 }}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            onChange={handleEventStartTimeChange}
-          />
-        )}
-        {isAdmin && (
-          <TextField
-            required={toEditEventDetails ? false : true}
-            error={!endDateValid}
-            helperText={!endDateValid ? "Please enter a valid date " : ""}
-            id="datetime-local"
-            label="Enter end date"
-            type="datetime-local"
-            defaultValue={toEditEventDetails ? toEditEventDetails.endAt : null}
-            sx={{ width: 250 }}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            onChange={handleEventEndTimeChange}
-          />
-        )}
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 4.7,
-        }}
-      >
-        <Box sx={{ flexDirection: "column" }}>
-          {" "}
-          <Typography sx={{ textDecoration: "underline" }}>
-            {toEditEventDetails ? "Begins at: " : ""}
-          </Typography>
-          <Typography>
-            {toEditEventDetails
-              ? dateToString(new Date(toEditEventDetails.startAt))
-              : ""}
-          </Typography>
-        </Box>
-        <Box sx={{ flexDirection: "column" }}>
-          {" "}
-          <Typography sx={{ textDecoration: "underline" }}>
-            {toEditEventDetails ? "Ends at: " : ""}
-          </Typography>
-          <Typography>
-            {toEditEventDetails
-              ? dateToString(new Date(toEditEventDetails.endAt))
-              : ""}
-          </Typography>
-        </Box>
+        <TextField
+          disabled={currentPage != "AddOrEditEvent" && !isAdmin}
+          required={toEditEventDetails ? false : true}
+          error={!startDateValid}
+          helperText={!startDateValid ? "Please enter a valid date " : ""}
+          id="datetime-local"
+          label="Enter start date"
+          type="datetime-local"
+          defaultValue={
+            toEditEventDetails ? getLocalDate(toEditEventDetails.startAt) : null
+          }
+          sx={{ width: "50%", textAlign: "center" }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={handleEventStartTimeChange}
+        />
+
+        <TextField
+          disabled={currentPage != "AddOrEditEvent" && !isAdmin}
+          required={toEditEventDetails ? false : true}
+          error={!endDateValid}
+          helperText={!endDateValid ? "Please enter a valid date " : ""}
+          id="datetime-local"
+          label="Enter end date"
+          type="datetime-local"
+          defaultValue={
+            toEditEventDetails ? getLocalDate(toEditEventDetails.endAt) : null
+          }
+          sx={{ width: "50%", textAlign: "center" }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          onChange={handleEventEndTimeChange}
+        />
       </Box>
 
       <Box sx={{ maxWidth: "20%" }}>
@@ -698,62 +632,14 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
           />
         </FormGroup>
       </Box>
+      <LabelsOptionsComp
+        toEditEventDetails={toEditEventDetails}
+        isAdmin={isAdmin}
+        currentPage={currentPage}
+        currentLabelsList={labelsList}
+        setAllCheckedLabels={setCheckedLabels}
+      />
 
-      <Typography>lables:</Typography>
-
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 4.7,
-        }}
-      >
-        <List
-          sx={{
-            width: "100%",
-            maxWidth: 360,
-            maxHeight: 100,
-            border: 1,
-            borderBlockColor: "grey",
-            borderRadius: 1,
-            overflow: "auto",
-          }}
-        >
-          {labelOptions.map((value) => {
-            const labelId = value.id;
-            return (
-              <ListItem key={value.id} disablePadding>
-                <ListItemButton
-                  disabled={currentPage != "AddOrEditEvent" && !isAdmin}
-                  role={undefined}
-                  onClick={handleToggle(value)}
-                  dense
-                >
-                  <ListItemIcon>
-                    <Checkbox
-                      disabled={currentPage != "AddOrEditEvent" && !isAdmin}
-                      edge="start"
-                      checked={
-                        checkedLabels.map((cl) => cl.id).indexOf(value.id) !==
-                        -1
-                      }
-                      tabIndex={-1}
-                      disableRipple
-                      inputProps={{
-                        "aria-labelledby": labelId.toString(),
-                      }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText id={labelId.toString()} primary={value.name} />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
-      </Box>
-
-      <Box />
       <Box />
       {toEditEventDetails && (
         <Box sx={{ maxWidth: "40%" }}>

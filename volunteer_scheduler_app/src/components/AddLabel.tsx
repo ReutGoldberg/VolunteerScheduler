@@ -49,7 +49,6 @@ export const AddLabel: React.FC = () => {
         return;
       }
     }
-
     callAsync();
   }, []);
 
@@ -72,7 +71,6 @@ export const AddLabel: React.FC = () => {
     if (!addLabelValid) return;
     const response = await addLabel(label, userFromStorage.token)
       .then(() => {
-        console.log("Label added successfully");
         return getLabels(user.token);
       })
       .catch((err) => {
@@ -170,7 +168,7 @@ export const AddLabel: React.FC = () => {
           >
             Labels List
           </Typography>
-          <LabelsList curLabelsList={labelsList} />
+          <LabelsList currentLabelsList={labelsList} />
         </Box>
       </Box>
     </Box>

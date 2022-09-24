@@ -15,78 +15,50 @@ datasource db {
 //   url      = env("FAKE_DATABASE_URL")
 // }
 
-
-
 model Users {
-  id Int @id @default(autoincrement())
-  first_name String?
-  last_name String?
-  email String @unique
-  token String @unique
-  is_admin Boolean
-  EventManagerMap EventManagerMap[]
-  Requests PendingRequests[]
+  id                Int                 @id @default(autoincrement())
+  first_name        String?
+  last_name         String?
+  email             String              @unique
+  token             String              @unique
+  is_admin          Boolean
   EventVolunteerMap EventVolunteerMap[]
 }
 
 model Events {
-  id Int @id @default(autoincrement())
-  title String
-  details String
-  created_by String
-  location String?
-  min_volunteers Int?
-  max_volunteers Int?
-  start_time DateTime
-  end_time DateTime
-  EventManagerMap EventManagerMap[]
-  EventLabelMap EventLabelMap[]
-  Requests PendingRequests[]
-  EventVolunteerMap EventVolunteerMap []
+  id                Int                 @id @default(autoincrement())
+  title             String
+  details           String
+  created_by        String
+  location          String?
+  min_volunteers    Int?
+  max_volunteers    Int?
+  start_time        DateTime
+  end_time          DateTime
+  EventLabelMap     EventLabelMap[]
+  EventVolunteerMap EventVolunteerMap[]
 }
 
-model Labels{
-  id Int @id @default(autoincrement())
-  name String
+model Labels {
+  id            Int             @id @default(autoincrement())
+  name          String
   EventLabelMap EventLabelMap[]
 }
 
-model EventManagerMap{
+model EventLabelMap {
   event_id Int
-  Events Events? @relation(fields: [event_id], references: [id])
-  user_id Int
-  Users Users? @relation(fields: [user_id], references: [id])
-  @@id([event_id, user_id])
-}
-
-model EventLabelMap{
-  event_id Int
-  Events Events? @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  Events   Events? @relation(fields: [event_id], references: [id], onDelete: Cascade)
   label_id Int
-  Labels Labels? @relation(fields: [label_id], references: [id], onDelete: Cascade)
+  Labels   Labels? @relation(fields: [label_id], references: [id], onDelete: Cascade)
+
   @@id([event_id, label_id])
 }
 
-
-model Logs{
-  id Int @id @default(autoincrement())
-  text String?
-  time DateTime?
-}
-
-model PendingRequests{
-  id Int @id @default(autoincrement())
-  user_id Int
-  Users Users? @relation(fields: [user_id], references: [id])
+model EventVolunteerMap {
   event_id Int
-  Events Events? @relation(fields: [event_id], references: [id])
-}
+  Events   Events? @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  user_id  Int
+  Users    Users?  @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-model EventVolunteerMap{
-  event_id Int
-  Events Events? @relation(fields: [event_id], references: [id], onDelete: Cascade)
-  user_id Int
-  Users Users? @relation(fields: [user_id], references: [id], onDelete: Cascade)
   @@id([event_id, user_id])
 }
-

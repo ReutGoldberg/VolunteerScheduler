@@ -2,12 +2,7 @@ import React from "react";
 import { Button, Box, TextField } from "@mui/material";
 import jwt_decode from "jwt-decode";
 
-
-import {
-  isNewUser,
-  createUser,
-
-} from "../utils/DataAccessLayer";
+import { isNewUser, createUser } from "../utils/DataAccessLayer";
 import { AppConfig } from "../AppConfig";
 import { UserObjectContext } from "../App";
 import { FakeDataGen } from "./FakeDataGen";
@@ -73,13 +68,8 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
   /* End google login part*/
   function onSignIn(googleUser: any) {
     var profile = googleUser.getBasicProfile();
-    // console.log("ID: " + profile.getId()); // Do not send to your backend! Use an ID token instead.
-    // console.log("Name: " + profile.getName());
-    // console.log("Image URL: " + profile.getImageUrl());
-    // console.log("Email: " + profile.getEmail()); // This is null if the 'email' scope is not present.
   }
 
- 
   return (
     <Box
       sx={{
@@ -99,10 +89,7 @@ export const Login: React.FC<LoginProps> = ({ setPageApp, setUserAuth }) => {
         }}
         id="signInDiv"
       ></Box>
-      {AppConfig.IS_SHOW_FAKE && <FakeDataGen/>}
+      {AppConfig.IS_SHOW_FAKE && <FakeDataGen />}
     </Box>
   );
 };
-
-
-
