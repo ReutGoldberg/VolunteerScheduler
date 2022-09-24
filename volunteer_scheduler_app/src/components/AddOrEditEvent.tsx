@@ -96,7 +96,9 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const [endDateValid, setEndDateValid] = React.useState(true);
 
   const [allDayChecked, setAllDayChecked] = React.useState(false);
-  const [isAllDayDisable, setIsAllDayDisable] = React.useState(false);
+  const [isAllDayDisable, setIsAllDayDisable] = React.useState(
+    toEditEventDetails ? true : false
+  );
 
   const { user, setUser } = React.useContext(UserObjectContext); //importing the context - user object by google token
 
