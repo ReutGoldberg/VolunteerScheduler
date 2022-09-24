@@ -33,9 +33,10 @@ export const AddLabel: React.FC = () => {
   React.useEffect(() => {
     async function callAsync() {
       try {
-        const data: labelOptions[] = await getLabels(user.token);
+        const data: labelOptions[] = await getLabels(userFromStorage.token);
         if (data) {
           if (data.length === 0) {
+            setLabelsList([]);
             return;
           }
           setLabelsList(

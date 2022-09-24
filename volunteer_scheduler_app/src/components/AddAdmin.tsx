@@ -33,11 +33,25 @@ export const AddAdmin: React.FC = () => {
     userFromStorage = JSON.parse(data);
   } else userFromStorage = user;
   // -------------------------------------------------------------------- End of persisted auth ----------------------------------------------------
+
   React.useEffect(() => {
-    const userToken = userFromStorage.token;
-    getAdminsList(userToken).then((data) => {
-      setAdminsList(data);
-    });
+    async function callAsync() {
+      try {
+        const data: any = await getAdminsList(userFromStorage.token);
+        if (data) {
+          if (data.length === 0) {
+            setAdminsList([]);
+            return;
+          }
+          console.log(data);
+          setAdminsList(data);
+        }
+      } catch (error) {
+        alert("An error accured in server. can't get admins");
+        return;
+      }
+    }
+    callAsync();
   }, []);
 
   const handleAddAdminEmailChange = (
@@ -218,7 +232,7 @@ export const AddAdmin: React.FC = () => {
           >
             Admins List
           </Typography>
-          <AdminsList curAdminList={adminsList} />
+          <AdminsList currentAdminList={adminsList} />
         </Box>
       </Box>
     </Box>

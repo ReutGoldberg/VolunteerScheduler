@@ -67,10 +67,9 @@ import qs from "qs";
 
 async function getLabels(userToken:string){
   try {
-    const requestURL:string = `${AppConfig.server_url}/labels/all_labels`;
     const response = await axios({
       method: "get",
-      url: requestURL,
+      url: `${AppConfig.server_url}/labels/all_labels`,
       headers: { "Content-Type": "application/json",
                  "Authorization": userToken
                 },
