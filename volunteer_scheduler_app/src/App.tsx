@@ -71,9 +71,6 @@ function App() {
       if (userObj == true) {
         isAdminUser(userObj.token)
           .then((result) => {
-            console.log("------------------------------------------");
-            console.log("IS_ADMIN REUSLT:" + result);
-            console.log("------------------------------------------");
             setIsAdmin(result);
           })
           .catch((err: any) => {
