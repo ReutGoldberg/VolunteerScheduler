@@ -127,7 +127,6 @@ router.get('/filterd_events', async (req:Request, res:Response) => {
 
 router.get('/event_details/:event_id', async (req:Request, res:Response) => {
     const eventId = Number(req.params.event_id)
-    console.log(`This is the event id: ${eventId}`)//todo: remove when done testing
     const token = req.headers.authorization ? req.headers.authorization : "";
     try{
         if(!(await isVerifiedUser(token))){
@@ -153,7 +152,7 @@ router.get('/event_details/:event_id', async (req:Request, res:Response) => {
             endAt: event_details["end_time"],
             title: event_details["title"],
             details: event_details["details"],
-            color: 'blue', //todo: not hardcode the color
+            color: 'green', 
             allDay: false,
             labels: labels,
             location: event_details["location"],

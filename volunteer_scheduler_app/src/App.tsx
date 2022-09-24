@@ -33,8 +33,6 @@ function App() {
     setPage(page);
   };
 
-  const setOpenDialogApp = (openDialogApp: boolean) => {};
-
   //This hook will set the value to the localStorage upon erasing the User on Refresh
   React.useEffect(() => {
     const userStr: string = JSON.stringify(user);
@@ -73,9 +71,6 @@ function App() {
       if (userObj == true) {
         isAdminUser(userObj.token)
           .then((result) => {
-            console.log("------------------------------------------");
-            console.log("IS_ADMIN REUSLT:" + result);
-            console.log("------------------------------------------");
             setIsAdmin(result);
           })
           .catch((err: any) => {
@@ -106,7 +101,8 @@ function App() {
             toEditEventDetails={null}
             isAdmin={isAdmin}
             currentPage={"AddOrEditEvent"}
-            setOpenDialogApp={setOpenDialogApp}
+            setOpenDialogApp={(openDialogApp: boolean) => {}}
+            setIsDelete={(isDelete: boolean) => {}}
           />
         );
       case "AddAdmin":

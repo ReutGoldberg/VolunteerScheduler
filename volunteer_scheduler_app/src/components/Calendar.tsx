@@ -20,6 +20,7 @@ import { AppConfig } from "../AppConfig";
 const CalendComponent = (props: any) => {
   const [demoEvents, setDemoEvents] = useState<eventDetails[] | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [isDelete, setisDelete] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<fullEventDetails | null>(
     null
   );
@@ -61,7 +62,7 @@ const CalendComponent = (props: any) => {
         setDemoEvents(res!!);
       })
       .catch((er) => {alert("can't get events")});
-  }, [props.filters]);
+  }, [props.filters, isDelete]);
 
   const onNewEventClick = (data: any) => {
     const msg = `New event click action\n\n Callback data:\n\n${JSON.stringify({
@@ -137,6 +138,7 @@ const CalendComponent = (props: any) => {
               isAdmin={isAdmin}
               currentPage="fromCalender"
               setOpenDialogApp={setOpenDialogApp}
+              setIsDelete={setisDelete}
             />
           </DialogContent>
           <DialogActions>

@@ -7,7 +7,6 @@ const config = require('../config')
 const router = express.Router();
 
 router.post('/add_label', async (req:Request, res:Response) => {
-    console.log("add_label");
     const {labelName} = req.body;
     const authToken = req.headers.authorization ? req.headers.authorization : "";
     try{
@@ -30,7 +29,6 @@ router.post('/add_label', async (req:Request, res:Response) => {
 });
 
 router.get('/all_labels', async (req:Request, res:Response) => {
-    console.log("all_labels");
     const token = req.headers.authorization ? req.headers.authorization : "";
     try{
         if(!(await isVerifiedUser(token))){

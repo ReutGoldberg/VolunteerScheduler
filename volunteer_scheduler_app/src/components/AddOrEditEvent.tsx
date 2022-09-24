@@ -48,6 +48,7 @@ export interface AddOrEditProps {
   isAdmin: boolean;
   currentPage: string;
   setOpenDialogApp(openDialogApp: boolean): void;
+  setIsDelete(isDelete: boolean): void;
 }
 
 export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
@@ -55,6 +56,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   isAdmin,
   currentPage,
   setOpenDialogApp,
+  setIsDelete,
 }) => {
   const [eventName, setEventName] = React.useState(
     toEditEventDetails ? toEditEventDetails.title : ""
@@ -94,7 +96,9 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   const [endDateValid, setEndDateValid] = React.useState(true);
 
   const [allDayChecked, setAllDayChecked] = React.useState(false);
-  const [isAllDayDisable, setIsAllDayDisable] = React.useState(false);
+  const [isAllDayDisable, setIsAllDayDisable] = React.useState(
+    toEditEventDetails ? true : false
+  );
 
   const { user, setUser } = React.useContext(UserObjectContext); //importing the context - user object by google token
 
@@ -394,6 +398,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       );
       if (response.statusText === "OK") {
         alert("Event deleted successfully");
+        setIsDelete(true);
         setOpenDialogApp(false);
       } else console.log("didnt delete event");
     }
