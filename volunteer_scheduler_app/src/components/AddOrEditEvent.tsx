@@ -124,21 +124,16 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
 
   React.useEffect(() => {
     async function callAsync() {
-      try {
-        const data: labelOptions[] = await getLabels(user.token);
-        if (data) {
-          if (data.length === 0) {
-            return;
-          }
-          setLabelsList(
-            data.map((labelOption) => {
-              return { id: labelOption.id, name: labelOption.name };
-            })
-          );
+      const data: labelOptions[] = await getLabels(user.token);
+      if (data) {
+        if (data.length === 0) {
+          return;
         }
-      } catch (error) {
-        alert("An error accured in server. can't get labels");
-        return;
+        setLabelsList(
+          data.map((labelOption) => {
+            return { id: labelOption.id, name: labelOption.name };
+          })
+        );
       }
     }
     callAsync();
@@ -208,16 +203,18 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       }
     } catch (err: any) {
       console.error(`From handleEnrollement: ${err.message}`);
-      throw err;
+      if (err.message==="Full capacity"){
+        alert("Can't enroll - full capacity")
+      }
+      else{
+        throw err;
+      }
+      
     } finally {
       if (response.statusText === "OK") {
-        alert("Enrollment proccess completed successfully");
         setOpenDialogApp(false);
-      } else {
-        console.error("Enrollment process ended with errors");
-      }
     }
-  };
+  }};
 
   const handleEventStartTimeChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -291,37 +288,33 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       eventMaxParticipantsValid
     ) {
       if (isAdmin) {
-        try {
-          var event_details: fullEventDetails = {
-            id: 0,
-            title: eventName,
-            details: eventInfo,
-            labels: checkedLabels,
-            location: eventLocation,
-            min_volunteers: Number(eventMinParticipants),
-            max_volunteers: Number(eventMaxParticipants),
-            startAt: startDate,
-            endAt: endDate,
-            //@ts-ignore
-            created_by: `${user.email}`,
-            volunteers: [],
-            count_volunteers: 0,
-          };
-          const data =
-            window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
-            "";
-          const userFromStorage = JSON.parse(data);
-          const response = await addEventReq(
-            event_details,
-            userFromStorage.token || ""
-          );
-          if (response.statusText === "OK") {
-            alert("Event addeds successfully");
-            setOpenDialogApp(false);
-          } else console.log("didnt add event");
-        } catch {
-        } finally {
-        }
+        var event_details: fullEventDetails = {
+          id: 0,
+          title: eventName,
+          details: eventInfo,
+          labels: checkedLabels,
+          location: eventLocation,
+          min_volunteers: Number(eventMinParticipants),
+          max_volunteers: Number(eventMaxParticipants),
+          startAt: startDate,
+          endAt: endDate,
+          //@ts-ignore
+          created_by: `${user.email}`,
+          volunteers: [],
+          count_volunteers: 0,
+        };
+        const data =
+          window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
+          "";
+        const userFromStorage = JSON.parse(data);
+        const response = await addEventReq(
+          event_details,
+          userFromStorage.token || ""
+        );
+        if (response.statusText === "OK") {
+          alert("Event addeds successfully");
+          setOpenDialogApp(false);
+        } else console.log("didnt add event");
       }
     }
   };
@@ -342,39 +335,35 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       eventMaxParticipantsValid
     ) {
       if (isAdmin) {
-        try {
-          var event_details: fullEventDetails = {
-            id: toEditEventDetails ? toEditEventDetails.id : -1,
-            title: eventName,
-            details: eventInfo,
-            labels: checkedLabels,
-            location: eventLocation,
-            min_volunteers: Number(eventMinParticipants),
-            max_volunteers: Number(eventMaxParticipants),
-            startAt: startDate,
-            endAt: endDate,
-            //@ts-ignore
-            created_by: `${user.email}`,
-            volunteers: [],
-            count_volunteers: 0,
-          };
-
+        var event_details: fullEventDetails = {
+          id: toEditEventDetails ? toEditEventDetails.id : -1,
+          title: eventName,
+          details: eventInfo,
+          labels: checkedLabels,
+          location: eventLocation,
+          min_volunteers: Number(eventMinParticipants),
+          max_volunteers: Number(eventMaxParticipants),
+          startAt: startDate,
+          endAt: endDate,
           //@ts-ignore
-          const data =
-            window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
-            "";
-          const userFromStorage = JSON.parse(data);
-          const response = await editEventReq(
-            event_details,
-            userFromStorage.token || ""
-          );
-          if (response.statusText === "OK") {
-            alert("Event edited successfully");
-            setOpenDialogApp(false);
-          } else console.log("didnt edit event");
-        } catch {
-        } finally {
-        }
+          created_by: `${user.email}`,
+          volunteers: [],
+          count_volunteers: 0,
+        };
+
+        //@ts-ignore
+        const data =
+          window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
+          "";
+        const userFromStorage = JSON.parse(data);
+        const response = await editEventReq(
+          event_details,
+          userFromStorage.token || ""
+        );
+        if (response.statusText === "OK") {
+          alert("Event edited successfully");
+          setOpenDialogApp(false);
+        } else console.log("didnt edit event");
       }
     }
   };
@@ -392,26 +381,23 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
   };
 
   const handleDeleteEvent = async () => {
-    try {
-      if (toEditEventDetails != null) {
-        var eventId = toEditEventDetails?.id;
-        const data =
-          window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
-          "";
-        const userFromStorage = JSON.parse(data);
-        //@ts-ignore
-        const response = await deleteEventReq(
-          eventId,
-          userFromStorage.token || ""
-        );
-        if (response.statusText === "OK") {
-          alert("Event deleted successfully");
-          setOpenDialogApp(false);
-        } else console.log("didnt delete event");
-      }
-    } catch {
-    } finally {
+    if (toEditEventDetails != null) {
+      var eventId = toEditEventDetails?.id;
+      const data =
+        window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) ||
+        "";
+      const userFromStorage = JSON.parse(data);
+      //@ts-ignore
+      const response = await deleteEventReq(
+        eventId,
+        userFromStorage.token || ""
+      );
+      if (response.statusText === "OK") {
+        alert("Event deleted successfully");
+        setOpenDialogApp(false);
+      } else console.log("didnt delete event");
     }
+
   };
 
   const handelIsEnrollChange = (event: React.ChangeEvent<HTMLInputElement>) => {

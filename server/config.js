@@ -4,6 +4,7 @@ const config = {
       name: 'myapp',
       localhost: `http://localhost`,
       notVerifiedUserMsg: "User token is not verified",
+      fullCapacityMsg: "Full capacity",
       invalidUserMsg: "User email is not valid",
       noAdminRightsMsg: "User is not an admin - request failed",
       IS_FAKE: false

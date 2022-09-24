@@ -60,7 +60,7 @@ const CalendComponent = (props: any) => {
       .then((res) => {
         setDemoEvents(res!!);
       })
-      .catch((er) => {});
+      .catch((er) => {alert("can't get events")});
   }, [props.filters]);
 
   const onNewEventClick = (data: any) => {
@@ -83,6 +83,7 @@ const CalendComponent = (props: any) => {
     const token_data =
       window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || "";
     const userFromStorage = JSON.parse(token_data);
+    try{
     const response = await getEventDetails(
       event_id,
       userFromStorage.token || ""
@@ -91,6 +92,10 @@ const CalendComponent = (props: any) => {
       setSelectedEvent(response.data);
       setOpenDialog(true);
     } else console.log("didnt get event details");
+  }
+  catch{
+    alert("could't get event details");
+  }
   };
 
   return (

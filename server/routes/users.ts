@@ -135,10 +135,10 @@ router.get('/userEmail/', async (req:Request, res:Response) => {
             throw new Error(config.notVerifiedUserMsg);
         }
         getAllAdminUsers().then(adminUsers => res.json(adminUsers));
-    } catch (error:any) {
+    } catch (err:any) {
         console.log("Error in adminsUserEmail - getting the admins list from server.ts")
-        console.error(error.message);
-        error.message === config.notVerifiedUserMsg? res.status(401):res.status(500); 
+        console.error(err.message);
+        err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error:err}); 
     }
     
  });
@@ -162,10 +162,10 @@ router.put('/add_admin', async (req:Request, res:Response) => {
 
         res.json(userToUpdate);   
         res.status(200);
-    } catch (error:any) {
+    } catch (err:any) {
         console.log("Error in add_admin from server.ts")
-        console.error(error.message);
-        error.message === config.notVerifiedUserMsg || config.noAdminRightsMsg ? res.status(401):res.status(500); 
+        console.error(err.message);
+        err.message === config.notVerifiedUserMsg || config.noAdminRightsMsg ? res.status(401).send({error:err}):res.status(500).send({error:err}); 
     }
 });
 
@@ -189,10 +189,10 @@ router.put('/add_admin', async (req:Request, res:Response) => {
 
         res.json(userToUpdate);   
         res.status(200);
-    } catch (error:any) {
+    } catch (err:any) {
         console.log("Error in remove_admin from server.ts")
-        console.error(error.message);
-        error.message === config.notVerifiedUserMsg || config.noAdminRightsMsg ? res.status(401):res.status(500); 
+        console.error(err.message);
+        err.message === config.notVerifiedUserMsg || config.noAdminRightsMsg ? res.status(401).send({error:err}):res.status(500).send({error:err}); 
     }
 });
 

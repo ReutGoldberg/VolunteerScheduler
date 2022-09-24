@@ -387,7 +387,7 @@ const config = require('./config')
       }
       else{
         console.log("cant enroll- full capacity")
-        return false;
+        throw new Error("Full capacity");
       }
     }
     catch(error: any){
@@ -502,7 +502,6 @@ async function addNewLabel(labelName:string) {
     console.error(error.message);
     throw error; 
   }
-
 }
 
 async function addNewLog(logTxt:string, logTime:Date) {

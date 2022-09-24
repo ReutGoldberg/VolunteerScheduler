@@ -19,7 +19,7 @@ router.get('/all_events', async (req:Request, res:Response) => {
     catch(err:any){
         console.log("Error in get all_events from events.ts (server router)")
         console.error(err.message);
-        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);        
+        err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error:err});        
     }
 });
 
@@ -38,7 +38,7 @@ router.get('/personal_events', async (req:Request, res:Response) => {
     catch(err:any){
         console.log("Error in get personal_events from events.ts (server router)")
         console.error(err.message);
-        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);        
+        err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error:err});        
     }
 });
 
@@ -119,7 +119,7 @@ router.get('/filterd_events', async (req:Request, res:Response) => {
         catch(err:any){
             console.log("Error in get filterd_events from events.ts (server router)")
             console.error(err.message);
-            err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);        
+            err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error:err});        
         }
     }
     
@@ -143,8 +143,8 @@ router.get('/event_details/:event_id', async (req:Request, res:Response) => {
         let count_volunteers = event_details["EventVolunteerMap"].length;
         //@ts-ignore
         if((await getUserByToken(webUser.sub).then((user) => user.is_admin))){
-            for (let volenteer of event_details["EventVolunteerMap"]){
-                volunteers.push(volenteer["Users"])
+            for (let volunteer of event_details["EventVolunteerMap"]){
+                volunteers.push(volunteer["Users"])
             }
         }
         const full_event_details={
@@ -165,10 +165,10 @@ router.get('/event_details/:event_id', async (req:Request, res:Response) => {
         }
         res.json(full_event_details);
     }
-    catch (error:any) {
+    catch (err:any) {
         console.log("Error in get event_details from events.ts (server router)")
-        console.error(error.message);
-        error.message === config.notVerifiedUserMsg? res.status(401):res.status(500);    
+        console.error(err.message);
+        err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error:err});    
     }
 });
 //Pushes data to the DB based on the request body
@@ -188,9 +188,17 @@ router.post('/enroll_to_event', async (req:Request, res:Response) => {
         }
     }
     catch(err:any){
-        console.log("Error in enroll_to_event from events.ts (server router)")
+        console.error("Error in enroll_to_event from events.ts (server router)")
         console.error(err.message);
-        err.message === config.notVerifiedUserMsg ? res.status(401) : res.status(500);    
+        if (err.message === config.notVerifiedUserMsg){
+            res.status(401).send({error:err});
+        }
+        else if (err.message === config.fullCapacityMsg){
+            res.status(405).send({error:err});
+        }
+        else{
+            res.status(500).send({error:err});
+        }
     }
 });
 
@@ -213,7 +221,7 @@ router.post('/unenroll_to_event', async (req:Request, res:Response) => {
     catch(err:any){
         console.log("Error in unenroll_to_event from events.ts (server router)")
         console.error(err.message);
-        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);  
+        err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error:err});  
     }
 });
 
@@ -231,7 +239,9 @@ router.post('/add_event', async (req:Request, res:Response) => {
     catch(err:any){
         console.log("Error in Post add_event from events.ts (server router)")
         console.error(err.message);
-        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);  
+        err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error: err}); 
+        console.log("----end-----"); 
+        console.log(res); 
     }
 });
 
@@ -250,7 +260,7 @@ router.post('/edit_event', async (req:Request, res:Response) => {
     catch(err:any){
         console.log("Error in Post edit_event from events.ts (server router)")
         console.error(err.message);
-        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);  
+        err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error:err});  
     }
 });
 
@@ -273,7 +283,7 @@ router.delete('/delete_event/:event_id', async (req:Request, res:Response) => {
     catch(err:any){
         console.log("Error in delete_event from events.ts (server router)")
         console.error(err.message);
-        err.message === config.notVerifiedUserMsg || config.noAdminRightsMsg ? res.status(401):res.status(500);  
+        err.message === config.notVerifiedUserMsg || config.noAdminRightsMsg ? res.status(401).send({error:err}):res.status(500).send({error:err});  
     }
 });
 
@@ -291,7 +301,7 @@ router.get('/:event_id', async (req:Request, res:Response) => {
     catch(err:any){
         console.log("Error in get event_id from events.ts (server router)")
         console.error(err.message);
-        err.message === config.notVerifiedUserMsg ? res.status(401):res.status(500);  
+        err.message === config.notVerifiedUserMsg ? res.status(401).send({error:err}):res.status(500).send({error:err});  
     }
 });
 

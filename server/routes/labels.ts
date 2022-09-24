@@ -25,7 +25,7 @@ router.post('/add_label', async (req:Request, res:Response) => {
     catch(err:any){
         console.log("Error in Post add_label to Labels.ts (server router)")
         console.error(err.message);
-        err.message === config.notVerifiedUserMsg? res.status(401):res.status(500);  
+        err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error:err});  
     }
 });
 
@@ -42,7 +42,7 @@ router.get('/all_labels', async (req:Request, res:Response) => {
     catch(err:any){
         console.log("Error in get all_labels from labels.ts (server router)")
         console.error(err.message);
-        err.message === config.notVerifiedUserMsg ? res.status(401):res.status(500);  
+        err.message === config.notVerifiedUserMsg ? res.status(401).send({error:err}):res.status(500).send({error:err});  
     }
 });
 
