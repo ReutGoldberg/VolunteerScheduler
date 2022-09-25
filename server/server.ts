@@ -1,10 +1,7 @@
 import express, {Express, Request, Response} from "express";
-import jwt_decode from "jwt-decode";
-import { isVerifiedUser } from "./server_utils";
-import {editEvent, getUserByToken,getAllLabels,getEvent, getAllEvents, getAllUsers, deleteEventById, addNewEvent, enrollToEvent, getPersonalEvents, unenrollToEvent, getIsUserEnrolledToEvent} from "./db";
 
-
-const config = require('./config')
+import {config} from "./config"
+//const config = require('./config')
 
 const app: Express = express();
 var cors = require('cors');
@@ -12,8 +9,8 @@ app.use(cors({origin: config.client_app.localhost}))
 
 app.use(express.json());
 
-const myPort = config.server_app.port;
-
+//grab the port from the heroku server (process.env.Port) if not, default back to localhost ports
+const myPort = (process.env.PORT == null || process.env.PORT == "") ? config.server_app.port : process.env.PORT;
 /* Connecting the server with its sub routes*/
 
 const addFakeRouter = require('./routes/add_fake');
