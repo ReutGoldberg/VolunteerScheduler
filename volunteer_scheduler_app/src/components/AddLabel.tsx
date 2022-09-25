@@ -21,19 +21,21 @@ export const AddLabel: React.FC = () => {
   //why doing like this?
   //We can only use user object by the useContext hook which is allowed within a React Functional Component
   //Using the setUser from the useState hook resutls in an endless loop so we tackle this by using a different variable with the correct value assigned
-  const { user } = React.useContext(UserObjectContext); //using App's context
+  const { user, setUser } = React.useContext(UserObjectContext); //using App's context
   let userFromStorage: any; //option to default back to sessionStorage
   if (JSON.stringify(user) === "{}") {
     const data =
       sessionStorage.getItem(`${AppConfig.sessionStorageContextKey}`) || "";
     userFromStorage = JSON.parse(data);
   } else userFromStorage = user;
+  
+  setUser(userFromStorage);
   // -------------------------------------------------------------------- End of persisted auth ----------------------------------------------------
 
   React.useEffect(() => {
     async function callAsync() {
       try {
-        const data: labelOptions[] = await getLabels(user.token);
+        const data: labelOptions[] = await getLabels(userFromStorage.token);
         if (data) {
           if (data.length === 0) {
             return;
@@ -44,7 +46,8 @@ export const AddLabel: React.FC = () => {
             })
           );
         }
-      } catch (error) {
+      } catch (error:any) {
+        console.error(error.message);
         alert("An error accured in server. can't get labels");
         return;
       }

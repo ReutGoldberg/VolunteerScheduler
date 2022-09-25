@@ -10,6 +10,9 @@ import ListItemButton from "@mui/material/ListItemButton";
 import Box from "@mui/material/Box";
 import { labelOptions } from "../utils/helper";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
+import { UserObjectContext } from "../App";
+import { AppConfig } from "../AppConfig";
+import { SettingsSuggestRounded } from "@mui/icons-material";
 
 interface LabelsListProps {
   currentLabelsList: labelOptions[];
@@ -23,6 +26,39 @@ export const LabelsList: React.FC<LabelsListProps> = ({
   const [isPending, setIsPending] = React.useState(true);
   const boxRef = useRef(null);
   const listRef = useRef(null);
+
+  const { user, setUser } = React.useContext(UserObjectContext); //using App's context
+  let userFromStorage: any; //option to default back to sessionStorage
+  if (JSON.stringify(user) === "{}") {
+    const data =
+      sessionStorage.getItem(`${AppConfig.sessionStorageContextKey}`) || "";
+    userFromStorage = JSON.parse(data);
+  } else userFromStorage = user;
+  
+
+  //========
+  if (JSON.stringify(userFromStorage) === "{}") {
+    userFromStorage = JSON.parse(
+      window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || ""
+    );
+    setUser(userFromStorage); //updating the context
+  }
+  //final safe-check for the user value
+  if (userFromStorage === "") {
+    const msg: string = `userObject is not set, can't reterive data from DB`;
+    console.error(msg);
+    throw new Error(msg);
+  }
+  
+  // -------------------------------------------------------------------- End of persisted auth ----------------------------------------------------
+  React.useEffect(() => {
+    const userToken = userFromStorage.token;
+    getLabels(userToken).then((data) => {
+      setLabels(data);
+      setIsPending(false);
+    })
+  }, []);
+
 
   useEffect(() => {
     if (currentLabelsList.length > 0) {
@@ -67,3 +103,4 @@ export const LabelsList: React.FC<LabelsListProps> = ({
     </Box>
   );
 };
+
