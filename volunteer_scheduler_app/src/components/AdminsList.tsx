@@ -13,11 +13,11 @@ import { UserObjectContext } from "../App";
 import { AppConfig } from "../AppConfig";
 
 interface AdminListProps {
-  curAdminList: any;
+  currentAdminList: any;
 }
 
-export const AdminsList: React.FC<AdminListProps> = ({ curAdminList }) => {
-  const [admins, setAdmins] = React.useState(curAdminList);
+export const AdminsList: React.FC<AdminListProps> = ({ currentAdminList }) => {
+  const [admins, setAdmins] = React.useState(currentAdminList);
 
   const [isPending, setIsPending] = React.useState(true);
   const boxRef = useRef(null);
@@ -25,41 +25,19 @@ export const AdminsList: React.FC<AdminListProps> = ({ curAdminList }) => {
 
   const { user, setUser } = React.useContext(UserObjectContext);
 
-  //set admin list one on initial load
   useEffect(() => {
-    let userObj = user;
-    //if we get an empty object upon rendering the component - grab the user context from sessionStorage, where it's already set.
-    if (JSON.stringify(userObj) === "{}") {
-      userObj = JSON.parse(
-        window.sessionStorage.getItem(AppConfig.sessionStorageContextKey) || ""
-      );
-      setUser(userObj); //updating the context
-    }
-    //final safe-check for the user value
-    if (userObj === "") {
-      const msg: string = `userObject is not set, can't reterive data from DB`;
-      console.error(msg);
-      throw new Error(msg);
-    }
-    getAdminsList(userObj.token).then((data) => {
-      setAdmins(data);
-      setIsPending(false);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (curAdminList.length > 0) {
-      setAdmins(curAdminList);
+    if (currentAdminList.length > 0) {
+      setAdmins(currentAdminList);
       setIsPending(false);
     }
-  }, [curAdminList]);
+  }, [currentAdminList]);
 
   return (
     <Box id="AdminListTabId" ref={boxRef}>
       <List
         id="adminsList"
         ref={listRef}
-        style={{ maxHeight: 350, overflow: "auto" }} // - to show more admins on the page w/o scroll
+        style={{ maxHeight: 300, overflow: "auto" }} // - to show more admins on the page w/o scroll
         //style={{ overflow: "auto" }}
       >
         {isPending && <CircularProgress color="primary" size={100} />}
