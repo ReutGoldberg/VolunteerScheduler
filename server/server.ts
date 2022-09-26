@@ -3,7 +3,7 @@ import express, {Express, Request, Response} from "express";
 import {config} from "./config"
 //const config = require('./config')
 
-const app: Express = express();
+const app: any = express();
 var cors = require('cors');
 app.use(cors({origin: config.client_app.localhost})) 
 
