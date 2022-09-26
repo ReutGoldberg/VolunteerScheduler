@@ -1,12 +1,12 @@
 import express, {Express, Request, Response} from "express";
-
-import {config} from "./config"
+import {config} from "./config";
+import helmet from "helmet";
 //const config = require('./config')
 
-const app: any = express();
+const app: Express = express();
+app.use(helmet());
 var cors = require('cors');
 app.use(cors({origin: config.client_app.localhost})) 
-
 app.use(express.json());
 
 //grab the port from the heroku server (process.env.Port) if not, default back to localhost ports
