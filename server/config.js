@@ -1,6 +1,6 @@
 const config = {
       server_app: {
-      port: 5001, 
+      port: 5000, 
       name: 'myapp',
       localhost: `http://localhost`,
       notVerifiedUserMsg: "User token is not verified",
