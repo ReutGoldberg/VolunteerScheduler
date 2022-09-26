@@ -9,7 +9,7 @@
     "devStart": "nodemon server.ts",
     "start": "npx ts-node server.ts"
   },
-  "author": "",
+  "author": "DRG",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^3.14.0",
