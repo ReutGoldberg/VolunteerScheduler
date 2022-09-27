@@ -11,7 +11,7 @@ app.use(express.json());
 
 //grab the port from the heroku server (process.env.Port) if not, default back to localhost ports
 //const myPort = (process.env.PORT == null || process.env.PORT == "") ? config.server_app.port : process.env.PORT;
-const myPort = process.env.PORT || config.server_app.port || 5001;
+const myPort = process.env.PORT || config.server_app.port;
 /* Connecting the server with its sub routes*/
 
 const addFakeRouter = require('./routes/add_fake');
