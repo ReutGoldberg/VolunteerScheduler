@@ -11,7 +11,7 @@ export const config = {
     },
     client_app:{
       port: 3000, 
-      localhost: process.env.REACT_APP_API_URL || 'http://localhost:3000',
+      localhost: process.env.CLIENT_APP || 'http://localhost:3000',
       client_id: "83163129776-q90s185nilupint4nb1bp0gsi0fb61vs.apps.googleusercontent.com",
     },
     db: {
