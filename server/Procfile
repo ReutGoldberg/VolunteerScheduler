@@ -1,2 +1,2 @@
 release: prisma migrate deploy
-web: npm install ts-node --save-dev && npm install typescript -g && npm install typescript --save-dev && npm run start
+web: npm run start
