@@ -1,9 +1,11 @@
-import express, {Express, Request, Response} from "express";
+//import express, {Express, Request, Response} from "express";
+const express =  require("express");
+import {Request, Response} from "express";
 import {config} from "./config";
 import helmet from "helmet";
 //const config = require('./config')
 
-const app: Express = express();
+const app: any = express();
 app.use(helmet());
 var cors = require('cors');
 app.use(cors({origin: config.client_app.localhost})) 
