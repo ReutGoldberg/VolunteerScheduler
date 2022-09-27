@@ -8,7 +8,7 @@ import qs from "qs";
 //todo: change this to a class - DAL and have a private field of token.
  async function isNewUser(token:string){
   try {
-    const requestURL:string = `${AppConfig.server_url}/users/isNewUser/`;
+    const requestURL:string = `${AppConfig.server_url}users/isNewUser/`;
     //@ts-ignore 
       const response = await axios({
         method: "get",
@@ -32,7 +32,7 @@ import qs from "qs";
       const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email};
       const response = await axios({
           method: "post",
-          url: `${AppConfig.server_url}/users/add_user`,
+          url: `${AppConfig.server_url}users/add_user`,
           data: JSON.stringify(data),
           headers: { "Content-Type": "application/json",
                      "Authorization": userToken
@@ -49,7 +49,7 @@ import qs from "qs";
  async function isAdminUser(userToken:string){
     try {
       if(userToken == null || userToken === "") return false;
-      const requestURL:string = `${AppConfig.server_url}/users/userEmail/`;
+      const requestURL:string = `${AppConfig.server_url}users/userEmail/`;
       const response = await axios({
         method: "get",
         url: requestURL,
@@ -87,7 +87,7 @@ async function getAdminsList(usertoken:string){
   try {
     const isAdmin = await axios({
           method: "get",
-          url: `${AppConfig.server_url}/users/userEmail/`,
+          url: `${AppConfig.server_url}users/userEmail/`,
           headers: { "Content-Type": "application/json",
                       "authorization": usertoken
                   },
@@ -100,7 +100,7 @@ async function getAdminsList(usertoken:string){
 
     const response2 =  await axios({
           method: "get",
-          url: `${AppConfig.server_url}/users/adminsUserEmail/`,
+          url: `${AppConfig.server_url}users/adminsUserEmail/`,
           headers: { "Content-Type": "application/json",
                       "authorization": usertoken
                   },
@@ -117,7 +117,7 @@ export async function addAdmin(email:string, usertoken:string) {
   try {
     return await axios({
       method: "put",
-      url: `${AppConfig.server_url}/users/add_admin`,
+      url: `${AppConfig.server_url}users/add_admin`,
       data: {email:email, isAdminFlag:true},
       headers: { "Content-Type": "application/json; charset=utf-8",
       "authorization": usertoken }, 
@@ -149,7 +149,7 @@ export async function removeAdmin(email:string, usertoken:string) {
   try {
     return await axios({
       method: "put",
-      url: `${AppConfig.server_url}/users/remove_admin`,
+      url: `${AppConfig.server_url}users/remove_admin`,
       data: {email:email, isAdminFlag:false},
       headers: { "Content-Type": "application/json; charset=utf-8",
       "authorization": usertoken }, 
