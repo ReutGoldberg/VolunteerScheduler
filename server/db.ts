@@ -1,8 +1,5 @@
 // Prisma section //
 //----------------------------------------------------------------
-
-import { inflateSync } from "zlib";
-
   /** Data Access Layer for our DB
    *
    *  Contains all methods that change the data inside our DB

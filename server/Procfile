@@ -1,1 +1,2 @@
-web: npm run devStart
+release: prisma migrate deploy
+web: npm run start
