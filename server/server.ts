@@ -7,7 +7,8 @@ import helmet from "helmet";
 const app: Express = express();
 app.use(helmet());
 var cors = require('cors');
-app.use(cors({origin: config.client_app.localhost})) 
+const allowCorsOnClient = process.env.CLIENT_API || config.client_app.localhost;
+app.use(cors({origin: allowCorsOnClient})) 
 app.use(express.json());
 
 //grab the port from the heroku server (process.env.Port) if not, default back to localhost ports
