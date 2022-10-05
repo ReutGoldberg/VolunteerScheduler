@@ -301,7 +301,52 @@ router.get('/:event_id', async (req:Request, res:Response) => {
         console.log("Error in get event_id from events.ts (server router)")
         console.error(err.message);
         err.message === config.notVerifiedUserMsg ? res.status(401).send({error:err}):res.status(500).send({error:err});  
-    }
+    }   
 });
+
+/* Attempt to Fix Algo */
+
+router.post('/filterd_events', async (req:Request, res:Response) => {
+    console.log("-----post filtered events-------");
+    console.log(req.body);
+        try{
+            if(req.body.startDate && req.body.endDate && req.body.dateForStartTime && req.body.dateForEndTime && req.body.isMax)
+            var showOnlyAvailableEvents = req.body.showOnlyAvailableEvents?.toString();
+
+            if(!showOnlyAvailableEvents) showOnlyAvailableEvents="false";
+
+            const labelsId = req.body.labelsId?.toString();
+            let labels :number[] = labelsId ? labelsId.split(',').map((x: any) => Number(x)) : [];
+            const token = req.headers.authorization ? req.headers.authorization : "";
+
+            if(!(await isVerifiedUser(token))){
+                throw new Error(config.notVerifiedUserMsg);
+            }
+
+            const events = await getFilterEvents( new Date(req.body.startDate.toString()), new Date(req.body.endDate.toString()), 
+                                                new Date(req.body.dateForStartTime.toString()), new Date(req.body.dateForEndTime.toString()),
+                                                labels);
+            console.log("--------Returend Event --------");
+            console.log(events);
+            let filter_events = events;
+            
+            if(showOnlyAvailableEvents=="true"){
+                //@ts-ignore
+                filter_events = filterOnlyAvailableEvents(jwt_decode(token).sub, events);
+            }
+            filter_events = cleanEvents(filter_events);
+            if(req.body.isMax.toString()=="true"){
+                //max-algo
+                console.log("its algo time!!!");
+                filter_events = maxAlgo(filter_events);
+            }
+            res.json(filter_events);
+        }
+        catch(err:any){
+            console.log("Error in get filterd_events from events.ts (server router)")
+            console.error(err.message);
+            err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error:err});        
+        }
+    });    
 
 module.exports = router;

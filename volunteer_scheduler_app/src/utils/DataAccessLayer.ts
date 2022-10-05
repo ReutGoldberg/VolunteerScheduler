@@ -287,9 +287,9 @@ export async function getFilterdEvents(token:string, filters:filtersToMax, isMax
   try{
     const labelsIds = filters.labels.map(l => l.id);
     const response = await axios({
-      method: "get",
+      method: "post",
       url: `${AppConfig.server_url}events/filterd_events`,
-      params: {
+      data:{
           labelsId: labelsIds,
           startDate: filters.startDate,
           endDate: filters.endDate,
@@ -298,10 +298,6 @@ export async function getFilterdEvents(token:string, filters:filtersToMax, isMax
           isMax: isMax,
           showOnlyAvailableEvents: showOnlyAvailableEvents,
         },
-        paramsSerializer: params => {
-          return qs.stringify(params)
-        }
-      ,
       headers: {  "Content-Type": "application/json", "authorization": token},
     });
     return response;
