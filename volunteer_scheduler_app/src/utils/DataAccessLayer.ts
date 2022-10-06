@@ -285,6 +285,9 @@ export async function getAllEvents(token:string){
 
 export async function getFilterdEvents(token:string, filters:filtersToMax, isMax:boolean, showOnlyAvailableEvents:boolean){
   try{
+    const timeDiff = filters.startDate.getTimezoneOffset()/60;
+    console.log("timeDiff");
+    console.log(timeDiff);
     const labelsIds = filters.labels.map(l => l.id);
     let data1 = {
       labelsId: labelsIds,
@@ -294,6 +297,7 @@ export async function getFilterdEvents(token:string, filters:filtersToMax, isMax
       dateForEndTime: filters.dateForEndTime,
       isMax: isMax,
       showOnlyAvailableEvents: showOnlyAvailableEvents,
+      timeDiff: timeDiff,
     }
     const response = await axios({
       method: "post",
@@ -306,6 +310,7 @@ export async function getFilterdEvents(token:string, filters:filtersToMax, isMax
           dateForEndTime: filters.dateForEndTime,
           isMax: isMax,
           showOnlyAvailableEvents: showOnlyAvailableEvents,
+          timeDiff: timeDiff,
         },
       headers: {  "Content-Type": "application/json", "authorization": token},
     });

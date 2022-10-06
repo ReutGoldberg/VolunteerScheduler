@@ -172,7 +172,8 @@ const config = require('./config')
     }
   }
 
-  function timeToStr(date: Date){
+  function timeToStr(date: Date, timeDiff:number){
+    date.setHours(date.getHours()-timeDiff);
     return (("00" + date.getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2) + ":" + ("00" + date.getSeconds()).slice(-2));    
   }
 
@@ -236,7 +237,7 @@ const config = require('./config')
   }});
   }
 
-  async function getFilterEvents(start_date:Date, end_date:Date, start_time:Date, end_time:Date, labelsIds:number[]){
+  async function getFilterEvents(start_date:Date, end_date:Date, start_time:Date, end_time:Date, labelsIds:number[], timeDiff:number){
     try {
       let events;
       if(labelsIds.length==0){
@@ -245,16 +246,16 @@ const config = require('./config')
        events = await filterWithLabels(start_date,end_date,labelsIds);
       }
 
-      const filter_start_time = timeToStr(start_time);
-      const filter_end_time = timeToStr(end_time);
+      const filter_start_time = timeToStr(start_time, timeDiff);
+      const filter_end_time = timeToStr(end_time, timeDiff);
       if(filter_start_time == "00:00:00" && filter_end_time == "23:59:59"){
         return events
       }
       else{
         const relevant_events = []
         for (var event of events){
-          const event_start_time = timeToStr(event["start_time"]);
-          const event_end_time = timeToStr(event["end_time"]);
+          const event_start_time = timeToStr(event["start_time"], timeDiff);
+          const event_end_time = timeToStr(event["end_time"], timeDiff);
           const event_start_date = dateToStr(event["start_time"]);
           const event_end_date = dateToStr(event["end_time"]);
           if (event_start_date == event_end_date && event_start_time >= filter_start_time && event_end_time <= filter_end_time){
