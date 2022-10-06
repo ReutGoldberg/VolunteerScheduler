@@ -250,6 +250,7 @@ export const MaxVolunteer = () => {
           dateForEndTime: submitEndTime,
           labels: checkedLabels,
         };
+        console.log(filtersSub);
         setFilters(filtersSub);
       }
     } catch {
