@@ -173,7 +173,7 @@ const config = require('./config')
   }
 
   function timeToStr(date: Date){
-    return (("00" + date.getHours()).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2) + ":" + ("00" + date.getSeconds()).slice(-2));    
+    return (("00" + date.getHours()+3).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2) + ":" + ("00" + date.getSeconds()).slice(-2));    
   }
 
   function dateToStr(date: Date){
