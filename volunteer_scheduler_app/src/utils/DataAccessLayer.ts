@@ -286,6 +286,15 @@ export async function getAllEvents(token:string){
 export async function getFilterdEvents(token:string, filters:filtersToMax, isMax:boolean, showOnlyAvailableEvents:boolean){
   try{
     const labelsIds = filters.labels.map(l => l.id);
+    let data1 = {
+      labelsId: labelsIds,
+      startDate: filters.startDate,
+      endDate: filters.endDate,
+      dateForStartTime: filters.dateForStartTime,
+      dateForEndTime: filters.dateForEndTime,
+      isMax: isMax,
+      showOnlyAvailableEvents: showOnlyAvailableEvents,
+    }
     const response = await axios({
       method: "post",
       url: `${AppConfig.server_url}events/filterd_events`,
@@ -300,6 +309,8 @@ export async function getFilterdEvents(token:string, filters:filtersToMax, isMax
         },
       headers: {  "Content-Type": "application/json", "authorization": token},
     });
+    console.log("request data:");
+    console.log(data1);
     console.log("this is the reuslt of the filters"); //todo: remove when done testing
     console.log(response); //todo: remove when done testing
     console.log(JSON.stringify(response)); //todo: remove when done testing
