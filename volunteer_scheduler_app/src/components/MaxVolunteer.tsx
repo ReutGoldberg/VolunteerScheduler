@@ -242,19 +242,8 @@ export const MaxVolunteer = () => {
       submitEndTime = setTimesForDates(null, false);
     }
     try {
-      let filtersSub: filtersToMax = {
-        startDate: new Date("1970-01-01"),//defualt back to unix time
-        endDate: new Date("1970-01-01"),
-        dateForStartTime: submitStartTime,
-        dateForEndTime: submitEndTime,
-        labels: checkedLabels,
-      };
-      console.log("about to enter dates value");
       if (startDate && endDate) {
-          console.log("entered with dates value");
-          console.log(`Startdate: \n ${startDate}`);
-          console.log(`endDate: \n ${endDate}`);
-          filtersSub = {
+        var filtersSub: filtersToMax = {
           startDate: startDate,
           endDate: endDate,
           dateForStartTime: submitStartTime,
