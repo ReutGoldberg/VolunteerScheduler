@@ -173,7 +173,7 @@ const config = require('./config')
   }
 
   function timeToStr(date: Date){
-    return (("00" + date.getHours()+3).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2) + ":" + ("00" + date.getSeconds()).slice(-2));    
+    return (("00" + ((date.getHours()+3)%24)).slice(-2) + ":" + ("00" + date.getMinutes()).slice(-2) + ":" + ("00" + date.getSeconds()).slice(-2));    
   }
 
   function dateToStr(date: Date){
@@ -246,7 +246,12 @@ const config = require('./config')
       }
 
       const filter_start_time = timeToStr(start_time);
+      console.log("filter start time:");
+      console.log(filter_start_time)
+      
       const filter_end_time = timeToStr(end_time);
+      console.log("filter end time");
+      console.log(filter_end_time);
       if(filter_start_time == "00:00:00" && filter_end_time == "23:59:59"){
         return events
       }
