@@ -300,6 +300,9 @@ export async function getFilterdEvents(token:string, filters:filtersToMax, isMax
         },
       headers: {  "Content-Type": "application/json", "authorization": token},
     });
+    console.log("this is the reuslt of the filters"); //todo: remove when done testing
+    console.log(response); //todo: remove when done testing
+    console.log(JSON.stringify(response)); //todo: remove when done testing
     return response;
   }
   catch(err:any){

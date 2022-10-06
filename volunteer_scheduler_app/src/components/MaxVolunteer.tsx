@@ -243,14 +243,14 @@ export const MaxVolunteer = () => {
     }
     try {
       if (startDate && endDate) {
-        var filtersSub: filtersToMax = {
+        let filtersSub: filtersToMax = {
           startDate: startDate,
           endDate: endDate,
           dateForStartTime: submitStartTime,
           dateForEndTime: submitEndTime,
           labels: checkedLabels,
         };
-        console.log(filtersSub);
+        console.log(filtersSub);//todo remove when done testing
         setFilters(filtersSub);
       }
     } catch {
