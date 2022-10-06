@@ -245,7 +245,7 @@ const config = require('./config')
        events = await filterWithLabels(start_date,end_date,labelsIds);
       }
 
-      const filter_start_time = timeToStr(start_time);
+      let filter_start_time = timeToStr(start_time);
       console.log("filter start time:");
       console.log(filter_start_time)
       
@@ -256,6 +256,7 @@ const config = require('./config')
         return events
       }
       else{
+        filter_start_time="02:00:00"
         const relevant_events = []
         for (var event of events){
           const event_start_time = timeToStr(event["start_time"]);
