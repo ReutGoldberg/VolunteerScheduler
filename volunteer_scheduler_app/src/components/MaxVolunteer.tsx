@@ -252,6 +252,8 @@ export const MaxVolunteer = () => {
       console.log("about to enter dates value");
       if (startDate && endDate) {
           console.log("entered with dates value");
+          console.log(`Startdate: \n ${startDate}`);
+          console.log(`endDate: \n ${endDate}`);
           filtersSub = {
           startDate: startDate,
           endDate: endDate,
