@@ -72,7 +72,7 @@ export const LabelsList: React.FC<LabelsListProps> = ({
       <List
         id="labelsList"
         ref={listRef}
-        style={{ maxHeight: 500, overflow: "auto" }}
+        style={{ maxHeight: 400, overflow: "auto" }}
       >
         {isPending && <CircularProgress color="primary" size={100} />}
         {labels &&
