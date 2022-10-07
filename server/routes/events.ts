@@ -86,44 +86,44 @@ function maxAlgo(events:any[]){
     return opt_events;       
 }
 
-// router.get('/filterd_events', async (req:Request, res:Response) => {
-//     console.log("-----get filtered events-------")  
-//     if(req.query.startDate && req.query.endDate && req.query.dateForStartTime && req.query.dateForEndTime && req.query.isMax){
-//         let showOnlyAvailableEvents = req.query.showOnlyAvailableEvents?.toString();
-//         if(!showOnlyAvailableEvents) showOnlyAvailableEvents="false";
-//         const labelsId = req.query.labelsId?.toString();
-//         let labels :number[] = labelsId ? labelsId.split(',').map(x => Number(x)) : [];
-//         const token = req.headers.authorization ? req.headers.authorization : "";
-//         try{
-//             if(!(await isVerifiedUser(token))){
-//                 throw new Error(config.notVerifiedUserMsg);
-//             }
+router.get('/filterd_events', async (req:Request, res:Response) => {
+    console.log("-----get filtered events-------")  
+    if(req.query.startDate && req.query.endDate && req.query.dateForStartTime && req.query.dateForEndTime && req.query.isMax && req.query.timeDiff){
+        let showOnlyAvailableEvents = req.query.showOnlyAvailableEvents?.toString();
+        if(!showOnlyAvailableEvents) showOnlyAvailableEvents="false";
+        const timeDiff = Number(req.query.timeDiff);
+        const labelsId = req.query.labelsId?.toString();
+        let labels :number[] = labelsId ? labelsId.split(',').map(x => Number(x)) : [];
+        const token = req.headers.authorization ? req.headers.authorization : "";
+        try{
+            if(!(await isVerifiedUser(token))){
+                throw new Error(config.notVerifiedUserMsg);
+            }
 
-//             const events = await getFilterEvents( new Date(req.query.startDate.toString()), new Date(req.query.endDate.toString()), 
-//                                                 new Date(req.query.dateForStartTime.toString()), new Date(req.query.dateForEndTime.toString()),
-//                                                 labels);
-//             let filter_events = events;
+            const events = await getFilterEvents( new Date(req.query.startDate.toString()), new Date(req.query.endDate.toString()), 
+                                                new Date(req.query.dateForStartTime.toString()), new Date(req.query.dateForEndTime.toString()),
+                                                labels, timeDiff);
+            let filter_events = events;
             
-//             if(showOnlyAvailableEvents=="true"){
-//                 //@ts-ignore
-//                 filter_events = filterOnlyAvailableEvents(jwt_decode(token).sub, events);
-//             }
-//             filter_events = cleanEvents(filter_events);
-//             if(req.query.isMax.toString()=="true"){
-//                 //max-algo
-//                 console.log("its algo time!!!");
-//                 filter_events = maxAlgo(filter_events);
-//             }
-//             res.json(filter_events);
-//         }
-//         catch(err:any){
-//             console.log("Error in get filterd_events from events.ts (server router)")
-//             console.error(err.message);
-//             err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error:err});        
-//         }
-//     }
+            if(showOnlyAvailableEvents=="true"){
+                //@ts-ignore
+                filter_events = filterOnlyAvailableEvents(jwt_decode(token).sub, events);
+            }
+            filter_events = cleanEvents(filter_events);
+            if(req.query.isMax.toString()=="true"){
+                //max-algo
+                filter_events = maxAlgo(filter_events);
+            }
+            res.json(filter_events);
+        }
+        catch(err:any){
+            console.log("Error in get filterd_events from events.ts (server router)")
+            console.error(err.message);
+            err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error:err});        
+        }
+    }
     
-// });
+});
 
 router.get('/event_details/:event_id', async (req:Request, res:Response) => {
     const eventId = Number(req.params.event_id)
@@ -306,47 +306,47 @@ router.get('/:event_id', async (req:Request, res:Response) => {
 
 /* Attempt to Fix Algo */
 
-router.post('/filterd_events', async (req:Request, res:Response) => {
-    console.log("-----post filtered events-------");
-    console.log(req.body);
-        try{
-            if(req.body.startDate && req.body.endDate && req.body.dateForStartTime && req.body.dateForEndTime && req.body.isMax)
-            var showOnlyAvailableEvents = req.body.showOnlyAvailableEvents?.toString();
+// router.post('/filterd_events', async (req:Request, res:Response) => {
+//     console.log("-----post filtered events-------");
+//     console.log(req.body);
+//         try{
+//             if(req.body.startDate && req.body.endDate && req.body.dateForStartTime && req.body.dateForEndTime && req.body.isMax)
+//             var showOnlyAvailableEvents = req.body.showOnlyAvailableEvents?.toString();
 
-            if(!showOnlyAvailableEvents) showOnlyAvailableEvents="false";
-            const timeDiff = req.body.timeDiff;
-            const labelsId = req.body.labelsId?.toString();
-            let labels :number[] = labelsId ? labelsId.split(',').map((x: any) => Number(x)) : [];
-            const token = req.headers.authorization ? req.headers.authorization : "";
+//             if(!showOnlyAvailableEvents) showOnlyAvailableEvents="false";
+//             const timeDiff = req.body.timeDiff;
+//             const labelsId = req.body.labelsId?.toString();
+//             let labels :number[] = labelsId ? labelsId.split(',').map((x: any) => Number(x)) : [];
+//             const token = req.headers.authorization ? req.headers.authorization : "";
 
-            if(!(await isVerifiedUser(token))){
-                throw new Error(config.notVerifiedUserMsg);
-            }
+//             if(!(await isVerifiedUser(token))){
+//                 throw new Error(config.notVerifiedUserMsg);
+//             }
 
-            const events = await getFilterEvents( new Date(req.body.startDate.toString()), new Date(req.body.endDate.toString()), 
-                                                new Date(req.body.dateForStartTime.toString()), new Date(req.body.dateForEndTime.toString()),
-                                                labels, timeDiff);
-            console.log("--------Returend Event --------");
-            console.log(events);
-            let filter_events = events;
+//             const events = await getFilterEvents( new Date(req.body.startDate.toString()), new Date(req.body.endDate.toString()), 
+//                                                 new Date(req.body.dateForStartTime.toString()), new Date(req.body.dateForEndTime.toString()),
+//                                                 labels, timeDiff);
+//             console.log("--------Returend Event --------");
+//             console.log(events);
+//             let filter_events = events;
             
-            if(showOnlyAvailableEvents=="true"){
-                //@ts-ignore
-                filter_events = filterOnlyAvailableEvents(jwt_decode(token).sub, events);
-            }
-            filter_events = cleanEvents(filter_events);
-            if(req.body.isMax.toString()=="true"){
-                //max-algo
-                console.log("its algo time!!!");
-                filter_events = maxAlgo(filter_events);
-            }
-            res.json(filter_events);
-        }
-        catch(err:any){
-            console.log("Error in get filterd_events from events.ts (server router)")
-            console.error(err.message);
-            err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error:err});        
-        }
-    });    
+//             if(showOnlyAvailableEvents=="true"){
+//                 //@ts-ignore
+//                 filter_events = filterOnlyAvailableEvents(jwt_decode(token).sub, events);
+//             }
+//             filter_events = cleanEvents(filter_events);
+//             if(req.body.isMax.toString()=="true"){
+//                 //max-algo
+//                 console.log("its algo time!!!");
+//                 filter_events = maxAlgo(filter_events);
+//             }
+//             res.json(filter_events);
+//         }
+//         catch(err:any){
+//             console.log("Error in get filterd_events from events.ts (server router)")
+//             console.error(err.message);
+//             err.message === config.notVerifiedUserMsg? res.status(401).send({error:err}):res.status(500).send({error:err});        
+//         }
+//     });    
 
 module.exports = router;

@@ -2,11 +2,6 @@ import "../App.css";
 import {
   Box,
   Checkbox,
-  ListItem,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   ButtonGroup,
   Button,
   FormGroup,
@@ -22,9 +17,10 @@ import React from "react";
 import { UserObjectContext } from "../App";
 import CalendComponent from "./Calendar";
 import { AppConfig } from "../AppConfig";
+import { LabelsOptionsComp } from "./LabelsOptionsComp";
 
 export const MaxVolunteer = () => {
-  const [labelOptions, setlabelOptions] = React.useState<labelOptions[]>([]);
+  const [labelsList, setLabelsList] = React.useState<labelOptions[]>([]);
   const [checkedLabels, setCheckedLabels] = React.useState<labelOptions[]>([]);
 
   const [startTime, setStartTime] = React.useState<Date | null>(null);
@@ -46,9 +42,6 @@ export const MaxVolunteer = () => {
   const [isAvailable, setIsAvailable] = React.useState(false);
 
   // ------------------------------------------------------ Persisted Auth after page refresh for admins Section -----------------------
-  //why doing like this?
-  //We can only use user object by the useContext hook which is allowed within a React Functional Component
-  //Using the setUser from the useState hook resutls in an endless loop so we tackle this by using a different variable with the correct value assigned
   const { user } = React.useContext(UserObjectContext); //using App's context
   let userFromStorage: any; //option to default back to sessionStorage
   if (JSON.stringify(user) === "{}") {
@@ -58,33 +51,21 @@ export const MaxVolunteer = () => {
   } else userFromStorage = user;
   // -------------------------------------------------------------------- End of persisted auth ----------------------------------------------------
 
-  // React.useEffect(() => {
-  //   async function callAsync() {
-  //     try {
-  //       const data: labelOptions[] = await getLabels(user.token);
-  //       if (data) {
-  //         if (data.length === 0) {
-  //           return;
-  //         }
-  //         setlabelOptions(
-  //           data.map((labelOption) => {
-  //             return { id: labelOption.id, name: labelOption.name };
-  //           })
-  //         );
-  //       }
-  //     } catch (error) {
-  //       alert("An error accured in server. can't get labels");
-  //       return;
-  //     }
-  //   }
-  //   callAsync();
-  // }, []);
-
   React.useEffect(() => {
-    const userToken = userFromStorage.token;
-    getLabels(userToken).then((data) => {
-      setlabelOptions(data);
-    });
+    async function callAsync() {
+      const data: labelOptions[] = await getLabels(user.token);
+      if (data) {
+        if (data.length === 0) {
+          return;
+        }
+        setLabelsList(
+          data.map((labelOption) => {
+            return { id: labelOption.id, name: labelOption.name };
+          })
+        );
+      }
+    }
+    callAsync();
   }, []);
 
   const setTimesForDates = (date: Date | null, isStart: boolean): Date => {
@@ -250,7 +231,7 @@ export const MaxVolunteer = () => {
           dateForEndTime: submitEndTime,
           labels: checkedLabels,
         };
-        console.log(filtersSub);//todo remove when done testing
+        console.log(filtersSub); //todo remove when done testing
         setFilters(filtersSub);
       }
     } catch {
@@ -339,7 +320,9 @@ export const MaxVolunteer = () => {
             onChange={handleEventEndDateChange}
           />
         </Box>
-        <Typography>for all days choose start hour and end hour:</Typography>
+        <Typography>
+          if needed, choose start hour and end hour for every day:
+        </Typography>
         <Box
           sx={{
             display: "flex",
@@ -384,60 +367,14 @@ export const MaxVolunteer = () => {
             sx={{ width: 200 }}
           />
         </Box>
-
-        <Typography>lables:</Typography>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 4.7,
-          }}
-        >
-          <List
-            sx={{
-              width: "100%",
-              maxWidth: 450,
-              maxHeight: 100,
-              border: 1,
-              borderBlockColor: "grey",
-              borderRadius: 1,
-              overflow: "auto",
-            }}
-          >
-            {labelOptions.map((value) => {
-              const labelId = value.id;
-              return (
-                <ListItem key={value.id} disablePadding>
-                  <ListItemButton
-                    role={undefined}
-                    onClick={handleToggle(value)}
-                    dense
-                  >
-                    <ListItemIcon>
-                      <Checkbox
-                        edge="start"
-                        checked={
-                          checkedLabels.map((cl) => cl.id).indexOf(value.id) !==
-                          -1
-                        }
-                        tabIndex={-1}
-                        disableRipple
-                        inputProps={{
-                          "aria-labelledby": labelId.toString(),
-                        }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText
-                      id={labelId.toString()}
-                      primary={value.name}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
-          </List>
-        </Box>
+        <Typography>if needed, choose labels to filter by:</Typography>
+        <LabelsOptionsComp
+          toEditEventDetails={null}
+          isAuth={true}
+          currentPage={"AddOrEditEvent"}
+          currentLabelsList={labelsList}
+          setAllCheckedLabels={setCheckedLabels}
+        />
 
         <Box sx={{ maxWidth: "40%" }}>
           <FormGroup>

@@ -145,6 +145,23 @@ export async function addLabel(label:string, usertoken:string) {
   }
 }
 
+export async function deleteLabelReq(label_id:number, token:string){
+  try{
+    const response =  await axios({
+        method: "delete",
+        url: `${AppConfig.server_url}labels/delete_label/${label_id}`,
+        headers: { "Content-Type": "application/json",
+                    "authorization": token },
+      });
+    return response;
+  }
+  catch(err:any){
+    console.log("Error in deleteLabelReq from DAL");
+    console.error(err.message);
+    throw err;
+  }
+}
+
 export async function removeAdmin(email:string, usertoken:string) {
   try {
     return await axios({
@@ -286,23 +303,11 @@ export async function getAllEvents(token:string){
 export async function getFilterdEvents(token:string, filters:filtersToMax, isMax:boolean, showOnlyAvailableEvents:boolean){
   try{
     const timeDiff = filters.startDate.getTimezoneOffset()/60;
-    console.log("timeDiff");
-    console.log(timeDiff);
     const labelsIds = filters.labels.map(l => l.id);
-    let data1 = {
-      labelsId: labelsIds,
-      startDate: filters.startDate,
-      endDate: filters.endDate,
-      dateForStartTime: filters.dateForStartTime,
-      dateForEndTime: filters.dateForEndTime,
-      isMax: isMax,
-      showOnlyAvailableEvents: showOnlyAvailableEvents,
-      timeDiff: timeDiff,
-    }
     const response = await axios({
-      method: "post",
+      method: "get",
       url: `${AppConfig.server_url}events/filterd_events`,
-      data:{
+      params:{
           labelsId: labelsIds,
           startDate: filters.startDate,
           endDate: filters.endDate,
@@ -312,13 +317,12 @@ export async function getFilterdEvents(token:string, filters:filtersToMax, isMax
           showOnlyAvailableEvents: showOnlyAvailableEvents,
           timeDiff: timeDiff,
         },
+        paramsSerializer: params => {
+          return qs.stringify(params)
+        }
+      ,
       headers: {  "Content-Type": "application/json", "authorization": token},
-    });
-    console.log("request data:");
-    console.log(data1);
-    console.log("this is the reuslt of the filters"); //todo: remove when done testing
-    console.log(response); //todo: remove when done testing
-    console.log(JSON.stringify(response)); //todo: remove when done testing
+    });;
     return response;
   }
   catch(err:any){

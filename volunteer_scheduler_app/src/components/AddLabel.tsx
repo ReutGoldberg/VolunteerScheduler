@@ -5,7 +5,7 @@ import { AccountCircle } from "@mui/icons-material";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import Typography from "@mui/material/Typography";
-import { addLabel, getLabels } from "../utils/DataAccessLayer";
+import { addLabel, getLabels, deleteLabelReq } from "../utils/DataAccessLayer";
 import { UserObjectContext } from "../App";
 import { labelOptions } from "../utils/helper";
 import { AppConfig } from "../AppConfig";
@@ -14,6 +14,8 @@ import { LabelsList } from "./LabelsList";
 export const AddLabel: React.FC = () => {
   const [label, setLabel] = React.useState("");
   const [addLabelValid, setAddLabelValid] = React.useState(true);
+  const [removeLabel, setRemoveLabel] = React.useState(-1);
+  const [removeLabelValid, setRemoveLabelValid] = React.useState(true);
 
   const [labelsList, setLabelsList] = React.useState<labelOptions[]>([]);
 
@@ -66,6 +68,17 @@ export const AddLabel: React.FC = () => {
     setLabel(event.target.value);
   };
 
+  const handleRemoveLabelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let l = labelsList.find((l) => l.name == event.target.value);
+    if (!event.target.value.match(/^[a-z0-9]+/i) || !l)
+      setRemoveLabelValid(false);
+    else 
+      {
+        setRemoveLabelValid(true); 
+        setRemoveLabel(l.id);
+      }
+  };
+
   //to stop refershing the page when adding/removing labels.
   const handleSubmitForm = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -85,6 +98,23 @@ export const AddLabel: React.FC = () => {
     //@ts-ignore
     document.getElementById("labelToAddTxt").value = ""; //clear the feild for better UX
     alert(`${label} added successfully`);
+  };
+
+
+  const handleRemoveLabel = async () => {
+    if (!removeLabelValid) return;
+    const response = await deleteLabelReq(removeLabel, userFromStorage.token)
+      .then(() => {
+        return getLabels(user.token);
+      })
+      .catch((err) => {
+        console.log("Error! Didn`t remove label");
+        throw err;
+      });
+    setLabelsList(response);
+    //@ts-ignore
+    document.getElementById("labelToRemoveTxt").value = ""; //clear the feild for better UX
+    alert(`${label} removed successfully`);
   };
 
   return (
@@ -112,7 +142,7 @@ export const AddLabel: React.FC = () => {
             gutterBottom
             component="div"
           >
-            Add Label
+            Configure Label
           </Typography>
           <Box
             sx={{
@@ -124,13 +154,13 @@ export const AddLabel: React.FC = () => {
           >
             <Typography>
               please notice - a new label identical to an existing one will not
-              be approved!{" "}
+              be added!{" "}
             </Typography>
             <TextField
-              sx={{ mt: 5 }}
+              sx={{ mt: 2 }}
               error={!addLabelValid}
               id="labelToAddTxt"
-              label="Label"
+              label="Label's name to add"
               variant="outlined"
               onChange={handleAddLabelChange}
               helperText={!addLabelValid ? "Please enter a valid Label " : ""}
@@ -149,6 +179,39 @@ export const AddLabel: React.FC = () => {
               onClick={handleAddLabel}
             >
               Add Label
+            </Button>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              p: "5%",
+              gap: 2,
+            }}
+          >
+            <TextField
+              error={!removeLabelValid}
+              id="labelToRemoveTxt"
+              label="Label's name to remove"
+              variant="outlined"
+              onChange={handleRemoveLabelChange}
+              helperText={!removeLabelValid ? "Please enter a valid Label " : ""}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AccountCircle />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <Button
+              type="submit"
+              form="registerForm"
+              variant="contained"
+              color="error"
+              onClick={handleRemoveLabel}
+            >
+              Remove Label
             </Button>
           </Box>
         </Box>

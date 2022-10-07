@@ -1,5 +1,5 @@
 import express, {Request, Response} from "express";
-import { addNewLabel, getAllLabels, getUserByToken } from "../db";
+import { addNewLabel, getAllLabels, getUserByToken, deleteLabelById } from "../db";
 import { isVerifiedUser } from "../server_utils";
 import jwt_decode from "jwt-decode";
 
@@ -41,6 +41,29 @@ router.get('/all_labels', async (req:Request, res:Response) => {
         console.log("Error in get all_labels from labels.ts (server router)")
         console.error(err.message);
         err.message === config.notVerifiedUserMsg ? res.status(401).send({error:err}):res.status(500).send({error:err});  
+    }
+});
+
+router.delete('/delete_label/:label_id', async (req:Request, res:Response) => {
+    const authToken = req.headers.authorization ? req.headers.authorization : "";
+    try{
+        if(!(await isVerifiedUser(authToken))){
+            throw new Error(config.notVerifiedUserMsg);
+        }
+        const webUser = jwt_decode(authToken);
+        //@ts-ignore
+        if(!(await getUserByToken(webUser.sub).then((user) => user.is_admin))){
+            throw new Error(config.noAdminRightsMsg);
+        }
+        else{
+            const deletedLabel = await deleteLabelById(Number(req.params.label_id));
+            res.json(deletedLabel);
+        }
+    }
+    catch(err:any){
+        console.log("Error in delete_labels from labels.ts (server router)")
+        console.error(err.message);
+        err.message === config.notVerifiedUserMsg || config.noAdminRightsMsg ? res.status(401).send({error:err}):res.status(500).send({error:err});  
     }
 });
 

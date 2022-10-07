@@ -507,6 +507,21 @@ async function addNewLabel(labelName:string) {
   }
 }
 
+async function deleteLabelById(label_id: Number) {
+  try {
+    const deletedLabel = await prisma.Labels.delete({
+      where: {
+        id: label_id,
+      }
+    });
+    return deletedLabel;
+  } catch (error:any) {
+    console.error("Error in deleteLabelById from db.ts");
+    console.error(error.message);
+    throw error;
+  }
+}
+
 async function addNewLog(logTxt:string, logTime:Date) {
   try {
     return await prisma.Logs.create({
@@ -522,4 +537,4 @@ async function addNewLog(logTxt:string, logTime:Date) {
   }
 }
 
-export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, setAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog, getFilterEvents};
+export {getPersonalEvents, unenrollToEvent, enrollToEvent, editEvent, getUserByToken,getAllLabels, getUserByEmail,getEvent, getAllUsers,addNewUser,updateUser,deleteUserById, setAdmin, getAllEvents, deleteEventById, addNewEvent, getAllAdminUsers, addNewLabel, addNewLog, getFilterEvents, deleteLabelById};

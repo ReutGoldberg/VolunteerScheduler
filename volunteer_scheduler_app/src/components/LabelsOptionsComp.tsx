@@ -17,7 +17,7 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 
 interface LabelsOptionsProps {
   toEditEventDetails: fullEventDetails | null;
-  isAdmin: boolean;
+  isAuth: boolean;
   currentPage: string;
   currentLabelsList: labelOptions[];
   setAllCheckedLabels(labels: labelOptions[]): void;
@@ -25,7 +25,7 @@ interface LabelsOptionsProps {
 
 export const LabelsOptionsComp: React.FC<LabelsOptionsProps> = ({
   toEditEventDetails,
-  isAdmin,
+  isAuth,
   currentPage,
   currentLabelsList,
   setAllCheckedLabels,
@@ -82,7 +82,7 @@ export const LabelsOptionsComp: React.FC<LabelsOptionsProps> = ({
       <Autocomplete
         multiple
         id="checkboxes-tags-demo"
-        disabled={currentPage != "AddOrEditEvent" && !isAdmin}
+        disabled={currentPage != "AddOrEditEvent" && !isAuth}
         defaultValue={checkedLabels}
         value={checkedLabels}
         options={labelsOptions}
@@ -95,14 +95,14 @@ export const LabelsOptionsComp: React.FC<LabelsOptionsProps> = ({
         renderOption={(autocompleteProps, option, { selected }) => (
           <ListItem {...autocompleteProps} key={option.id} disablePadding>
             <ListItemButton
-              disabled={currentPage != "AddOrEditEvent" && !isAdmin}
+              disabled={currentPage != "AddOrEditEvent" && !isAuth}
               role={undefined}
               onClick={() => handleToggle(option)}
               dense
             >
               <ListItemIcon>
                 <Checkbox
-                  disabled={currentPage != "AddOrEditEvent" && !isAdmin}
+                  disabled={currentPage != "AddOrEditEvent" && !isAuth}
                   edge="start"
                   checked={
                     toEditEventDetails

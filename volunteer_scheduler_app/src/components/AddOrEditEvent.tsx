@@ -625,7 +625,7 @@ export const AddOrEditEvent: React.FC<AddOrEditProps> = ({
       </Box>
       <LabelsOptionsComp
         toEditEventDetails={toEditEventDetails}
-        isAdmin={isAdmin}
+        isAuth={isAdmin}
         currentPage={currentPage}
         currentLabelsList={labelsList}
         setAllCheckedLabels={setCheckedLabels}
