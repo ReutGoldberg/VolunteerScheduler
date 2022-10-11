@@ -61,7 +61,7 @@ export const AddLabel: React.FC = () => {
   const handleAddLabelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (
       !event.target.value.match(/^[a-z0-9]+/i) ||
-      labelsList.map((l) => l.name).find((l) => l == event.target.value)
+      labelsList.map((l) => l.name).find((l) => l === event.target.value)
     )
       setAddLabelValid(false);
     else setAddLabelValid(true);
@@ -69,7 +69,7 @@ export const AddLabel: React.FC = () => {
   };
 
   const handleRemoveLabelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let l = labelsList.find((l) => l.name == event.target.value);
+    let l = labelsList.find((l) => l.name === event.target.value);
     if (!event.target.value.match(/^[a-z0-9]+/i) || !l)
       setRemoveLabelValid(false);
     else 
@@ -104,16 +104,14 @@ export const AddLabel: React.FC = () => {
   const handleRemoveLabel = async () => {
     if (!removeLabelValid) return;
     const response = await deleteLabelReq(removeLabel, userFromStorage.token)
-      .then(() => {
-        return getLabels(user.token);
-      })
+      .then(() => getLabels(user.token))
       .catch((err) => {
         console.log("Error! Didn`t remove label");
         throw err;
       });
     setLabelsList(response);
     //@ts-ignore
-    document.getElementById("labelToRemoveTxt").value = ""; //clear the feild for better UX
+    document.getElementById("labelToRemoveTxt").value = ""; 
     alert(`${label} removed successfully`);
   };
 

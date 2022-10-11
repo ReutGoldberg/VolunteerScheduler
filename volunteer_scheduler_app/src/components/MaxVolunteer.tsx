@@ -231,7 +231,6 @@ export const MaxVolunteer = () => {
           dateForEndTime: submitEndTime,
           labels: checkedLabels,
         };
-        console.log(filtersSub); //todo remove when done testing
         setFilters(filtersSub);
       }
     } catch {

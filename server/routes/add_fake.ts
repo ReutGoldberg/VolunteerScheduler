@@ -65,8 +65,6 @@ router.post('/enroll_to_event/', async (req:Request, res:Response) => {
             throw new Error(msg);
         }
         else{
-            //todo remove log when done testing
-            console.log(`Got the following: num_enrolls: ${num_enrolls}`)
             const event = await enrollToFakeEvent(Number(num_enrolls));            
             res.json(event);
         }

@@ -2,6 +2,8 @@
 //----------------------------------------------------------------
 
 import { Console } from "console";
+import e from "express";
+import { start } from "repl";
 
   /** Data Access Layer for our DB
    *
@@ -58,8 +60,6 @@ const config = require('./config')
       throw error;
     }
   }
-
-  //todo: change userName to an entire object of user details 
   async function updateUser(userId:Number, userName:String) {
     try {
       const user = await prisma.Users.update({
@@ -177,14 +177,43 @@ const config = require('./config')
 
   function timeToStr(date: Date, timeDiff:number){
     let new_date = new Date(date);
-    new_date.setHours(new_date.getHours()-timeDiff);
+    if(timeDiff < 0){
+      if(new_date.getHours()+timeDiff <= 0){
+        new_date.setHours(0);
+        new_date.setMinutes(0);
+        new_date.setSeconds(0);
+      } //if the timediff goes back to the day before just set it to zero
+      else  
+        new_date.setHours(new_date.getHours()+timeDiff);
+    }
+      
+    else{
+      if(new_date.getHours()-timeDiff <= 0){
+        new_date.setHours(0);
+        new_date.setMinutes(0);
+        new_date.setSeconds(0);
+      } //if the timediff goes back to the day before just set it to zero
+      else  
+        new_date.setHours(new_date.getHours()-timeDiff);
+    }
+      
     return (("00" + new_date.getHours()).slice(-2) + ":" + ("00" + new_date.getMinutes()).slice(-2) + ":" + ("00" + new_date.getSeconds()).slice(-2));    
   }
 
   function dateToStr(date: Date, timeDiff:number){
     let new_date = new Date(date);
+    if(timeDiff < 0)
+    new_date.setHours(new_date.getHours()+timeDiff);
+    else
     new_date.setHours(new_date.getHours()-timeDiff);
     return (("00" + new_date.getFullYear()).slice(-2) + ":" + ("00" + new_date.getMonth()).slice(-2) + ":" + ("00" + new_date.getDate()).slice(-2));    
+  }
+
+  function isFullDayFilter(start_date:Date, end_date:Date){
+    if ((start_date.getHours() !== 0 || start_date.getMinutes() !== 0 || start_date.getSeconds() !== 0) || 
+        (end_date.getHours() !== 23 || end_date.getMinutes() !== 59 || end_date.getSeconds() !== 59))
+        return false;    
+    return true;
   }
 
   async function filterWithLabels(start_date:Date, end_date:Date, labelsIds:number[]){
@@ -251,8 +280,16 @@ const config = require('./config')
       }else{
        events = await filterWithLabels(start_date,end_date,labelsIds);
       }
+
+      if(isFullDayFilter(start_time,end_time)){//added to account for when the filter gets whole day
+        return events;
+      }
+
       const filter_start_time = timeToStr(start_time, timeDiff);
+      if(end_time.getHours()-timeDiff < 0)
+        console.error("Error: Unsported stage - both start time and end time belong to previous day according to the timezone - behavior is unexpected");
       const filter_end_time = timeToStr(end_time, timeDiff);
+
       if(filter_start_time == "00:00:00" && filter_end_time == "23:59:59"){
         return events
       }

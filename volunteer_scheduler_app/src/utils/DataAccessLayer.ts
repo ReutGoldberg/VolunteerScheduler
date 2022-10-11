@@ -5,7 +5,6 @@ import { filtersToMax, fullEventDetails } from "./helper";
 import qs from "qs";
 
 
-//todo: change this to a class - DAL and have a private field of token.
  async function isNewUser(token:string){
   try {
     const requestURL:string = `${AppConfig.server_url}users/isNewUser/`;

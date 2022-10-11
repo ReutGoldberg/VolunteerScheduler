@@ -48,10 +48,6 @@ function generateFakeEvent(){
   }
 
   function generateFakeLabel(){
-  // commented out in lights of the todo for the id above
-  //  const uuid = faker.datatype.uuid();
-  //  const label_id = parseInt(uuid,16); 
-
     const name = faker.company.bsBuzz();
     return {
         "name": name
@@ -59,11 +55,7 @@ function generateFakeEvent(){
   }
 
 
-  function generateFakeLog(){
-    // commented out in lights of the todo for the id above
-    //  const uuid = faker.datatype.uuid();
-    //  const label_id = parseInt(uuid,16); 
-  
+  function generateFakeLog(){  
       const text = faker.lorem.text();
       const logTime = faker.date.soon(10);
       return {

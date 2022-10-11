@@ -88,10 +88,11 @@ export const isValidEmail = (email:string) =>{
 export const parseGetEvents =  async(token:string, isGeneral:boolean=true, filters:filtersToMax|null=null, isMax:boolean=false, showOnlyAvailableEvents:boolean=false): Promise<eventDetails[] | null> => {
   const events: eventDetails[] = [];
   try{
+    let response;
     if(filters==null)
-      var response = isGeneral ? await getAllEvents(token) : await getPersonalEvents(token);
+      response = isGeneral ? await getAllEvents(token) : await getPersonalEvents(token);
     else
-      var response = await getFilterdEvents(token, filters, isMax, showOnlyAvailableEvents);
+      response = await getFilterdEvents(token, filters, isMax, showOnlyAvailableEvents);
 
     if(response.statusText === 'OK'){
       for (let i = 0; i < response.data.length; i ++) {
