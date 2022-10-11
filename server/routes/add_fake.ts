@@ -1,7 +1,7 @@
 import express, {Request, Response} from "express";
 import { addNewFakeUser, addNewFakeLabel, addNewFakeLog, addNewFakeEvent, enrollToFakeEvent} from "../fake_db";
 import { isValidEmail } from "../server_utils";
-const config = require('../config')
+import {config} from '../config'
 const router = express.Router();
 
 
@@ -99,6 +99,8 @@ router.post('/label', async (req:Request, res:Response) => {
     }
 });
 
+  /* support for potential logging system */
+  /* not used on current version */
 router.post('/log', async (req:Request, res:Response) => {
     const {text, time} = req.body;
     const authToken = req.headers.authorization ? req.headers.authorization : "";

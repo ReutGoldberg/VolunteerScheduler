@@ -45,13 +45,15 @@ import {
       createFakeUser(data);
     }
 
-    //@ts-ignore
-    const LogAmount = document.getElementById("fakeLogsAmount")?.value;
-    const num_logs = parseInt(LogAmount);
-    for (let index = 0; index < num_logs; index++) {
-      const fakeLog = generateFakeLog();
-      createFakeLog(fakeLog);
-    }
+
+  /* support for potential logging system */
+  /* not used on current version */
+    // const LogAmount = document.getElementById("fakeLogsAmount")?.value;
+    // const num_logs = parseInt(LogAmount);
+    // for (let index = 0; index < num_logs; index++) {
+    //   const fakeLog = generateFakeLog();
+    //   createFakeLog(fakeLog);
+    // }
 
     //@ts-ignore
     const LabelAmount = document.getElementById("fakeLabelsAmount")?.value;
@@ -70,7 +72,7 @@ import {
     //Enrolls part:
     createFakeEnrollToEvent(num_enrolls);
 
-    console.log(`Added ${num_users} users, ${num_events} events, ${num_logs} logs, ${num_labels} labels to the fake DB`)
+    console.log(`Added ${num_users} users, ${num_events} events, ${num_labels} labels to the fake DB`)
     console.log(`And enrolled ${num_enrolls}`);
     alert(`fakes added successfully`);
   }
@@ -105,12 +107,12 @@ export const FakeDataGen: React.FC = () => {
         helperText="Set the amount of fake labels to generate"
         label="Num labels"
         ></TextField>
-        <TextField
+        {/* <TextField
         id="fakeLogsAmount"
         type="number"
         helperText="Set the amount of fake logs to generate"
         label="Num logs"
-        ></TextField>
+        ></TextField> */}
         <TextField
         id="fakeEnrollsAmount"
         type="number"

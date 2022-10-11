@@ -8,7 +8,7 @@ export async function createFakeUser(userObject:any){
       const data = {firstName: userObject.given_name,lastName: userObject.family_name ,email: userObject.email, token: userObject.token, is_admin: userObject.is_admin};
       const response = await axios({
           method: "post",
-          url: `${AppConfig.server_url}/add_fake/user`,
+          url: `${AppConfig.server_url}add_fake/user`,
           data: JSON.stringify(data),
           headers: { "Content-Type": "application/json",
           "Authorization": `fake_data_token-${data.token}`
@@ -26,7 +26,7 @@ export async function createFakeEvent(data:any){
 try {
     const response = await axios({
     method: "post",
-    url: `${AppConfig.server_url}/add_fake/event`,
+    url: `${AppConfig.server_url}add_fake/event`,
     data: JSON.stringify(data),
     headers: { "Content-Type": "application/json",
     "Authorization": "fake_event"
@@ -47,7 +47,7 @@ export async function createFakeLabel(data:any){
 try {
     const response = await axios({
     method: "post",
-    url: `${AppConfig.server_url}/add_fake/label`,
+    url: `${AppConfig.server_url}add_fake/label`,
     data: JSON.stringify(data),
     headers: { "Content-Type": "application/json", "Authorization": "fake_label"},
 });
@@ -64,7 +64,7 @@ export  async function createFakeLog(data:any){
 try {
     const response = await axios({
     method: "post",
-    url: `${AppConfig.server_url}/add_fake/log`,
+    url: `${AppConfig.server_url}add_fake/log`,
     data: JSON.stringify(data),
     headers: { "Content-Type": "application/json", "Authorization": "fake_log"},
 });
@@ -79,7 +79,7 @@ export async function createFakeEnrollToEvent(num_enrolls:number){
 try {
     const response =  await axios({
     method: "post",
-    url: `${AppConfig.server_url}/add_fake/enroll_to_event`,
+    url: `${AppConfig.server_url}add_fake/enroll_to_event`,
     data: {num_enrolls:num_enrolls},
     headers: { "Content-Type": "application/json",
     "Authorization": "fake_eventEnroll"}

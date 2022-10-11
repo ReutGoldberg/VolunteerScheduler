@@ -4,5 +4,5 @@
     token_iss_1: "https://accounts.google.com",
     server_url: process.env.REACT_APP_API_URL || "http://localhost:5000/",
     sessionStorageContextKey: "VolunteerSchedUserObj",
-    IS_SHOW_FAKE: false
+    IS_SHOW_FAKE: true
    };

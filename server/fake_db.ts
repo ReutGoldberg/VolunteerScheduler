@@ -4,7 +4,7 @@
 
 const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient()
-const config = require('./config')
+import {config} from './config'
 
 export async function addNewFakeUser(firstName:String, lastName:String, email:string, token:string, is_admin:boolean){
     try {
@@ -93,7 +93,8 @@ export async function addNewFakeEvent(event:any){
     }
   
   }
-  
+  /* support for potential logging system */
+  /* not used on current version */
   export async function addNewFakeLog(logTxt:string, logTime:Date) {
     try {
       return await prisma.Logs.create({
@@ -131,7 +132,8 @@ export async function addNewFakeEvent(event:any){
                   create: [{Events: {connect: {id: event.id}}}],
                 },
               },
-            });          
+            });
+            count = i;          
           }             
         return true;  
     }
